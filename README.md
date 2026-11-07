@@ -10,16 +10,16 @@ LivaChat is an open-source, real-time multimodal AI companion platform. It inclu
 
 <table>
   <tr>
-    <td align="center"><img src="images/01-conversation.webp" width="220" alt="Conversation" /></td>
-    <td align="center"><img src="images/02-agent-tasks.webp" width="220" alt="Agent tasks" /></td>
-    <td align="center"><img src="images/03-live-translation.webp" width="220" alt="Live translation" /></td>
-    <td align="center"><img src="images/04-timeline.webp" width="220" alt="Timeline" /></td>
+    <td align="center" width="25%"><img src="images/01-conversation.webp" width="220" alt="Conversation" /></td>
+    <td align="center" width="25%"><img src="images/02-agent-tasks.webp" width="220" alt="Agent tasks" /></td>
+    <td align="center" width="25%"><img src="images/03-live-translation.webp" width="220" alt="Live translation" /></td>
+    <td align="center" width="25%"><img src="images/04-timeline.webp" width="220" alt="Timeline" /></td>
   </tr>
   <tr>
-    <td align="center">Conversation</td>
-    <td align="center">Agent tasks</td>
-    <td align="center">Live translation</td>
-    <td align="center">Timeline</td>
+    <td align="center" width="25%">Conversation</td>
+    <td align="center" width="25%">Agent tasks</td>
+    <td align="center" width="25%">Live translation</td>
+    <td align="center" width="25%">Timeline</td>
   </tr>
 </table>
 
