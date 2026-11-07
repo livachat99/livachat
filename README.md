@@ -82,12 +82,12 @@ cp .env.example .env
 
 ### Download
 
-<!-- TODO: replace the links and screenshots below once the store listings are live -->
-
-| Store | Link | Screenshot |
+| Store | Link | QR code |
 | --- | --- | --- |
-| Google Play | _link pending_ | _screenshot pending_ |
-| App Store | _link pending_ | _screenshot pending_ |
+| Android | [Download APK (v1.0.0)](https://github.com/livachat99/livachat/releases/download/v1.0.0/LivaChat-1.0.0.apk) | <img src="images/qr-download-apk.png" width="120" alt="QR code to download the Android APK" /> |
+| App Store | _link pending_ | _QR code pending_ |
+
+<!-- TODO: add the App Store link and QR code when the listing is live. -->
 
 ## Agent connections
 
