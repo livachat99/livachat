@@ -6,6 +6,23 @@ LivaChat is an open-source, real-time multimodal AI companion platform. It inclu
 - **An AI data-analysis server** — turns everyday conversations plus audio/video data into structured, searchable information, presented as a time-machine-style timeline.
 - **Ready-to-use mobile apps** — native Android and iOS clients built on the same open-source stack.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="images/01-conversation.webp" width="220" alt="Conversation" /></td>
+    <td align="center"><img src="images/02-agent-tasks.webp" width="220" alt="Agent tasks" /></td>
+    <td align="center"><img src="images/03-live-translation.webp" width="220" alt="Live translation" /></td>
+    <td align="center"><img src="images/04-timeline.webp" width="220" alt="Timeline" /></td>
+  </tr>
+  <tr>
+    <td align="center">Conversation</td>
+    <td align="center">Agent tasks</td>
+    <td align="center">Live translation</td>
+    <td align="center">Timeline</td>
+  </tr>
+</table>
+
 ## Features
 
 - **Real-time AI chat** over voice and text, with interruptible turns and low-latency Opus audio.
