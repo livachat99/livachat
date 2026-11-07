@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/session-ready.json",
+  "title": "session.ready — Session Ready",
+  "description": "Server confirms session establishment. Client should use server_time_ms to compute clock offset for one-way delay calculations.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "session.ready"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "session_id",
+        "session_restored",
+        "server_time_ms",
+        "keepalive_interval_s"
+      ],
+      "properties": {
+        "session_id": {
+          "$ref": "../common.json#/$defs/SessionId"
+        },
+        "session_restored": {
+          "type": "boolean",
+          "description": "True if a previous session was successfully restored (reconnection within 30s TTL)."
+        },
+        "server_time_ms": {
+          "$ref": "../common.json#/$defs/UInt64",
+          "description": "Server's current UTC wall-clock time in milliseconds. Client should compute: clock_offset = server_time_ms - local_time_at_receipt_ms."
+        },
+        "keepalive_interval_s": {
+          "$ref": "../common.json#/$defs/UInt8",
+          "description": "Server-recommended heartbeat interval in seconds. Client should respect this value (default: 15)."
+        },
+        "server_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Server package version (PEP 440, e.g. \"0.1.0\" or \"0.1.0+20261017.ad2fa88\"). Informational only; clients must not gate behavior on it."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "session.ready",
+      "seq": 1,
+      "timestamp": 1712345678200,
+      "payload": {
+        "session_id": "sess_abc123def456ghijkl",
+        "session_restored": false,
+        "server_time_ms": 1712345678200,
+        "keepalive_interval_s": 15,
+        "server_version": "0.1.0"
+      }
+    }
+  ]
+}

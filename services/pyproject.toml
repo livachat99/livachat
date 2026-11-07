@@ -1,0 +1,176 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "livachat-server"
+version = "0.1.0"
+description = "LivaChat backend server"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2,<3",
+    "pydantic-settings>=2",
+    "websockets>=13",
+    "httpx>=0.27",
+    "certifi>=2026.10.18",  # GHSA-6q48-6c7w-9gw2（emSign 中间 CA 私钥泄露）
+    "openai>=1.40",
+    "starlette>=0.49.1",  # FileResponse 原生 Range + Range 解析安全修复 (GHSA-7f5h-v6xp-fcq8)
+    "sqlalchemy[asyncio]>=2.0",  # ext.asyncio 需 greenlet；2.1 起仅随 [asyncio] 等 extra 提供（2.0 有平台 marker 兜底）
+    "asyncpg>=0.29",
+    "alembic>=1.13",
+    "redis>=5",
+    "pyyaml>=6",
+    "structlog>=24",
+    "prometheus-client>=0.20",
+    "opentelemetry-api>=1.27",
+    "soxr>=0.5",
+    "pyogg>=0.6.14a1 ; platform_system != 'Windows'",
+    "opuslib>=3.0",
+    "Pillow>=13.0.0",  # 12.3.0 命中 59 条 OSV（含 JPEG/FPX 解码 RCE）
+    "PyJWT>=2.9",
+    "livachat-protocol",
+    "tzdata>=2024.1 ; platform_system == 'Linux'",  # zoneinfo 极简镜像兜底（timezone-support.md §5.4）
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5",
+    "respx>=0.21",
+    "fakeredis>=2.24",
+    "freezegun>=1.5",
+    "anyio>=4",
+]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "types-PyYAML",
+    "ipython",
+]
+
+[project.scripts]
+livachat-server = "app.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+markers = [
+    "integration: tests that require real PG infrastructure (docker-compose)",
+    "e2e: end-to-end tests that require a running uvicorn subprocess",
+    "slow: tests with long timeouts (e.g., heartbeat/idle detection), skipped in CI by default",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+# 规则基线：默认集(E4/E7/E9/F) + 本仓库已达成一致的扩展规则。
+# SIM/TRY/RET/B/S/ASYNC 等组存量较多，不整组开启，按具体规则逐个纳入。
+select = [
+    "E4", "E7", "E9", "W", "F",
+    "I",
+    "UP",
+    "C4",
+    "PIE",
+    "SIM101", "SIM102", "SIM114", "SIM115", "SIM117",
+    "TRY203", "TRY400",
+    "RET504",
+    "RUF022", "RUF023",
+    "DTZ",
+    "ASYNC230",
+    "PLR1701", "PLR1711", "PLR1730",
+    "BLE001", "S110",
+    "B008",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# 边界吞错基线（历史遗留、语义有意）：IO/三方 SDK/HAL 边界统一 catch-all 吞错。
+# 重构为结构化异常前按文件豁免 BLE001/S110；新代码优先具体异常或行内 noqa。
+"agent_relay/adapters/hermes.py" = ["BLE001", "S110"]
+"agent_relay/adapters/openclaw.py" = ["BLE001", "S110"]
+"agent_relay/chatlog_watcher.py" = ["BLE001", "S110"]
+"agent_relay/delivery.py" = ["BLE001", "S110"]
+"agent_relay/event_bus.py" = ["BLE001", "S110"]
+"agent_relay/job_status.py" = ["BLE001", "S110"]
+"agent_relay/job_store.py" = ["BLE001", "S110"]
+"agent_relay/job_store_sqlite.py" = ["BLE001", "S110"]
+"agent_relay/publisher.py" = ["BLE001", "S110"]
+"agent_relay/session_manager.py" = ["BLE001", "S110"]
+"app/application.py" = ["BLE001", "S110"]
+"app/routes.py" = ["BLE001", "S110"]
+"asr/providers/alibaba_bailian.py" = ["BLE001", "S110"]
+"asr/providers/alibaba_qwen_asr.py" = ["BLE001", "S110"]
+"asr/providers/deepgram.py" = ["BLE001", "S110"]
+"asr/providers/elevenlabs.py" = ["BLE001", "S110"]
+"asr/service.py" = ["BLE001", "S110"]
+"avdetector/providers/alibaba_avdetector.py" = ["BLE001", "S110"]
+"avdetector/service.py" = ["BLE001", "S110"]
+"gateway/connection.py" = ["BLE001", "S110"]
+"gateway/endpoint.py" = ["BLE001", "S110"]
+"gateway/seq.py" = ["BLE001", "S110"]
+"llm/service.py" = ["BLE001", "S110"]
+"media/opus.py" = ["BLE001", "S110"]
+"omni/providers/alibaba_livetranslate.py" = ["BLE001", "S110"]
+"omni/providers/alibaba_omni.py" = ["BLE001", "S110"]
+"omni/providers/openai_realtime.py" = ["BLE001", "S110"]
+"omni/service.py" = ["BLE001", "S110"]
+"recording/service.py" = ["BLE001", "S110"]
+"recording/session.py" = ["BLE001", "S110"]
+"scripts/measure_asr_final_latency.py" = ["BLE001", "S110", "E402"]
+"scripts/measure_e2e_asr_final_latency.py" = ["BLE001", "S110", "E402", "I001"]
+"scripts/measure_lecture_switch_latency.py" = ["BLE001", "S110", "E402", "I001"]
+"scripts/test_hermes_concurrency_real.py" = ["BLE001", "S110", "E402"]
+"session/agent_job_ingest.py" = ["BLE001", "S110"]
+"session/av_detector.py" = ["BLE001", "S110"]
+"session/lecture_translate.py" = ["BLE001", "S110"]
+"session/manager.py" = ["BLE001", "S110"]
+"session/omni_mode.py" = ["BLE001", "S110"]
+"session/orchestrator.py" = ["BLE001", "S110"]
+"shared/persistence/chat_store.py" = ["BLE001", "S110"]
+"shared/persistence/helpers.py" = ["BLE001", "S110"]
+"tests/e2e_backend/conftest.py" = ["BLE001", "S110", "E402"]
+"tests/integration/agent_relay/mock_hermes_server.py" = ["BLE001", "S110"]
+"tests/integration/agent_relay/mock_openclaw_server.py" = ["BLE001", "S110"]
+"tests/integration/bff/test_bff_smoke.py" = ["BLE001", "S110"]
+"tests/integration/gateway/conftest.py" = ["BLE001", "S110"]
+"tests/manual/test_hermes_real.py" = ["BLE001", "S110"]
+"tests/manual/p0_openclaw_probe.py" = ["BLE001", "S110"]
+"tts/providers/alibaba_bailian.py" = ["BLE001", "S110"]
+"tts/providers/alibaba_qwen_tts.py" = ["BLE001", "S110"]
+"tts/providers/cartesia.py" = ["BLE001", "S110"]
+"tts/providers/deepgram.py" = ["BLE001", "S110"]
+"tts/providers/elevenlabs.py" = ["BLE001", "S110"]
+"tts/service.py" = ["BLE001", "S110"]
+
+# 一次性脚本/测试夹具的 sys.path bootstrap：import 有意不在文件顶部。
+"scripts/compare_asr_realtime.py" = ["E402"]
+"scripts/test_bailian_asr_real.py" = ["E402"]
+"scripts/test_bailian_translate_real.py" = ["E402"]
+"scripts/test_bailian_tts_real.py" = ["E402"]
+"scripts/test_qwen_asr_real.py" = ["E402"]
+"scripts/test_qwen_tts_race.py" = ["E402"]
+"scripts/test_qwen_tts_real.py" = ["E402"]
+
+# FastAPI Depends() 参数默认值是其标准惯用法（B008 误报），维持按文件豁免
+"bff/common/media.py" = ["BLE001", "S110", "B008"]
+"bff/graph/router.py" = ["B008"]
+"bff/remove/router.py" = ["B008"]
+"bff/search/router.py" = ["B008"]
+"bff/timeline/router.py" = ["B008"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+warn_return_any = true
+warn_unused_ignores = true

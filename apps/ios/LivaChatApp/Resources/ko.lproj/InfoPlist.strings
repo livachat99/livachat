@@ -1,0 +1,4 @@
+"NSMicrophoneUsageDescription" = "목소리를 듣고 함께 곁에 있기 위해 필요해요";
+"NSLocalNetworkUsageDescription" = "로컬 네트워크의 LivaChat 서버에 연결해요.";
+"NSCameraUsageDescription" = "주변 환경을 볼 수 있어요. 나중에 필요할 때 켜도 돼요";
+"NSPhotoLibraryAddUsageDescription" = "AI 이미지를 사진 보관함에 저장할 수 있도록 허용해요.";

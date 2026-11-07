@@ -1,0 +1,19 @@
+[Unit]
+Description=LvData MCP Service v2
+After=network.target
+
+[Service]
+Type=simple
+# v2 配置主体为 lvdata_mcp.yaml（§4.1）；占位符 ${DASHSCOPE_API_KEY} /
+# ${DASHSCOPE_API_HOST}（纯域名）/ ${DASHSCOPE_WORKSPACE_ID} 经环境解析
+Environment=DASHSCOPE_API_KEY=sk-xxx
+Environment=DASHSCOPE_API_HOST=llm-xxxx.cn-beijing.maas.aliyuncs.com
+Environment=DASHSCOPE_WORKSPACE_ID=llm-xxxx
+# 绑定非回环地址时必填（§4.1.4）
+Environment=LVDATA_MCP_TOKEN=
+ExecStart=/opt/lvdata-mcp/.venv/bin/lvdata-mcp serve --config /opt/lvdata-mcp/configs/dev/lvdata_mcp.yaml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

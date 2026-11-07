@@ -1,0 +1,212 @@
+{
+  "c2s": {
+    "session.start": {
+      "type": "session.start",
+      "seq": 1,
+      "timestamp": 1712345678000,
+      "payload": {
+        "session_id": null,
+        "config": {
+          "enable_video": true,
+          "audio_sample_rate": 24000,
+          "vad_sensitivity": "medium",
+          "client_version": "ios-1.0.0",
+          "timezone": "Asia/Shanghai",
+          "language": "zh-Hans"
+        }
+      }
+    },
+    "session.end": {
+      "type": "session.end",
+      "seq": 145,
+      "timestamp": 1712345778000,
+      "payload": {
+        "reason": "user_quit"
+      }
+    },
+    "session.change": {
+      "type": "session.change",
+      "seq": 42,
+      "timestamp": 1712345680000,
+      "payload": {
+        "mode": "translate",
+        "my_language": "zh",
+        "local_language": "ja"
+      }
+    },
+    "audio": {
+      "type": "audio",
+      "seq": 34,
+      "timestamp": 1712345681020,
+      "payload": {
+        "data": "Ly9VUXhBQUFBQUtBQVlBQUFBQ0FBb0FCZ0FBQUFJQUFBQURBQUE9PQ==",
+        "codec": "opus",
+        "duration_ms": 20,
+        "vad_state": "speech"
+      }
+    },
+    "video": {
+      "type": "video",
+      "seq": 12,
+      "timestamp": 1712345682000,
+      "payload": {
+        "data": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==",
+        "frame_id": 7,
+        "width": 1080,
+        "height": 1920,
+        "orientation": 270,
+        "camera_facing": "front",
+        "quality": 70
+      }
+    },
+    "interrupt": {
+      "type": "interrupt",
+      "seq": 58,
+      "timestamp": 1712345683000,
+      "payload": {
+        "reason": "user_voice"
+      }
+    },
+    "ping": {
+      "type": "ping",
+      "seq": 60,
+      "timestamp": 1712345685000,
+      "payload": {}
+    },
+    "pong": {
+      "type": "pong",
+      "seq": 61,
+      "timestamp": 1712345685100,
+      "payload": {
+        "ping_seq": 2001
+      }
+    }
+  },
+  "s2c": {
+    "session.ready": {
+      "type": "session.ready",
+      "seq": 1,
+      "timestamp": 1712345678200,
+      "payload": {
+        "session_id": "sess_abc123def456ghijkl",
+        "session_restored": false,
+        "server_time_ms": 1712345678200,
+        "keepalive_interval_s": 15,
+        "server_version": "0.1.0"
+      }
+    },
+    "session.ended": {
+      "type": "session.ended",
+      "seq": 204,
+      "timestamp": 1712345778200,
+      "payload": {
+        "reason": "user_quit",
+        "session_id": "sess_abc123def456ghijkl"
+      }
+    },
+    "session.changed": {
+      "type": "session.changed",
+      "seq": 43,
+      "timestamp": 1712345680100,
+      "payload": {
+        "mode": "translate",
+        "my_language": "zh",
+        "local_language": "ja"
+      }
+    },
+    "transcription": {
+      "type": "transcription",
+      "seq": 15,
+      "timestamp": 1712345683500,
+      "payload": {
+        "text": "今天天气真不错",
+        "is_final": false,
+        "transcription_id": "trans_a1b2c3d4e5f6"
+      }
+    },
+    "ai_text": {
+      "type": "ai_text",
+      "seq": 30,
+      "timestamp": 1712345684000,
+      "payload": {
+        "text": "今天天气确实",
+        "message_id": "msg_xyz789abcdef",
+        "index": 1,
+        "is_final": false
+      }
+    },
+    "job_status": {
+      "type": "job_status",
+      "seq": 41,
+      "timestamp": 1712345687000,
+      "payload": {
+        "jobs": [
+          {
+            "job_id": "9f3c2ab4d1e84f0c9f3c2ab4d1e84f0c",
+            "agent_name": "hermes",
+            "summary": "正在查询东京机票",
+            "started_at_ms": 1712345640000,
+            "running_time_ms": 47000
+          }
+        ]
+      }
+    },
+    "ai_audio": {
+      "type": "ai_audio",
+      "seq": 40,
+      "timestamp": 1712345684200,
+      "payload": {
+        "data": "Ly9VUXhBQUFBQUtBQVlBQUFBQ0FBb0FCZ0FBQUFJQUFBQURBQUE9PQ==",
+        "codec": "opus",
+        "message_id": "msg_xyz789abcdef",
+        "index": 0,
+        "duration_ms": 40,
+        "is_final": false
+      }
+    },
+    "ai_video_ack": {
+      "type": "ai_video_ack",
+      "seq": 25,
+      "timestamp": 1712345682500,
+      "payload": {
+        "frame_id": 7,
+        "ack_frame_id": 7,
+        "processed": true
+      }
+    },
+    "status": {
+      "type": "status",
+      "seq": 20,
+      "timestamp": 1712345683600,
+      "payload": {
+        "session_status": "thinking",
+        "reason": "asr_final"
+      }
+    },
+    "error": {
+      "type": "error",
+      "seq": 5,
+      "timestamp": 1712345679000,
+      "payload": {
+        "code": 1001,
+        "message": "ASR service unavailable",
+        "fatal": false,
+        "recoverable": true
+      }
+    },
+    "ping": {
+      "type": "ping",
+      "seq": 100,
+      "timestamp": 1712345689000,
+      "payload": {}
+    },
+    "pong": {
+      "type": "pong",
+      "seq": 101,
+      "timestamp": 1712345689100,
+      "payload": {
+        "ping_seq": 60
+      }
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/common.json",
+  "title": "LivaChat Common Definitions",
+  "description": "Shared schema definitions reused across all message types. Synchronized with ws-protocol-design.md v1.3.",
+  "$defs": {
+    "SessionId": {
+      "type": "string",
+      "pattern": "^sess_[a-z0-9]{18}$",
+      "description": "Session identifier: 'sess_' prefix + 18 random lowercase alphanumeric characters.",
+      "examples": ["sess_abc123def456ghijk"]
+    },
+    "MessageId": {
+      "type": "string",
+      "pattern": "^msg_[a-z0-9]{12}$",
+      "description": "AI reply message identifier: 'msg_' prefix + 12 random lowercase alphanumeric characters.",
+      "examples": ["msg_xyz789abcde"]
+    },
+    "TranscriptionId": {
+      "type": "string",
+      "pattern": "^trans_[a-z0-9]{12}$",
+      "description": "Transcription batch identifier: 'trans_' prefix + 12 random lowercase alphanumeric characters.",
+      "examples": ["trans_a1b2c3d4e5f6"]
+    },
+    "DeviceId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Client device UUID v4, generated on first launch and persisted in secure storage."
+    },
+    "JwtToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9\\-_]+\\.[A-Za-z0-9\\-_]+\\.[A-Za-z0-9\\-_]+$",
+      "description": "JWT Bearer token in standard three-segment base64url encoding."
+    },
+    "Base64String": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+      "minLength": 1,
+      "description": "Standard Base64 encoded binary data (RFC 4648)."
+    },
+    "UInt8": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "UInt16": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "UInt32": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "UInt64": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "SeqNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4294967295,
+      "description": "Monotonically increasing sequence number per direction. Starts at 1 on connection, resets on disconnect. Client and server maintain independent sequences."
+    },
+    "Timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615,
+      "description": "Sender-local UTC wall-clock time in milliseconds since Unix epoch. Used for one-way delay calculation and audio/video frame synchronization."
+    },
+    "ClientVersion": {
+      "type": "string",
+      "pattern": "^(ios|android)-\\d+\\.\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Client version with platform prefix. Android: 'android-<versionName>.<versionCode>' (e.g. 'android-1.0.0.130'); the 4th segment is optional for backward compatibility with old clients. iOS may append its build number.",
+      "examples": ["android-1.0.0.130", "ios-1.0.0"]
+    },
+    "AudioSampleRate": {
+      "type": "integer",
+      "enum": [16000, 24000],
+      "description": "Audio sample rate in Hz. Supported values: 16000 or 24000."
+    },
+    "VadSensitivity": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Voice Activity Detection sensitivity level."
+    },
+    "AvDetectorSwitch": {
+      "type": "string",
+      "enum": ["enable", "disable"],
+      "description": "Per-session AVDetector switch. 'enable' = allow proactive audio/video detection; 'disable' = do not attach the detector for this session."
+    },
+    "VadState": {
+      "type": "string",
+      "enum": ["silence", "speech", "muted"],
+      "description": "Per-frame VAD state. Server uses consecutive silence frames (≥600ms) to detect end of user turn. 'muted' marks client mic-mute flush frames (docs/android_audio_capture.md §5.2): server substitutes each of them with a 20ms zero PCM frame downstream instead of decoding."
+    },
+    "AudioCodec": {
+      "type": "string",
+      "const": "opus",
+      "description": "Audio codec identifier. Always 'opus' in MVP."
+    },
+    "AudioDurationMs": {
+      "description": "Audio frame duration in milliseconds. Opus frame length.",
+      "oneOf": [
+        { "const": 20 },
+        { "const": 40 }
+      ]
+    },
+    "JpegQuality": {
+      "$ref": "#/$defs/UInt8",
+      "minimum": 1,
+      "maximum": 100,
+      "description": "JPEG compression quality (1-100). Client adapts dynamically based on estimated upstream bandwidth. Recommended range: 60-80."
+    },
+    "Orientation": {
+      "type": "integer",
+      "enum": [0, 90, 180, 270],
+      "description": "Camera frame rotation in degrees (the rotation needed to display the image upright)."
+    },
+    "CameraFacing": {
+      "type": "string",
+      "enum": ["front", "back", "screen", "gallery"],
+      "description": "Which source produced the frame. 'screen' = screen capture, 'gallery' = user-selected gallery photo (neither is a live camera)."
+    },
+    "SessionStatusCode": {
+      "type": "string",
+      "enum": ["idle", "listening", "thinking", "speaking"],
+      "description": "Server-driven dialog state machine status."
+    },
+    "StatusReasonCode": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "asr_final",
+        "tts_start",
+        "tts_finish",
+        "interrupted",
+        "idle_timeout",
+        "mode_changed"
+      ],
+      "description": "Reason code for session status transitions."
+    },
+    "SessionEndReason": {
+      "type": "string",
+      "enum": [
+        "user_quit",
+        "app_background",
+        "app_terminate",
+        "server_shutdown",
+        "error",
+        "idle_timeout"
+      ],
+      "description": "Reason for session termination."
+    },
+    "InterruptReason": {
+      "type": "string",
+      "enum": ["user_voice", "manual"],
+      "description": "Reason for user interrupt. 'user_voice': VAD detected user speech. 'manual': user tapped interrupt button."
+    },
+    "WrapperProperties": {
+      "type": "object",
+      "required": ["type", "seq", "timestamp", "payload"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Message type discriminator. Determines payload schema."
+        },
+        "seq": {
+          "$ref": "#/$defs/SeqNumber"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "payload": {
+          "type": "object",
+          "description": "Message payload. Schema varies by 'type'."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/c2s/video.json",
+  "title": "video — JPEG Video Frame",
+  "description": "Client sends a JPEG-encoded camera frame asynchronously from audio. Approximately 1 fps. Server acknowledges with ai_video_ack.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "video"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "data",
+        "frame_id",
+        "width",
+        "height",
+        "orientation",
+        "camera_facing",
+        "quality"
+      ],
+      "properties": {
+        "data": {
+          "$ref": "../common.json#/$defs/Base64String",
+          "description": "Base64-encoded JPEG image frame."
+        },
+        "frame_id": {
+          "$ref": "../common.json#/$defs/UInt32",
+          "description": "Monotonically increasing video frame sequence number. Used for ai_video_ack pairing and loss detection (gap > 1)."
+        },
+        "width": {
+          "$ref": "../common.json#/$defs/UInt16",
+          "description": "Original image width in pixels (e.g., 1080)."
+        },
+        "height": {
+          "$ref": "../common.json#/$defs/UInt16",
+          "description": "Original image height in pixels (e.g., 1920)."
+        },
+        "orientation": {
+          "$ref": "../common.json#/$defs/Orientation"
+        },
+        "camera_facing": {
+          "$ref": "../common.json#/$defs/CameraFacing"
+        },
+        "quality": {
+          "$ref": "../common.json#/$defs/JpegQuality"
+        },
+        "turn_id": {
+          "$ref": "../common.json#/$defs/UInt32",
+          "description": "Capture-turn identifier (values start at 1). Client increments it every time the camera is opened, the front/back lens is switched, or screen capture starts. When the server observes a change, it treats this frame as the first frame of a new turn and immediately starts an LLM/TTS turn (without waiting for ASR). Absent or 0 = feature disabled; behavior unchanged (legacy)."
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "Optional user instruction accompanying this frame (e.g. \"描述图片内容\"). When present and non-empty, the server immediately runs a dialog turn with this text (no ASR turn needed) and the frame is consumed as that turn's image. Absent/empty → current behavior (frame only buffered)."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "video",
+      "seq": 12,
+      "timestamp": 1712345682000,
+      "payload": {
+        "data": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==",
+        "frame_id": 7,
+        "width": 1080,
+        "height": 1920,
+        "orientation": 270,
+        "camera_facing": "front",
+        "quality": 70
+      }
+    }
+  ]
+}

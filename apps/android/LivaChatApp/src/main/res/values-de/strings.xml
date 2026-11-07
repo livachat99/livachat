@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- Allgemein (bildschirmübergreifend; neutral, ohne Subjekt, docs/android_multilingual.md §12.3) -->
+    <string name="common_retry">Erneut versuchen</string>
+    <string name="common_close">Schließen</string>
+    <string name="common_back">Zurück</string>
+    <string name="common_view_full_result">Gesamtes Ergebnis anzeigen</string>
+
+    <!-- Chat: untere Leiste («X an/aus» mit Leerzeichen) -->
+    <string name="conv_toolbar_mic_on">Mikrofon an</string>
+    <string name="conv_toolbar_mic_off">Mikrofon aus</string>
+    <string name="conv_toolbar_speaker_on">Lautsprecher an</string>
+    <string name="conv_toolbar_speaker_off">Lautsprecher aus</string>
+    <string name="conv_toolbar_camera_on">Kamera an</string>
+    <string name="conv_toolbar_camera_off">Kamera aus</string>
+    <string name="conv_select_mic_device">Mikrofon auswählen</string>
+    <string name="conv_select_speaker_device">Lautsprecher auswählen</string>
+
+    <!-- Chat: Status -->
+    <string name="conv_status_idle">Jederzeit sprechen</string>
+    <string name="conv_status_connecting">Verbinden...</string>
+    <string name="conv_status_listening">Ich höre zu...</string>
+    <string name="conv_status_thinking">Ich denke nach...</string>
+    <string name="conv_status_disconnected">Verbindung getrennt</string>
+    <string name="ai_generated_notice">Gesprächsinhalte werden von KI generiert. Bitte prüfen Sie sie sorgfältig.</string>
+
+    <!-- Chat: Begrüßung (Chip-Texte werden unverändert als Nachricht gesendet, WYSIWYG) -->
+    <string name="conv_welcome_title">Willkommen bei LivaChat</string>
+    <string name="conv_welcome_subtitle">Ich bin Ihr KI-Begleiter. Sprechen Sie jederzeit mit mir</string>
+    <string name="conv_welcome_chip_voice">Sprachchat</string>
+    <string name="conv_welcome_chip_video">Videoanruf</string>
+    <string name="conv_welcome_chip_speaking">Sprechübung</string>
+    <string name="conv_welcome_chip_translate">Live-Übersetzung</string>
+    <string name="conv_welcome_chip_daily">Tägliche Notizen</string>
+
+    <!-- Berechtigungen (Dialog) -->
+    <string name="perm_dialog_title">Bevor es losgeht, wird eine Berechtigung benötigt</string>
+    <string name="perm_mic_title">Mikrofon-Berechtigung</string>
+    <string name="perm_mic_desc">Damit ich Ihre Stimme hören und für Sie da sein kann</string>
+    <string name="perm_camera_title">Kamera-Berechtigung (optional)</string>
+    <string name="perm_camera_desc">Damit ich Ihre Umgebung sehen kann. Kann später aktiviert werden</string>
+    <string name="perm_start_chat">Chat starten</string>
+    <string name="perm_screen_camera_title">Kamera-Berechtigung (optional)</string>
+    <string name="perm_mic_required_hint">Zum Chatten ist die Mikrofon-Berechtigung erforderlich</string>
+    <string name="perm_go_to_settings">Systemeinstellungen öffnen</string>
+    <string name="perm_grant_action">Erlauben</string>
+    <string name="perm_granted">Erteilt</string>
+
+    <!-- Kamerawechsel -->
+    <string name="conv_switch_to_back_camera">Zur Rückkamera wechseln</string>
+    <string name="conv_switch_to_front_camera">Zur Frontkamera wechseln</string>
+
+    <!-- Avatar / Bild -->
+    <string name="avatar_custom_image_desc">Eigener Avatar</string>
+    <string name="chat_ai_image">KI-Bild</string>
+
+    <!-- Agent-Aufgaben -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="one">Agent-Aufgabe (%1$d)</item>
+        <item quantity="other">Agent-Aufgaben (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">Gestartet: %1$s</string>
+    <string name="conv_agent_job_cancel_action">Agent-Aufgabe abbrechen</string>
+    <string name="conv_agent_job_cancel_question">Agent-Aufgabe abbrechen?</string>
+    <string name="conv_agent_job_cancel_yes">Ja</string>
+    <string name="conv_agent_job_cancel_no">Nein</string>
+    <string name="conv_agent_job_cancel_in_progress">Wird abgebrochen…</string>
+    <string name="conv_agent_job_cancel_failed">Abbruch fehlgeschlagen. Erneut versuchen</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="one">%1$d Agent-Aufgabe läuft</item>
+        <item quantity="other">%1$d Agent-Aufgaben laufen</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="one">Gesamten Text anzeigen · noch %1$s Zeichen</item>
+        <item quantity="other">Gesamten Text anzeigen · noch %1$s Zeichen</item>
+    </plurals>
+
+    <!-- WebView -->
+    <string name="webview_unsupported_link">Nicht unterstütztes Linkformat</string>
+    <string name="webview_open_in_browser">Im Browser öffnen</string>
+    <string name="webview_load_failed">Seite konnte nicht geladen werden. Netzwerk prüfen und erneut versuchen</string>
+    <string name="webview_cannot_open">Diese Seite kann nicht geöffnet werden</string>
+
+    <!-- Startseite -->
+    <string name="splash_tagline">Ihr KI-Begleiter</string>
+    <string name="splash_waking">Ihr Begleiter wird geweckt...</string>
+
+    <!-- Allgemein (Wave3) -->
+    <string name="common_cancel">Abbrechen</string>
+    <string name="common_stop">Stoppen</string>
+    <string name="common_save_image">Bild speichern</string>
+    <string name="common_saved_to_gallery">In der Galerie gespeichert</string>
+    <string name="common_save_failed">Speichern fehlgeschlagen</string>
+    <string name="common_save_failed_storage">Speichern fehlgeschlagen: Speicherberechtigung erforderlich</string>
+    <string name="common_go_to_settings">Zu den Einstellungen</string>
+    <string name="common_time_machine">Zeitmaschine</string>
+
+    <!-- Chat (Wave3) -->
+    <string name="conv_menu_stop_recording">Aufnahme stoppen</string>
+    <string name="conv_menu_start_recording">Aufnahme starten</string>
+    <string name="conv_menu_more">Mehr</string>
+    <string name="conv_menu_chats">Chats</string>
+    <string name="conv_menu_settings">Einstellungen</string>
+    <string name="conv_screen_capture_rationale_title">Bildschirm-Interaktion starten</string>
+    <string name="conv_screen_capture_rationale_text">Mit der KI über den Bildschirminhalt interagieren – Fragen zu Artikeln stellen, auf Videos reagieren und vieles mehr.\n\nNach der Freigabe erscheint am Bildschirmrand eine KI-Blase. Tippen Sie darauf, um einen Screenshot an die KI zu senden</string>
+    <string name="conv_continue">Weiter</string>
+    <string name="conv_screen_capture_stop_title">Bildschirm-Interaktion beenden</string>
+    <string name="conv_screen_capture_stop_message">Die Bildschirm-Interaktion läuft. Beenden?</string>
+    <string name="conv_conn_timeout">Zeitüberschreitung bei der Verbindung</string>
+    <string name="conv_permission_denied_fmt">Keine Berechtigung: %1$s</string>
+    <string name="conv_omni">Omni</string>
+    <string name="conv_omni_intro">Das Omni-Modell reduziert die Interaktionslatenz</string>
+    <string name="conv_enable">Aktivieren</string>
+    <string name="conv_take_photo">Foto aufnehmen</string>
+    <string name="conv_camera_unavailable">Kamera kann nicht geöffnet werden</string>
+    <string name="conv_camera_permission_guide">Für die Kameranutzung ist die Kamera-Berechtigung erforderlich. Prüfen Sie die Berechtigung für LivaChat in den Systemeinstellungen und versuchen Sie es erneut.</string>
+    <string name="conv_select_peer_language">Sprache des Gesprächspartners</string>
+    <string name="conv_select_speaker_language">Sprache des Sprechers</string>
+    <string name="conv_server_config_required">Server muss zuerst eingerichtet werden</string>
+    <string name="conv_server_config_hint">Bitte zuerst Serveradresse und Authentifizierungsschlüssel in den Einstellungen eingeben.</string>
+    <string name="conv_mode_translate">Übersetzungsmodus</string>
+    <string name="conv_mode_transcribe">Transkriptionsmodus</string>
+    <string name="conv_mode_omni">Omni-Modus</string>
+    <string name="conv_language_auto">Automatisch erkennen</string>
+    <string name="conv_picker_confirm">OK</string>
+    <string name="conv_transcribe_source_title">Aufnahmequelle auswählen</string>
+    <string name="conv_transcribe_source_original">Original</string>
+    <string name="conv_transcribe_source_original_desc">Originalklang der Umgebung</string>
+    <string name="conv_transcribe_source_voice">Stimme</string>
+    <string name="conv_transcribe_source_voice_desc">Für Sprache optimiert</string>
+    <string name="conv_mode_dialogue">Dialogmodus</string>
+    <string name="conv_mode_dialogue_desc">Gespräche in Echtzeit übersetzen</string>
+    <string name="conv_mode_lecture">Vortragsmodus</string>
+    <string name="conv_mode_lecture_desc">Vorträge in Echtzeit übersetzen</string>
+    <string name="conv_mode_transcribe_desc">Sprache in Echtzeit transkribieren</string>
+    <string name="conv_omni_desc">Omni-Modell verwenden</string>
+    <string name="conv_avatar_picker_title">Avatar</string>
+    <string name="conv_avatar_from_gallery">Aus Galerie wählen</string>
+    <string name="conv_avatar_reset">Standard-Avatar wiederherstellen</string>
+    <string name="conv_avatar_scale_normal">Normal</string>
+    <string name="conv_avatar_scale_shrink">Verkleinert</string>
+    <string name="conv_avatar_drag_hint">Zum Anpassen der Position ziehen</string>
+    <string name="conv_confirm">Bestätigen</string>
+    <string name="conv_gallery_send">Senden</string>
+    <string name="conv_image_action_text">Beschreibe den Inhalt des Bildes</string>
+    <string name="conv_gallery_preview_image">Fotovorschau</string>
+    <string name="conv_gallery_preview_failed">Foto kann nicht geladen werden</string>
+    <string name="conv_system_default">Systemstandard</string>
+    <string name="conv_overlay_permission_required">Für die Bildschirmaufnahme ist die Berechtigung „Über anderen Apps anzeigen“ erforderlich</string>
+    <string name="conv_avatar_save_failed">Avatar konnte nicht gespeichert werden: %1$s</string>
+    <string name="conv_camera_start_failed">Kamera konnte nicht gestartet werden – Kamera-Berechtigung prüfen</string>
+    <string name="conv_screen_capture_unsupported">Bildschirm-Interaktion ist in diesem Modus nicht verfügbar</string>
+    <string name="conv_msg_suffix_transcript">(Transkript)</string>
+    <string name="conv_msg_suffix_original">(Original)</string>
+    <string name="conv_msg_suffix_translation">(Übersetzung)</string>
+
+    <!-- Allgemein (Wave4) -->
+    <string name="common_view">Ansehen</string>
+
+    <!-- Einstellungen (Wave4) -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_section_service">Dienst</string>
+    <string name="settings_save">Speichern</string>
+    <string name="settings_section_video">Video</string>
+    <string name="settings_default_front_camera">Standardmäßig Frontkamera</string>
+    <string name="settings_default_front_camera_desc">Beim Start des Videos standardmäßig die Frontkamera verwenden</string>
+    <string name="settings_auto_camera_on_join">Kamera beim Chat-Beitritt automatisch einschalten</string>
+    <string name="settings_auto_camera_on_join_desc">Video bei jedem Chatstart automatisch aktivieren</string>
+    <string name="settings_section_general">Allgemein</string>
+    <string name="settings_haptic">Haptisches Feedback</string>
+    <string name="settings_haptic_desc">Leichte Vibration bei Statusänderungen</string>
+    <string name="settings_ai_proactive">Proaktive KI-Fürsorge erlauben</string>
+    <string name="settings_ai_proactive_desc">Die KI kann proaktiv auf Geräusche oder Sichtveränderungen reagieren</string>
+    <string name="settings_section_about">Über</string>
+    <string name="settings_privacy_policy">Datenschutzerklärung</string>
+    <string name="settings_eula">Endbenutzer-Lizenzvertrag</string>
+    <string name="settings_support">Support</string>
+    <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="licenses_title">Open-Source-Lizenzen</string>
+    <string name="licenses_unavailable">Lizenzinformationen sind nicht verfügbar.</string>
+    <string name="settings_server_updated">Servereinstellungen aktualisiert</string>
+    <string name="settings_restart_to_apply">Wird nach erneutem Öffnen der App wirksam.</string>
+    <string name="settings_exit">Beenden</string>
+    <string name="settings_save_failed_message">Bitte gültige Serveradresse und gültigen Authentifizierungsschlüssel eingeben.</string>
+    <string name="settings_server_label">Server</string>
+    <string name="settings_server_placeholder">ip:port oder domain:port</string>
+    <string name="settings_auth_token">Authentifizierungsschlüssel</string>
+    <string name="settings_auth_token_placeholder">Siehe Server-Konfigurationsdatei</string>
+    <string name="settings_tls_allow_self_signed">Selbstsigniertes Zertifikat erlauben</string>
+    <string name="settings_tls_allow_self_signed_desc">Nur für vertrauenswürdige lokale Server. Deaktiviert die Zertifikatsprüfung.</string>
+    <string name="settings_hide_token">Schlüssel verbergen</string>
+    <string name="settings_show_token">Schlüssel anzeigen</string>
+    <string name="settings_check_service">Dienst prüfen</string>
+    <string name="settings_check_service_desc">Mit dem Server verbinden und Schlüssel prüfen</string>
+    <string name="settings_check_action">Prüfen</string>
+    <string name="settings_status_available">Verfügbar</string>
+    <string name="settings_status_auth_failed">Authentifizierung fehlgeschlagen</string>
+    <string name="settings_status_unavailable">Nicht verfügbar</string>
+
+    <!-- Allgemein (Wave5) -->
+    <string name="common_delete">Löschen</string>
+
+    <!-- Verlauf (Wave5) -->
+    <string name="history_title">Chat-Verlauf</string>
+    <string name="history_clear">Leeren</string>
+    <string name="history_search_placeholder">Chats durchsuchen...</string>
+    <string name="history_empty_title">Noch kein Chat-Verlauf</string>
+    <string name="history_empty_subtitle">Erstes Gespräch starten</string>
+    <string name="history_delete_title">Chat löschen</string>
+    <string name="history_delete_message">Diesen Chat löschen?</string>
+    <string name="history_clear_all_title">Alle Chats leeren</string>
+    <string name="history_clear_all_message">Gesamten Chat-Verlauf löschen?</string>
+    <string name="history_untitled">Chat ohne Titel</string>
+    <string name="history_detail_title">Chat-Details</string>
+    <string name="history_detail_delete_message">Diesen gesamten Chat löschen?</string>
+    <plurals name="history_item_meta">
+        <item quantity="one">%1$s, %2$s, %3$d Nachricht</item>
+        <item quantity="other">%1$s, %2$s, %3$d Nachrichten</item>
+    </plurals>
+
+    <!-- Allgemein (Wave6) -->
+    <string name="common_clear">Leeren</string>
+    <string name="common_play">Abspielen</string>
+    <string name="common_pause">Pause</string>
+
+    <!-- MyLife (Wave6) -->
+    <string name="mylife_loading">Wird geladen…</string>
+    <string name="mylife_analyzing">Analyse läuft…</string>
+    <string name="mylife_analysis_pending">Erscheint nach Abschluss der Analyse</string>
+    <string name="mylife_load_failed">Laden fehlgeschlagen</string>
+    <string name="mylife_search_failed">Suche fehlgeschlagen</string>
+    <string name="mylife_agent_task">Agent-Aufgabe</string>
+    <string name="mylife_refresh">Aktualisieren</string>
+    <string name="mylife_analyzing_content">Inhalt wird analysiert…</string>
+    <string name="mylife_hotslot_empty">In diesem Zeitraum gibt es nichts anzuzeigen</string>
+    <string name="mylife_max_selection">Maximal 50 Fotos auswählbar</string>
+    <string name="mylife_delete_timeout">Zeitüberschreitung beim Löschen, bitte später erneut versuchen</string>
+    <string name="mylife_delete_failed">Löschen fehlgeschlagen</string>
+    <string name="mylife_no_records_in_scope">Keine Einträge für %1$s</string>
+    <string name="mylife_no_records_yet">Noch keine Einträge – erstes Gespräch starten</string>
+    <string name="mylife_load_failed_retry">Laden fehlgeschlagen – zum Wiederholen tippen</string>
+    <string name="mylife_loading_earlier">Frühere Einträge werden geladen…</string>
+    <string name="mylife_load_earlier">Frühere laden</string>
+    <string name="mylife_reached_start">Das ist der Anfang</string>
+    <string name="mylife_search_min_chars">Mindestens 2 Zeichen eingeben</string>
+    <string name="mylife_searching">Suche läuft…</string>
+    <string name="mylife_search_no_results">Keine Ergebnisse gefunden</string>
+    <string name="mylife_search_placeholder">Suchen…</string>
+    <string name="mylife_edit">Bearbeiten</string>
+    <string name="mylife_edit_exit">Fertig</string>
+    <string name="mylife_gallery_empty_title">In diesem Zeitraum keine Fotos</string>
+    <string name="mylife_deleting">Wird gelöscht…</string>
+    <string name="mylife_delete_photos">Fotos löschen</string>
+    <string name="mylife_select_photo">Foto auswählen</string>
+    <string name="mylife_audio_empty_title">An diesem Tag keine Audios</string>
+    <string name="mylife_audio_time_desc">Ereignisse im Umkreis von 10 Minuten um %1$s</string>
+    <string name="mylife_overview_month">%2$s %1$d</string>
+    <string name="mylife_scope_filter">Nur %1$s ✕</string>
+    <string name="mylife_granularity_day">Tag</string>
+    <string name="mylife_granularity_week">Woche</string>
+    <string name="mylife_granularity_month">Monat</string>
+    <string name="mylife_granularity_year">Jahr</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="one">Sprachaufnahme, %1$d Segment</item>
+        <item quantity="other">Sprachaufnahmen, %1$d Segmente</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="one">%1$d Foto</item>
+        <item quantity="other">%1$d Fotos</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="one">Analyse läuft… · %1$d Foto</item>
+        <item quantity="other">Analyse läuft… · %1$d Fotos</item>
+    </plurals>
+    <string name="mylife_delete_count">Löschen (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="one">%1$d ausgewähltes Foto löschen?</item>
+        <item quantity="other">%1$d ausgewählte Fotos löschen?</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="one">%1$d Segment</item>
+        <item quantity="other">%1$d Segmente</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="one">%1$d Ergebnis</item>
+        <item quantity="other">%1$d Ergebnisse</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="one">%1$d Foto gelöscht</item>
+        <item quantity="other">%1$d Fotos gelöscht</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">%1$d gelöscht, %2$d fehlgeschlagen</string>
+    <string name="mylife_week_label">KW %1$d</string>
+
+    <!-- Benachrichtigungen (Wave7) -->
+    <string name="notif_mic_channel">Mikrofon</string>
+    <string name="notif_mic_title">Mikrofon wird verwendet</string>
+    <string name="notif_mic_text">Sprache wird für den Chat an die KI gesendet</string>
+    <string name="notif_screen_channel">Bildschirm-Interaktion</string>
+    <string name="notif_screen_title">Bildschirmaufnahme bereit</string>
+    <string name="notif_screen_text">Am Bildschirmrand auf die Blase tippen, um einen Screenshot an die KI zu senden</string>
+
+    <!-- Bildschirmaufnahme-Blase und Fehler (Wave7) -->
+    <string name="cap_bubble_sent">Screenshot gesendet</string>
+    <string name="cap_bubble_foreground">Zu einer anderen App wechseln und tippen</string>
+    <string name="cap_bubble_locked">Zum Verwenden entsperren</string>
+    <string name="cap_bubble_failed">Aufnahme fehlgeschlagen, erneut versuchen</string>
+    <string name="capture_start_failed">Bildschirm-Interaktion konnte nicht gestartet werden: %1$s</string>
+    <string name="capture_overlay_failed">Blase konnte nicht gestartet werden – Bildschirmaufnahme nicht verfügbar</string>
+    <string name="capture_stopped">Bildschirm-Interaktion unerwartet beendet</string>
+
+    <!-- Audiowiedergabe (Wave7) -->
+    <string name="player_play_failed">Wiedergabe fehlgeschlagen</string>
+
+    <!-- Gerätelabels (Wave7) -->
+    <string name="device_wired_headset">Kabel-Headset</string>
+    <string name="device_bt_sco">Bluetooth-Headset</string>
+    <string name="device_ble_headset">Bluetooth-LE-Headset</string>
+    <string name="device_usb_device">USB-Audiogerät</string>
+    <string name="device_usb_headset">USB-Headset</string>
+    <string name="device_speaker">Lautsprecher</string>
+    <string name="device_earpiece">Hörer</string>
+    <string name="device_wired_headphones">Kabel-Kopfhörer (ohne Mikrofon)</string>
+    <string name="device_bt_a2dp">Bluetooth-Audio</string>
+    <string name="device_ble_speaker">Bluetooth-LE-Lautsprecher</string>
+    <string name="device_hearing_aid">Hörgerät</string>
+    <string name="device_output_fallback">Audio-Ausgabegerät</string>
+    <string name="device_builtin_mic">Integriertes Mikrofon</string>
+    <string name="device_input_fallback">Audio-Eingabegerät</string>
+    <string name="device_tag_bt_voice">Bluetooth-Sprache</string>
+    <string name="device_tag_bt_music">Bluetooth-Audio</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- MyLife-API: Protokollfehler (Wave8) -->
+    <string name="mylife_api_empty_response">Leere Antwort</string>
+    <string name="mylife_api_json_parse_failed">JSON-Analyse fehlgeschlagen: %1$s</string>
+</resources>

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/job-status.json",
+  "title": "job_status — Background Job Status Snapshot",
+  "description": "Server pushes the FULL snapshot of the device's running background jobs. Sent immediately when the running set changes (including dropping to zero, which clears client state), otherwise every 15s while at least one job is running; silent while unchanged and empty. Each frame is a full replacement: the client MUST replace its displayed job status with this payload. An empty jobs array clears the display and is only sent on a non-empty→empty transition; the client MUST NOT rely on periodic empty frames to maintain cleared state. First notification is triggered by session start. Not incremental.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "job_status"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["jobs"],
+      "properties": {
+        "jobs": {
+          "type": "array",
+          "description": "All currently running jobs, sorted by started_at_ms ascending. Empty array = no running jobs (clear signal, only sent when the previous snapshot was non-empty).",
+          "items": {
+            "type": "object",
+            "required": ["job_id", "agent_name", "summary", "started_at_ms", "running_time_ms"],
+            "properties": {
+              "job_id": {
+                "type": "string",
+                "description": "Job identifier (relay job_key, uuid hex). Matches the dedup key suffix of job result delivery: the result ai_text carries message_id msg_agent_job_{job_id}."
+              },
+              "agent_name": {
+                "type": "string",
+                "description": "Agent that owns the job. Currently always \"hermes\"."
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 0,
+                "description": "One-line task summary from the main agent (same text as the job-started ai_text)."
+              },
+              "started_at_ms": {
+                "$ref": "../common.json#/$defs/Timestamp",
+                "description": "When the job entered running (epoch ms, server clock)."
+              },
+              "running_time_ms": {
+                "$ref": "../common.json#/$defs/UInt64",
+                "description": "Elapsed running time in ms, computed at send time: server_now_ms - started_at_ms. Derived field; refreshed on every frame."
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "job_status",
+      "seq": 41,
+      "timestamp": 1712345687000,
+      "payload": {
+        "jobs": [
+          {
+            "job_id": "9f3c2ab4d1e84f0c9f3c2ab4d1e84f0c",
+            "agent_name": "hermes",
+            "summary": "正在查询东京机票",
+            "started_at_ms": 1712345640000,
+            "running_time_ms": 47000
+          }
+        ]
+      }
+    },
+    {
+      "type": "job_status",
+      "seq": 42,
+      "timestamp": 1712345690000,
+      "payload": { "jobs": [] }
+    }
+  ]
+}

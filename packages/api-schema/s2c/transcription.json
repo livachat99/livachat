@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/transcription.json",
+  "title": "transcription — ASR Result",
+  "description": "Server streams ASR (Automatic Speech Recognition) results to the client. Interim results (is_final=false) may be revised; final results (is_final=true) mark end of user turn and trigger THINKING state.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "transcription"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["text", "is_final", "transcription_id"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "description": "Recognized text. May be empty string for interim silence frames."
+        },
+        "is_final": {
+          "type": "boolean",
+          "description": "false = interim result (display but may change); true = final (lock into chat bubble, trigger THINKING)."
+        },
+        "transcription_id": {
+          "$ref": "../common.json#/$defs/TranscriptionId"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "transcription",
+      "seq": 15,
+      "timestamp": 1712345683500,
+      "payload": {
+        "text": "今天天气真不错",
+        "is_final": false,
+        "transcription_id": "trans_a1b2c3d4e5f6"
+      }
+    }
+  ]
+}

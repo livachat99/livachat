@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/message.json",
+  "title": "S2C Message — Server-to-Client Discriminated Union",
+  "description": "Validates any server-to-client WebSocket message. Uses type-field discrimination via oneOf. All S2C messages share the common wrapper: type, seq, timestamp, payload.",
+  "anyOf": [
+    { "$ref": "./session-ready.json" },
+    { "$ref": "./session-ended.json" },
+    { "$ref": "./session-changed.json" },
+    { "$ref": "./transcription.json" },
+    { "$ref": "./ai-text.json" },
+    { "$ref": "./job-status.json" },
+    { "$ref": "./ai-audio.json" },
+    { "$ref": "./ai-video-ack.json" },
+    { "$ref": "./status.json" },
+    { "$ref": "./error.json" },
+    { "$ref": "./ping.json" },
+    { "$ref": "./pong.json" }
+  ]
+}

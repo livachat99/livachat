@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/c2s/message.json",
+  "title": "C2S Message — Client-to-Server Discriminated Union",
+  "description": "Validates any client-to-server WebSocket message. Uses type-field discrimination via oneOf. All C2S messages share the common wrapper: type, seq, timestamp, payload.",
+  "anyOf": [
+    { "$ref": "./session-start.json" },
+    { "$ref": "./session-end.json" },
+    { "$ref": "./session-change.json" },
+    { "$ref": "./audio.json" },
+    { "$ref": "./video.json" },
+    { "$ref": "./interrupt.json" },
+    { "$ref": "./ping.json" },
+    { "$ref": "./pong.json" }
+  ]
+}

@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- 通用（跨屏复用；docs/android_multilingual.md §3.2） -->
+    <string name="common_retry">Retry</string>
+    <string name="common_close">Close</string>
+    <string name="common_back">Back</string>
+    <string name="common_view_full_result">View full result</string>
+
+    <!-- 对话页：底部工具栏 -->
+    <string name="conv_toolbar_mic_on">Mic on</string>
+    <string name="conv_toolbar_mic_off">Mic off</string>
+    <string name="conv_toolbar_speaker_on">Speaker on</string>
+    <string name="conv_toolbar_speaker_off">Speaker off</string>
+    <string name="conv_toolbar_camera_on">Camera on</string>
+    <string name="conv_toolbar_camera_off">Camera off</string>
+    <string name="conv_select_mic_device">Select microphone device</string>
+    <string name="conv_select_speaker_device">Select speaker device</string>
+
+    <!-- 对话页：状态指示 -->
+    <string name="conv_status_idle">Say something anytime</string>
+    <string name="conv_status_connecting">Connecting...</string>
+    <string name="conv_status_listening">I\'m listening...</string>
+    <string name="conv_status_thinking">Let me think...</string>
+    <string name="conv_status_disconnected">Disconnected</string>
+    <string name="ai_generated_notice">Conversation content is AI-generated. Please evaluate it carefully.</string>
+
+    <!-- 对话页：欢迎引导（chip 文案会作为用户消息原样上行，WYSIWYG） -->
+    <string name="conv_welcome_title">Welcome to LivaChat</string>
+    <string name="conv_welcome_subtitle">I\'m your AI companion — chat with me anytime.</string>
+    <string name="conv_welcome_chip_voice">Voice chat</string>
+    <string name="conv_welcome_chip_video">Video chat</string>
+    <string name="conv_welcome_chip_speaking">Speaking practice</string>
+    <string name="conv_welcome_chip_translate">Live translation</string>
+    <string name="conv_welcome_chip_daily">Daily log</string>
+
+    <!-- 权限说明（弹窗） -->
+    <string name="perm_dialog_title">Before we start, we need your permission</string>
+    <string name="perm_mic_title">Microphone permission</string>
+    <string name="perm_mic_desc">So I can hear your voice and be here for you</string>
+    <string name="perm_camera_title">Camera permission (optional)</string>
+    <string name="perm_camera_desc">So I can see your surroundings — you can turn it on later</string>
+    <string name="perm_start_chat">Start chatting</string>
+    <string name="perm_screen_camera_title">Camera permission (optional)</string>
+    <string name="perm_mic_required_hint">Microphone permission is required to start chatting</string>
+    <string name="perm_go_to_settings">Open system settings</string>
+    <string name="perm_grant_action">Allow</string>
+    <string name="perm_granted">Granted</string>
+
+    <!-- 摄像头切换 -->
+    <string name="conv_switch_to_back_camera">Switch to rear camera</string>
+    <string name="conv_switch_to_front_camera">Switch to front camera</string>
+
+    <!-- 头像 / 图片 -->
+    <string name="avatar_custom_image_desc">Custom avatar</string>
+    <string name="chat_ai_image">AI image</string>
+
+    <!-- Agent 任务 -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="one">Agent task (%1$d)</item>
+        <item quantity="other">Agent tasks (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">Started at %1$s</string>
+    <string name="conv_agent_job_cancel_action">Cancel Agent task</string>
+    <string name="conv_agent_job_cancel_question">Cancel Agent task?</string>
+    <string name="conv_agent_job_cancel_yes">Yes</string>
+    <string name="conv_agent_job_cancel_no">No</string>
+    <string name="conv_agent_job_cancel_in_progress">Cancelling…</string>
+    <string name="conv_agent_job_cancel_failed">Cancel failed. Try again</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="one">%1$d agent task running</item>
+        <item quantity="other">%1$d agent tasks running</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="one">View full text · %1$s character left</item>
+        <item quantity="other">View full text · %1$s characters left</item>
+    </plurals>
+
+    <!-- WebView 页 -->
+    <string name="webview_unsupported_link">Unsupported link format</string>
+    <string name="webview_open_in_browser">Open in browser</string>
+    <string name="webview_load_failed">Failed to load the page. Check your network and try again.</string>
+    <string name="webview_cannot_open">Can\'t open this page</string>
+
+    <!-- 启动页 -->
+    <string name="splash_tagline">Your AI companion</string>
+    <string name="splash_waking">Waking up your companion...</string>
+
+    <!-- 通用（Wave3 增补） -->
+    <string name="common_cancel">Cancel</string>
+    <string name="common_stop">Stop</string>
+    <string name="common_save_image">Save image</string>
+    <string name="common_saved_to_gallery">Saved to your gallery</string>
+    <string name="common_save_failed">Save failed</string>
+    <string name="common_save_failed_storage">Save failed: storage permission required</string>
+    <string name="common_go_to_settings">Go to settings</string>
+    <string name="common_time_machine">Time Machine</string>
+
+    <!-- 对话页（Wave3） -->
+    <string name="conv_menu_stop_recording">Stop recording</string>
+    <string name="conv_menu_start_recording">Start recording</string>
+    <string name="conv_menu_more">More options</string>
+    <string name="conv_menu_chats">Chats</string>
+    <string name="conv_menu_settings">Settings</string>
+    <string name="conv_screen_capture_rationale_title">Start screen interaction</string>
+    <string name="conv_screen_capture_rationale_text">Interact with AI about what\'s on your screen — ask about articles, react to videos, and more.\n\nAfter granting permission, an AI bubble appears at the screen edge. Tap it to send a snapshot of your screen to the AI.</string>
+    <string name="conv_continue">Continue</string>
+    <string name="conv_screen_capture_stop_title">Stop screen interaction</string>
+    <string name="conv_screen_capture_stop_message">Screen AI interaction is active — stop it?</string>
+    <string name="conv_conn_timeout">Connection timed out</string>
+    <string name="conv_permission_denied_fmt">Permission denied: %1$s</string>
+    <string name="conv_omni">Omni</string>
+    <string name="conv_omni_intro">Use the omni AI model for lower interaction latency</string>
+    <string name="conv_enable">Enable</string>
+    <string name="conv_take_photo">Take photo</string>
+    <string name="conv_camera_unavailable">Can\'t open camera</string>
+    <string name="conv_camera_permission_guide">Camera permission is required to use the camera. Check LivaChat\'s camera permission in system settings and try again.</string>
+    <string name="conv_select_peer_language">Their language</string>
+    <string name="conv_select_speaker_language">Speaker\'s language</string>
+    <string name="conv_server_config_required">Server setup required</string>
+    <string name="conv_server_config_hint">Please enter the server address and auth key in Settings first.</string>
+    <string name="conv_mode_translate">Translate mode</string>
+    <string name="conv_mode_transcribe">Transcribe mode</string>
+    <string name="conv_mode_omni">Omni mode</string>
+    <string name="conv_language_auto">Auto-detect</string>
+    <string name="conv_picker_confirm">OK</string>
+    <string name="conv_transcribe_source_title">Select recording source</string>
+    <string name="conv_transcribe_source_original">Original</string>
+    <string name="conv_transcribe_source_original_desc">Raw ambient audio</string>
+    <string name="conv_transcribe_source_voice">Speech</string>
+    <string name="conv_transcribe_source_voice_desc">Enhanced for speech</string>
+    <string name="conv_mode_dialogue">Conversation mode</string>
+    <string name="conv_mode_dialogue_desc">Translate conversations live</string>
+    <string name="conv_mode_lecture">Lecture mode</string>
+    <string name="conv_mode_lecture_desc">Translate speeches live</string>
+    <string name="conv_mode_transcribe_desc">Transcribe live audio</string>
+    <string name="conv_omni_desc">Use the omni model</string>
+    <string name="conv_avatar_picker_title">Avatar</string>
+    <string name="conv_avatar_from_gallery">Choose from gallery</string>
+    <string name="conv_avatar_reset">Reset to default avatar</string>
+    <string name="conv_avatar_scale_normal">Normal</string>
+    <string name="conv_avatar_scale_shrink">Shrink</string>
+    <string name="conv_avatar_drag_hint">Drag to adjust position</string>
+    <string name="conv_confirm">Confirm</string>
+    <string name="conv_gallery_send">Send</string>
+    <string name="conv_image_action_text">Describe the image content</string>
+    <string name="conv_gallery_preview_image">Photo preview</string>
+    <string name="conv_gallery_preview_failed">Can\'t load photo</string>
+    <string name="conv_system_default">System default</string>
+    <string name="conv_overlay_permission_required">The \"Display over other apps\" permission is required for screen capture</string>
+    <string name="conv_avatar_save_failed">Failed to save avatar: %1$s</string>
+    <string name="conv_camera_start_failed">Failed to start camera — check camera permission</string>
+    <string name="conv_screen_capture_unsupported">Screen interaction isn\'t available in this mode</string>
+    <string name="conv_msg_suffix_transcript">(transcript)</string>
+    <string name="conv_msg_suffix_original">(original)</string>
+    <string name="conv_msg_suffix_translation">(translation)</string>
+
+    <!-- 通用（Wave4 增补） -->
+    <string name="common_view">View</string>
+
+    <!-- 设置页（Wave4） -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_service">Service</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_section_video">Video</string>
+    <string name="settings_default_front_camera">Default front camera</string>
+    <string name="settings_default_front_camera_desc">Use the front camera by default when video starts</string>
+    <string name="settings_auto_camera_on_join">Auto-start camera on joining a chat</string>
+    <string name="settings_auto_camera_on_join_desc">Enable video each time a chat starts</string>
+    <string name="settings_section_general">General</string>
+    <string name="settings_haptic">Haptic feedback</string>
+    <string name="settings_haptic_desc">Subtle vibration on state changes</string>
+    <string name="settings_ai_proactive">Enable Proactive AI Care</string>
+    <string name="settings_ai_proactive_desc">Let the AI proactively respond to sounds or changes in view</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_eula">EULA</string>
+    <string name="settings_support">Support</string>
+    <string name="settings_open_source_licenses">Open Source Licenses</string>
+    <string name="licenses_title">Open Source Licenses</string>
+    <string name="licenses_unavailable">License information is unavailable.</string>
+    <string name="settings_server_updated">Server settings updated</string>
+    <string name="settings_restart_to_apply">Takes effect after reopening the app.</string>
+    <string name="settings_exit">Exit</string>
+    <string name="settings_save_failed_message">Enter a valid server address and auth key.</string>
+    <string name="settings_server_label">Server</string>
+    <string name="settings_server_placeholder">ip:port or domain:port</string>
+    <string name="settings_auth_token">Auth key</string>
+    <string name="settings_auth_token_placeholder">See the server config file</string>
+    <string name="settings_tls_allow_self_signed">Allow self-signed certificate</string>
+    <string name="settings_tls_allow_self_signed_desc">Only for trusted local servers. Disables certificate verification.</string>
+    <string name="settings_hide_token">Hide key</string>
+    <string name="settings_show_token">Show key</string>
+    <string name="settings_check_service">Check service</string>
+    <string name="settings_check_service_desc">Connect to the server and verify the auth key</string>
+    <string name="settings_check_action">Check</string>
+    <string name="settings_status_available">Available</string>
+    <string name="settings_status_auth_failed">Auth failed</string>
+    <string name="settings_status_unavailable">Unavailable</string>
+
+    <!-- 通用（Wave5 增补） -->
+    <string name="common_delete">Delete</string>
+
+    <!-- 历史页（Wave5） -->
+    <string name="history_title">Chat history</string>
+    <string name="history_clear">Clear</string>
+    <string name="history_search_placeholder">Search chats...</string>
+    <string name="history_empty_title">No conversations yet</string>
+    <string name="history_empty_subtitle">Start your first conversation</string>
+    <string name="history_delete_title">Delete conversation</string>
+    <string name="history_delete_message">Delete this conversation?</string>
+    <string name="history_clear_all_title">Clear all conversations</string>
+    <string name="history_clear_all_message">Delete all conversations?</string>
+    <string name="history_untitled">Untitled conversation</string>
+    <string name="history_detail_title">Conversation details</string>
+    <string name="history_detail_delete_message">Delete this entire conversation?</string>
+    <plurals name="history_item_meta">
+        <item quantity="one">%1$s, %2$s, %3$d message</item>
+        <item quantity="other">%1$s, %2$s, %3$d messages</item>
+    </plurals>
+
+    <!-- 通用（Wave6 增补） -->
+    <string name="common_clear">Clear</string>
+    <string name="common_play">Play</string>
+    <string name="common_pause">Pause</string>
+
+    <!-- MyLife（Wave6） -->
+    <string name="mylife_loading">Loading...</string>
+    <string name="mylife_analyzing">Analyzing...</string>
+    <string name="mylife_analysis_pending">It will appear once the analysis is done</string>
+    <string name="mylife_load_failed">Failed to load</string>
+    <string name="mylife_search_failed">Search failed</string>
+    <string name="mylife_agent_task">Agent task</string>
+    <string name="mylife_refresh">Refresh</string>
+    <string name="mylife_analyzing_content">Analyzing content...</string>
+    <string name="mylife_hotslot_empty">Nothing to show in this period</string>
+    <string name="mylife_max_selection">You can select up to 50</string>
+    <string name="mylife_delete_timeout">Delete timed out, please try again</string>
+    <string name="mylife_delete_failed">Delete failed</string>
+    <string name="mylife_no_records_in_scope">No records in %1$s</string>
+    <string name="mylife_no_records_yet">No records yet — start a conversation</string>
+    <string name="mylife_load_failed_retry">Failed to load — tap to retry</string>
+    <string name="mylife_loading_earlier">Loading earlier records...</string>
+    <string name="mylife_load_earlier">Load earlier</string>
+    <string name="mylife_reached_start">You\'ve reached the beginning</string>
+    <string name="mylife_search_min_chars">Type at least 2 characters</string>
+    <string name="mylife_searching">Searching...</string>
+    <string name="mylife_search_no_results">No results found</string>
+    <string name="mylife_search_placeholder">Search...</string>
+    <string name="mylife_edit">Edit</string>
+    <string name="mylife_edit_exit">Done</string>
+    <string name="mylife_gallery_empty_title">No photos in this period</string>
+    <string name="mylife_deleting">Deleting...</string>
+    <string name="mylife_delete_photos">Delete photos</string>
+    <string name="mylife_select_photo">Select photo</string>
+    <string name="mylife_audio_empty_title">No audio this day</string>
+    <string name="mylife_audio_time_desc">View events within 10 minutes of %1$s</string>
+    <string name="mylife_overview_month">%2$s %1$d</string>
+    <string name="mylife_scope_filter">%1$s only ✕</string>
+    <string name="mylife_granularity_day">Day</string>
+    <string name="mylife_granularity_week">Week</string>
+    <string name="mylife_granularity_month">Month</string>
+    <string name="mylife_granularity_year">Year</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="one">Voice recording, %1$d segment</item>
+        <item quantity="other">Voice recordings, %1$d segments</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="one">Analyzing... · %1$d photo</item>
+        <item quantity="other">Analyzing... · %1$d photos</item>
+    </plurals>
+    <string name="mylife_delete_count">Delete (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="one">Delete the %1$d selected photo?</item>
+        <item quantity="other">Delete the %1$d selected photos?</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="one">%1$d segment</item>
+        <item quantity="other">%1$d segments</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="one">Deleted %1$d photo</item>
+        <item quantity="other">Deleted %1$d photos</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">%1$d deleted, %2$d failed</string>
+    <string name="mylife_week_label">W%1$d</string>
+
+    <!-- 通知（Wave7） -->
+    <string name="notif_mic_channel">Microphone</string>
+    <string name="notif_mic_title">Using the microphone</string>
+    <string name="notif_mic_text">Voice is sent to the AI for conversation</string>
+    <string name="notif_screen_channel">Screen interaction</string>
+    <string name="notif_screen_title">Screen capture ready</string>
+    <string name="notif_screen_text">Tap the bubble at the screen edge to send a screenshot to the AI</string>
+
+    <!-- 屏幕抓取气泡与错误（Wave7） -->
+    <string name="cap_bubble_sent">Screenshot sent</string>
+    <string name="cap_bubble_foreground">Switch to another app, then tap</string>
+    <string name="cap_bubble_locked">Unlock to use</string>
+    <string name="cap_bubble_failed">Capture failed, try again</string>
+    <string name="capture_start_failed">Failed to start screen interaction: %1$s</string>
+    <string name="capture_overlay_failed">Floating bubble failed to start — screen capture unavailable</string>
+    <string name="capture_stopped">Screen interaction stopped unexpectedly</string>
+
+    <!-- 音频播放（Wave7） -->
+    <string name="player_play_failed">Playback failed</string>
+
+    <!-- 设备标签（Wave7；docs/android_multilingual.md §2.3.5） -->
+    <string name="device_wired_headset">Wired headset</string>
+    <string name="device_bt_sco">Bluetooth headset</string>
+    <string name="device_ble_headset">Bluetooth LE headset</string>
+    <string name="device_usb_device">USB audio device</string>
+    <string name="device_usb_headset">USB headset</string>
+    <string name="device_speaker">Speaker</string>
+    <string name="device_earpiece">Earpiece</string>
+    <string name="device_wired_headphones">Wired headphones (no mic)</string>
+    <string name="device_bt_a2dp">Bluetooth audio</string>
+    <string name="device_ble_speaker">Bluetooth LE speaker</string>
+    <string name="device_hearing_aid">Hearing aid</string>
+    <string name="device_output_fallback">Audio output device</string>
+    <string name="device_builtin_mic">Built-in microphone</string>
+    <string name="device_input_fallback">Audio input device</string>
+    <string name="device_tag_bt_voice">Bluetooth voice</string>
+    <string name="device_tag_bt_music">Bluetooth audio</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- MyLife API 协议异常文案（Wave8） -->
+    <string name="mylife_api_empty_response">Empty response</string>
+    <string name="mylife_api_json_parse_failed">JSON parse failed: %1$s</string>
+</resources>

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/c2s/session-start.json",
+  "title": "session.start — Begin New Session",
+  "description": "Client initiates a new session or resumes an existing one after reconnection. This must be the first C2S message sent after WebSocket handshake.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "session.start"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["session_id", "config"],
+      "properties": {
+        "session_id": {
+          "description": "Previous session ID for reconnection, or null for a fresh session.",
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "../common.json#/$defs/SessionId" }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "required": [
+            "enable_video",
+            "audio_sample_rate",
+            "vad_sensitivity",
+            "client_version"
+          ],
+          "properties": {
+            "enable_video": {
+              "type": "boolean",
+              "description": "Whether the client will stream camera frames."
+            },
+            "audio_sample_rate": {
+              "$ref": "../common.json#/$defs/AudioSampleRate"
+            },
+            "vad_sensitivity": {
+              "$ref": "../common.json#/$defs/VadSensitivity"
+            },
+            "client_version": {
+              "$ref": "../common.json#/$defs/ClientVersion"
+            },
+            "timezone": {
+              "type": "string",
+              "description": "Client local timezone ID (e.g. \"Asia/Shanghai\"; on some Android devices \"GMT+08:00\"). Send the raw system value; the server validates and canonicalizes it, and ignores invalid values. Optional."
+            },
+            "language": {
+              "type": "string",
+              "description": "Client app UI language (canonical app locale code), e.g. \"en\", \"zh-Hans\", \"zh-Hant\", \"pt\", \"ar\". Use the app's resolved resource language, not the device locale. Optional; omitted by old clients. The server stores it on the session for later use."
+            },
+            "avdetector": {
+              "$ref": "../common.json#/$defs/AvDetectorSwitch",
+              "default": "enable",
+              "description": "Optional per-session switch for AVDetector. Omitted = enable (backward compatible: old clients keep current behavior). Explicit null is invalid; the default keyword is annotation only and the server implements the omitted-field fallback."
+            }
+          },
+          "additionalProperties": true,
+          "description": "Client capability and configuration declaration. Additional properties are allowed for forward compatibility."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "session.start",
+      "seq": 1,
+      "timestamp": 1712345678000,
+      "payload": {
+        "session_id": null,
+        "config": {
+          "enable_video": true,
+          "audio_sample_rate": 24000,
+          "vad_sensitivity": "medium",
+          "client_version": "ios-1.0.0",
+          "timezone": "Asia/Shanghai",
+          "language": "zh-Hans",
+          "avdetector": "enable"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- عام (مشترك بين الشاشات؛ docs/android_multilingual.md §3.2) -->
+    <string name="common_retry">أعد المحاولة</string>
+    <string name="common_close">إغلاق</string>
+    <string name="common_back">رجوع</string>
+    <string name="common_view_full_result">عرض النتيجة كاملة</string>
+
+    <!-- شاشة المحادثة: شريط الأدوات السفلي -->
+    <string name="conv_toolbar_mic_on">الميكروفون مفتوح</string>
+    <string name="conv_toolbar_mic_off">الميكروفون مغلق</string>
+    <string name="conv_toolbar_speaker_on">مكبر الصوت مفتوح</string>
+    <string name="conv_toolbar_speaker_off">مكبر الصوت مغلق</string>
+    <string name="conv_toolbar_camera_on">الكاميرا مفتوحة</string>
+    <string name="conv_toolbar_camera_off">الكاميرا مغلقة</string>
+    <string name="conv_select_mic_device">اختيار جهاز الميكروفون</string>
+    <string name="conv_select_speaker_device">اختيار جهاز مكبر الصوت</string>
+
+    <!-- شاشة المحادثة: مؤشرات الحالة -->
+    <string name="conv_status_idle">تحدّث في أي وقت</string>
+    <string name="conv_status_connecting">جارٍ الاتصال...</string>
+    <string name="conv_status_listening">أنا أنصت إليك...</string>
+    <string name="conv_status_thinking">دعني أفكر...</string>
+    <string name="conv_status_disconnected">انقطع الاتصال</string>
+    <string name="ai_generated_notice">محتوى المحادثة مُنشأ بواسطة الذكاء الاصطناعي. يرجى تقييمه بعناية.</string>
+
+    <!-- شاشة المحادثة: الترحيب (نص الاقتراحات يُرسل كما هو كرسالة مستخدم، WYSIWYG) -->
+    <string name="conv_welcome_title">مرحبًا بك في LivaChat</string>
+    <string name="conv_welcome_subtitle">أنا رفيقك بالذكاء الاصطناعي — تحدّث معي في أي وقت.</string>
+    <string name="conv_welcome_chip_voice">مكالمة صوتية</string>
+    <string name="conv_welcome_chip_video">مكالمة فيديو</string>
+    <string name="conv_welcome_chip_speaking">تدريب على التحدث</string>
+    <string name="conv_welcome_chip_translate">الترجمة الفورية</string>
+    <string name="conv_welcome_chip_daily">سجل يومي</string>
+
+    <!-- أذونات (نافذة منبثقة) -->
+    <string name="perm_dialog_title">قبل أن نبدأ، نحتاج إلى إذنك</string>
+    <string name="perm_mic_title">إذن الميكروفون</string>
+    <string name="perm_mic_desc">لأسمع صوتك وأكون إلى جانبك</string>
+    <string name="perm_camera_title">إذن الكاميرا (اختياري)</string>
+    <string name="perm_camera_desc">لأرى محيطك — يمكنك فتحها لاحقًا</string>
+    <string name="perm_start_chat">ابدأ الدردشة</string>
+    <string name="perm_screen_camera_title">إذن الكاميرا (اختياري)</string>
+    <string name="perm_mic_required_hint">يجب منح إذن الميكروفون لبدء الدردشة</string>
+    <string name="perm_go_to_settings">فتح إعدادات النظام</string>
+    <string name="perm_grant_action">السماح</string>
+    <string name="perm_granted">ممنوح</string>
+
+    <!-- تبديل الكاميرا -->
+    <string name="conv_switch_to_back_camera">التبديل إلى الكاميرا الخلفية</string>
+    <string name="conv_switch_to_front_camera">التبديل إلى الكاميرا الأمامية</string>
+
+    <!-- الصورة الشخصية / الصور -->
+    <string name="avatar_custom_image_desc">صورة شخصية مخصصة</string>
+    <string name="chat_ai_image">صورة الذكاء الاصطناعي</string>
+
+    <!-- مهام الوكيل -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="zero">مهام الوكيل (%1$d)</item>
+        <item quantity="one">مهمة الوكيل (%1$d)</item>
+        <item quantity="two">مهمتا الوكيل (%1$d)</item>
+        <item quantity="few">مهام الوكيل (%1$d)</item>
+        <item quantity="many">مهمة الوكيل (%1$d)</item>
+        <item quantity="other">مهمة الوكيل (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">بدأ في %1$s</string>
+    <string name="conv_agent_job_cancel_action">إلغاء مهمة الوكيل</string>
+    <string name="conv_agent_job_cancel_question">إلغاء مهمة الوكيل؟</string>
+    <string name="conv_agent_job_cancel_yes">نعم</string>
+    <string name="conv_agent_job_cancel_no">لا</string>
+    <string name="conv_agent_job_cancel_in_progress">جارٍ الإلغاء…</string>
+    <string name="conv_agent_job_cancel_failed">تعذّر الإلغاء. حاول مرة أخرى</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="zero">%1$d مهام قيد التشغيل</item>
+        <item quantity="one">%1$d مهمة قيد التشغيل</item>
+        <item quantity="two">%1$d مهمتان قيد التشغيل</item>
+        <item quantity="few">%1$d مهام قيد التشغيل</item>
+        <item quantity="many">%1$d مهمة قيد التشغيل</item>
+        <item quantity="other">%1$d مهمة قيد التشغيل</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="zero">عرض النص كاملًا · تبقّى %1$s أحرف</item>
+        <item quantity="one">عرض النص كاملًا · تبقّى %1$s حرف</item>
+        <item quantity="two">عرض النص كاملًا · تبقّى %1$s حرفان</item>
+        <item quantity="few">عرض النص كاملًا · تبقّى %1$s أحرف</item>
+        <item quantity="many">عرض النص كاملًا · تبقّى %1$s حرفًا</item>
+        <item quantity="other">عرض النص كاملًا · تبقّى %1$s حرفًا</item>
+    </plurals>
+
+    <!-- صفحة WebView -->
+    <string name="webview_unsupported_link">تنسيق الرابط غير مدعوم</string>
+    <string name="webview_open_in_browser">فتح في المتصفح</string>
+    <string name="webview_load_failed">فشل تحميل الصفحة. تحقق من الشبكة وأعد المحاولة.</string>
+    <string name="webview_cannot_open">لا يمكن فتح هذه الصفحة</string>
+
+    <!-- شاشة البداية -->
+    <string name="splash_tagline">رفيقك بالذكاء الاصطناعي</string>
+    <string name="splash_waking">جارٍ إيقاظ رفيقك...</string>
+
+    <!-- عام (إضافات Wave3) -->
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_stop">إيقاف</string>
+    <string name="common_save_image">احفظ الصورة</string>
+    <string name="common_saved_to_gallery">تم الحفظ في المعرض</string>
+    <string name="common_save_failed">فشل الحفظ</string>
+    <string name="common_save_failed_storage">فشل الحفظ: يلزم إذن التخزين</string>
+    <string name="common_go_to_settings">الانتقال إلى الإعدادات</string>
+    <string name="common_time_machine">آلة الزمن</string>
+
+    <!-- شاشة المحادثة (Wave3) -->
+    <string name="conv_menu_stop_recording">أوقف التسجيل</string>
+    <string name="conv_menu_start_recording">ابدأ التسجيل</string>
+    <string name="conv_menu_more">خيارات أخرى</string>
+    <string name="conv_menu_chats">المحادثات</string>
+    <string name="conv_menu_settings">الإعدادات</string>
+    <string name="conv_screen_capture_rationale_title">بدء التفاعل مع الشاشة</string>
+    <string name="conv_screen_capture_rationale_text">تفاعل مع الذكاء الاصطناعي حول ما على شاشتك — اسأل عن المقالات، وعلّق على الفيديوهات، والمزيد.\n\nبعد منح الإذن تظهر فقاعة الذكاء الاصطناعي عند حافة الشاشة. اضغط عليها لإرسال لقطة من شاشتك إلى الذكاء الاصطناعي.</string>
+    <string name="conv_continue">متابعة</string>
+    <string name="conv_screen_capture_stop_title">إيقاف التفاعل مع الشاشة</string>
+    <string name="conv_screen_capture_stop_message">التفاعل مع الشاشة نشط — هل تريد إيقافه؟</string>
+    <string name="conv_conn_timeout">انتهت مهلة الاتصال</string>
+    <string name="conv_permission_denied_fmt">تم رفض الإذن: %1$s</string>
+    <string name="conv_omni">أومني</string>
+    <string name="conv_omni_intro">استخدم نموذج أومني لتقليل زمن التفاعل</string>
+    <string name="conv_enable">تفعيل</string>
+    <string name="conv_take_photo">التقاط صورة</string>
+    <string name="conv_camera_unavailable">لا يمكن فتح الكاميرا</string>
+    <string name="conv_camera_permission_guide">يلزم إذن الكاميرا لاستخدام الكاميرا. تحقق من إذن الكاميرا لتطبيق LivaChat في إعدادات النظام وأعد المحاولة.</string>
+    <string name="conv_select_peer_language">لغة المحاور</string>
+    <string name="conv_select_speaker_language">لغة المتحدث</string>
+    <string name="conv_server_config_required">يلزم إعداد الخادم أولًا</string>
+    <string name="conv_server_config_hint">يرجى إدخال عنوان الخادم ومفتاح المصادقة في الإعدادات أولًا.</string>
+    <string name="conv_mode_translate">وضع الترجمة</string>
+    <string name="conv_mode_transcribe">وضع النسخ</string>
+    <string name="conv_mode_omni">وضع أومني</string>
+    <string name="conv_language_auto">كشف تلقائي</string>
+    <string name="conv_picker_confirm">موافق</string>
+    <string name="conv_transcribe_source_title">اختيار مصدر التسجيل</string>
+    <string name="conv_transcribe_source_original">أصلي</string>
+    <string name="conv_transcribe_source_original_desc">الصوت المحيط الخام</string>
+    <string name="conv_transcribe_source_voice">صوت</string>
+    <string name="conv_transcribe_source_voice_desc">مُحسَّن للكلام</string>
+    <string name="conv_mode_dialogue">وضع الحوار</string>
+    <string name="conv_mode_dialogue_desc">ترجمة المحادثات مباشرةً</string>
+    <string name="conv_mode_lecture">وضع المحاضرة</string>
+    <string name="conv_mode_lecture_desc">ترجمة الخطب مباشرةً</string>
+    <string name="conv_mode_transcribe_desc">نسخ الصوت مباشرةً</string>
+    <string name="conv_omni_desc">استخدام نموذج أومني</string>
+    <string name="conv_avatar_picker_title">الصورة الشخصية</string>
+    <string name="conv_avatar_from_gallery">الاختيار من المعرض</string>
+    <string name="conv_avatar_reset">استعادة الصورة الافتراضية</string>
+    <string name="conv_avatar_scale_normal">عادي</string>
+    <string name="conv_avatar_scale_shrink">تصغير</string>
+    <string name="conv_avatar_drag_hint">اسحب لضبط الموضع</string>
+    <string name="conv_confirm">تأكيد</string>
+    <string name="conv_gallery_send">إرسال</string>
+    <string name="conv_image_action_text">صف محتوى الصورة</string>
+    <string name="conv_gallery_preview_image">معاينة الصورة</string>
+    <string name="conv_gallery_preview_failed">تعذّر تحميل الصورة</string>
+    <string name="conv_system_default">افتراضي النظام</string>
+    <string name="conv_overlay_permission_required">يلزم إذن «العرض فوق التطبيقات الأخرى» لالتقاط الشاشة</string>
+    <string name="conv_avatar_save_failed">فشل حفظ الصورة الشخصية: %1$s</string>
+    <string name="conv_camera_start_failed">فشل تشغيل الكاميرا — تحقق من إذن الكاميرا</string>
+    <string name="conv_screen_capture_unsupported">التفاعل مع الشاشة غير متاح في هذا الوضع</string>
+    <string name="conv_msg_suffix_transcript">(نسخ)</string>
+    <string name="conv_msg_suffix_original">(الأصل)</string>
+    <string name="conv_msg_suffix_translation">(ترجمة)</string>
+
+    <!-- عام (إضافات Wave4) -->
+    <string name="common_view">عرض</string>
+
+    <!-- صفحة الإعدادات (Wave4) -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_section_service">الخدمة</string>
+    <string name="settings_save">احفظ</string>
+    <string name="settings_section_video">الفيديو</string>
+    <string name="settings_default_front_camera">الكاميرا الأمامية الافتراضية</string>
+    <string name="settings_default_front_camera_desc">استخدام الكاميرا الأمامية افتراضيًا عند بدء الفيديو</string>
+    <string name="settings_auto_camera_on_join">تشغيل الكاميرا تلقائيًا عند بدء محادثة</string>
+    <string name="settings_auto_camera_on_join_desc">تفعيل الفيديو عند بدء كل محادثة</string>
+    <string name="settings_section_general">عام</string>
+    <string name="settings_haptic">الاهتزاز اللمسي</string>
+    <string name="settings_haptic_desc">اهتزاز خفيف عند تغيّر الحالة</string>
+    <string name="settings_ai_proactive">اسمح للذكاء الاصطناعي بالتفاعل الاستباقي</string>
+    <string name="settings_ai_proactive_desc">دع الذكاء الاصطناعي يستجيب بشكل استباقي للأصوات أو التغيرات في المشهد</string>
+    <string name="settings_section_about">حول</string>
+    <string name="settings_privacy_policy">سياسة الخصوصية</string>
+    <string name="settings_eula">اتفاقية ترخيص المستخدم النهائي</string>
+    <string name="settings_support">الدعم</string>
+    <string name="settings_open_source_licenses">تراخيص المصادر المفتوحة</string>
+    <string name="licenses_title">تراخيص المصادر المفتوحة</string>
+    <string name="licenses_unavailable">معلومات الترخيص غير متاحة.</string>
+    <string name="settings_server_updated">تم تحديث إعدادات الخادم</string>
+    <string name="settings_restart_to_apply">يُفعّل بعد إعادة فتح التطبيق.</string>
+    <string name="settings_exit">خروج</string>
+    <string name="settings_save_failed_message">أدخل عنوان خادم ومفتاح مصادقة صالحين.</string>
+    <string name="settings_server_label">الخادم</string>
+    <string name="settings_server_placeholder">ip:port أو domain:port</string>
+    <string name="settings_auth_token">مفتاح المصادقة</string>
+    <string name="settings_auth_token_placeholder">راجع ملف إعدادات الخادم</string>
+    <string name="settings_tls_allow_self_signed">السماح بشهادة موقّعة ذاتيًا</string>
+    <string name="settings_tls_allow_self_signed_desc">لخوادم محلية موثوقة فقط. يعطّل التحقق من الشهادة.</string>
+    <string name="settings_hide_token">إخفاء المفتاح</string>
+    <string name="settings_show_token">إظهار المفتاح</string>
+    <string name="settings_check_service">التحقق من الخدمة</string>
+    <string name="settings_check_service_desc">الاتصال بالخادم والتحقق من مفتاح المصادقة</string>
+    <string name="settings_check_action">تحقق</string>
+    <string name="settings_status_available">متاح</string>
+    <string name="settings_status_auth_failed">فشل المصادقة</string>
+    <string name="settings_status_unavailable">غير متاح</string>
+
+    <!-- عام (إضافات Wave5) -->
+    <string name="common_delete">احذف</string>
+
+    <!-- صفحة السجل (Wave5) -->
+    <string name="history_title">سجل المحادثات</string>
+    <string name="history_clear">امسح</string>
+    <string name="history_search_placeholder">ابحث في المحادثات...</string>
+    <string name="history_empty_title">لا توجد محادثات بعد</string>
+    <string name="history_empty_subtitle">ابدأ محادثتك الأولى</string>
+    <string name="history_delete_title">حذف المحادثة</string>
+    <string name="history_delete_message">هل تريد حذف هذه المحادثة؟</string>
+    <string name="history_clear_all_title">مسح جميع المحادثات</string>
+    <string name="history_clear_all_message">هل تريد حذف جميع المحادثات؟</string>
+    <string name="history_untitled">محادثة بلا عنوان</string>
+    <string name="history_detail_title">تفاصيل المحادثة</string>
+    <string name="history_detail_delete_message">هل تريد حذف المحادثة بأكملها؟</string>
+    <plurals name="history_item_meta">
+        <item quantity="zero">%1$s، %2$s، %3$d رسائل</item>
+        <item quantity="one">%1$s، %2$s، %3$d رسالة</item>
+        <item quantity="two">%1$s، %2$s، %3$d رسالتان</item>
+        <item quantity="few">%1$s، %2$s، %3$d رسائل</item>
+        <item quantity="many">%1$s، %2$s، %3$d رسالة</item>
+        <item quantity="other">%1$s، %2$s، %3$d رسالة</item>
+    </plurals>
+
+    <!-- عام (إضافات Wave6) -->
+    <string name="common_clear">مسح</string>
+    <string name="common_play">تشغيل</string>
+    <string name="common_pause">إيقاف مؤقت</string>
+
+    <!-- MyLife (Wave6) -->
+    <string name="mylife_loading">جارٍ التحميل…</string>
+    <string name="mylife_analyzing">جارٍ التحليل…</string>
+    <string name="mylife_analysis_pending">سيظهر بعد اكتمال التحليل</string>
+    <string name="mylife_load_failed">فشل التحميل</string>
+    <string name="mylife_search_failed">فشل البحث</string>
+    <string name="mylife_agent_task">مهمة وكيل</string>
+    <string name="mylife_refresh">تحديث</string>
+    <string name="mylife_analyzing_content">جارٍ تحليل المحتوى…</string>
+    <string name="mylife_hotslot_empty">لا يوجد ما يُعرض في هذه الفترة</string>
+    <string name="mylife_max_selection">يمكنك تحديد ٥٠ كحد أقصى</string>
+    <string name="mylife_delete_timeout">انتهت مهلة الحذف، أعد المحاولة لاحقًا</string>
+    <string name="mylife_delete_failed">فشل الحذف</string>
+    <string name="mylife_no_records_in_scope">لا توجد سجلات في %1$s</string>
+    <string name="mylife_no_records_yet">لا توجد سجلات بعد — ابدأ محادثة</string>
+    <string name="mylife_load_failed_retry">فشل التحميل — اضغط لإعادة المحاولة</string>
+    <string name="mylife_loading_earlier">جارٍ تحميل السجلات الأقدم…</string>
+    <string name="mylife_load_earlier">تحميل الأقدم</string>
+    <string name="mylife_reached_start">هذه البداية</string>
+    <string name="mylife_search_min_chars">اكتب حرفين على الأقل</string>
+    <string name="mylife_searching">جارٍ البحث…</string>
+    <string name="mylife_search_no_results">لا توجد نتائج</string>
+    <string name="mylife_search_placeholder">ابحث…</string>
+    <string name="mylife_edit">تعديل</string>
+    <string name="mylife_edit_exit">تم</string>
+    <string name="mylife_gallery_empty_title">لا توجد صور في هذه الفترة</string>
+    <string name="mylife_deleting">جارٍ الحذف…</string>
+    <string name="mylife_delete_photos">احذف الصور</string>
+    <string name="mylife_select_photo">اختيار صورة</string>
+    <string name="mylife_audio_empty_title">لا يوجد صوت في هذا اليوم</string>
+    <string name="mylife_audio_time_desc">عرض الأحداث خلال ١٠ دقائق من %1$s</string>
+    <string name="mylife_overview_month">%2$s %1$d</string>
+    <string name="mylife_scope_filter">%1$s فقط ✕</string>
+    <string name="mylife_granularity_day">يوم</string>
+    <string name="mylife_granularity_week">أسبوع</string>
+    <string name="mylife_granularity_month">شهر</string>
+    <string name="mylife_granularity_year">سنة</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="zero">تسجيلات صوتية، %1$d مقاطع</item>
+        <item quantity="one">تسجيل صوتي، %1$d مقطع</item>
+        <item quantity="two">تسجيلان صوتيان، %1$d مقطعان</item>
+        <item quantity="few">تسجيلات صوتية، %1$d مقاطع</item>
+        <item quantity="many">تسجيل صوتي، %1$d مقطع</item>
+        <item quantity="other">تسجيل صوتي، %1$d مقطع</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="zero">%1$d صور</item>
+        <item quantity="one">%1$d صورة</item>
+        <item quantity="two">%1$d صورتان</item>
+        <item quantity="few">%1$d صور</item>
+        <item quantity="many">%1$d صورة</item>
+        <item quantity="other">%1$d صورة</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="zero">جارٍ التحليل… · %1$d صور</item>
+        <item quantity="one">جارٍ التحليل… · %1$d صورة</item>
+        <item quantity="two">جارٍ التحليل… · %1$d صورتان</item>
+        <item quantity="few">جارٍ التحليل… · %1$d صور</item>
+        <item quantity="many">جارٍ التحليل… · %1$d صورة</item>
+        <item quantity="other">جارٍ التحليل… · %1$d صورة</item>
+    </plurals>
+    <string name="mylife_delete_count">احذف (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="zero">هل تريد حذف %1$d صور محددة؟</item>
+        <item quantity="one">هل تريد حذف %1$d صورة محددة؟</item>
+        <item quantity="two">هل تريد حذف %1$d صورتين محددتين؟</item>
+        <item quantity="few">هل تريد حذف %1$d صور محددة؟</item>
+        <item quantity="many">هل تريد حذف %1$d صورة محددة؟</item>
+        <item quantity="other">هل تريد حذف %1$d صورة محددة؟</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="zero">%1$d مقاطع</item>
+        <item quantity="one">%1$d مقطع</item>
+        <item quantity="two">%1$d مقطعان</item>
+        <item quantity="few">%1$d مقاطع</item>
+        <item quantity="many">%1$d مقطع</item>
+        <item quantity="other">%1$d مقطع</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="zero">%1$d نتائج</item>
+        <item quantity="one">%1$d نتيجة</item>
+        <item quantity="two">%1$d نتيجتان</item>
+        <item quantity="few">%1$d نتائج</item>
+        <item quantity="many">%1$d نتيجة</item>
+        <item quantity="other">%1$d نتيجة</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="zero">تم حذف %1$d صور</item>
+        <item quantity="one">تم حذف %1$d صورة</item>
+        <item quantity="two">تم حذف %1$d صورتين</item>
+        <item quantity="few">تم حذف %1$d صور</item>
+        <item quantity="many">تم حذف %1$d صورة</item>
+        <item quantity="other">تم حذف %1$d صورة</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">تم حذف %1$d، وفشل %2$d</string>
+    <string name="mylife_week_label">الأسبوع %1$d</string>
+
+    <!-- الإشعارات (Wave7) -->
+    <string name="notif_mic_channel">الميكروفون</string>
+    <string name="notif_mic_title">جارٍ استخدام الميكروفون</string>
+    <string name="notif_mic_text">يُرسَل الصوت إلى الذكاء الاصطناعي للمحادثة</string>
+    <string name="notif_screen_channel">التفاعل مع الشاشة</string>
+    <string name="notif_screen_title">التقاط الشاشة جاهز</string>
+    <string name="notif_screen_text">اضغط الفقاعة عند حافة الشاشة لإرسال لقطة شاشة إلى الذكاء الاصطناعي</string>
+
+    <!-- فقاعة التقاط الشاشة والأخطاء (Wave7) -->
+    <string name="cap_bubble_sent">تم إرسال لقطة الشاشة</string>
+    <string name="cap_bubble_foreground">بدّل إلى تطبيق آخر ثم اضغط</string>
+    <string name="cap_bubble_locked">افتح القفل للاستخدام</string>
+    <string name="cap_bubble_failed">فشل الالتقاط، أعد المحاولة</string>
+    <string name="capture_start_failed">فشل بدء التفاعل مع الشاشة: %1$s</string>
+    <string name="capture_overlay_failed">فشل تشغيل الفقاعة العائمة — التقاط الشاشة غير متاح</string>
+    <string name="capture_stopped">توقف التفاعل مع الشاشة بشكل غير متوقع</string>
+
+    <!-- تشغيل الصوت (Wave7) -->
+    <string name="player_play_failed">فشل التشغيل</string>
+
+    <!-- تسميات الأجهزة (Wave7؛ docs/android_multilingual.md §2.3.5) -->
+    <string name="device_wired_headset">سماعة سلكية</string>
+    <string name="device_bt_sco">سماعة بلوتوث</string>
+    <string name="device_ble_headset">سماعة بلوتوث LE</string>
+    <string name="device_usb_device">جهاز صوت USB</string>
+    <string name="device_usb_headset">سماعة USB</string>
+    <string name="device_speaker">مكبر الصوت</string>
+    <string name="device_earpiece">سماعة الأذن</string>
+    <string name="device_wired_headphones">سماعات سلكية (بدون ميكروفون)</string>
+    <string name="device_bt_a2dp">موسيقى بلوتوث</string>
+    <string name="device_ble_speaker">مكبر صوت بلوتوث LE</string>
+    <string name="device_hearing_aid">معين سمعي</string>
+    <string name="device_output_fallback">جهاز إخراج الصوت</string>
+    <string name="device_builtin_mic">الميكروفون المدمج</string>
+    <string name="device_input_fallback">جهاز إدخال الصوت</string>
+    <string name="device_tag_bt_voice">صوت بلوتوث</string>
+    <string name="device_tag_bt_music">موسيقى بلوتوث</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- نصوص أخطاء بروتوكول MyLife API (Wave8) -->
+    <string name="mylife_api_empty_response">استجابة فارغة</string>
+    <string name="mylife_api_json_parse_failed">فشل تحليل JSON: %1$s</string>
+</resources>

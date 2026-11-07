@@ -1,0 +1,110 @@
+# LvData MCP Service configuration file
+#
+
+# Output language for analysis products (single value; default en)
+# Supports the App's 16 current canonical codes (code --> language name):
+#   en      --> English
+#   zh-Hans --> Simplified Chinese
+#   zh-Hant --> Traditional Chinese
+#   ja      --> Japanese
+#   ko      --> Korean
+#   ru      --> Russian
+#   de      --> German
+#   fr      --> French
+#   it      --> Italian
+#   es      --> Spanish
+#   pt      --> Portuguese
+#   hi      --> Hindi
+#   id      --> Indonesian
+#   th      --> Thai
+#   vi      --> Vietnamese
+#   ar      --> Arabic
+language: zh-Hans
+
+server:
+  host: "127.0.0.1"
+  port: 8090
+  token: "lvdata_dev_token"        # required for non-loopback binding
+  log_level: INFO
+  max_ip_conn: 32
+  # Log file rotation (docs/server_logging.md §7): default project_root/logs, 50MB×3 files; serve only
+  log_file:
+    enabled: true
+    dir: ""                        # empty = <project_root>/logs
+    max_bytes: 52428800            # 50MB per-file limit
+    backup_count: 3                # keep .1~.3
+
+data:
+  root_dir: /opt/lvdata               # lv data root (raw media + session metadata)
+  db_path: ""                         # default <root_dir>/lvdata_inventory.db
+  rag_db_path: ""                     # default <root_dir>/lvdata_index.db (vector store)
+  chat_server_db_path: ""             # chat server DB (agent_jobs source tables, ATTACH read-only scan, §3.8.1); default <root_dir>/chat_server.db
+
+watcher:
+  poll_interval_s: 60
+  summarize_quiet_s: 600              # day_summary debounce quiet window
+  flush_min_events: 10                # flush gate: triggers embed/day_summary when pending events ≥ this
+  flush_max_delay_s: 600              # flush gate: triggers when the oldest pending event ts exceeds this (can be lowered for local debugging)
+  timezone: Asia/Shanghai
+  timezones: []
+  concurrency: 1                      # bounded concurrency for analysis LLM calls (429 throttling mitigation; lowered from 4 on 2026-08-26)
+  max_files_per_poll: 200             # max files processed per round for audio/vision each (0 = unlimited)
+  day_summary_max_per_poll: 10        # max day_summary documents generated per round
+  llm_timeout_s: 300
+  # -- Analysis parameters (aligned with v1 CLI defaults) --
+  audio_sample_rate: 16000            # ogg→wav transcode sample rate; 0 = pass ogg through
+  video_window_s: 30                  # window grouping duration
+  video_max_frames_per_call: 24       # max frames per filter call
+  video_extract_chunk_size: 4         # extract-stage chunk size
+  max_image_size: 1280                # image long-edge limit (0 = no scaling)
+  max_chars_per_event: 300             # per-event truncation of LLM input (§4.2 default)
+  stage_timeout_s: 1800               # per-stage timeout
+  # -- Audit table retention (docs/audit_tables_retention_plan.md) --
+  audit_retention_days: 14            # mcp_pipeline_runs retention days; 0 = disabled (including orphan watermark cleanup)
+  analysis_runs_retention_days: 30    # analysis_runs retention days; 0 = disabled
+  audit_prune_interval_s: 86400       # cleanup interval in seconds; runs once immediately after startup
+  # -- video frame retention (docs/data_clean.md) --
+  video_retention_hours: 72           # delete expired ok frames without video events; minimum 24 (values below are raised to 24)
+
+providers:
+  # The workspace-exclusive domain and workspace_id go together and are never derived from each
+  # other (same convention as chat server asr/llm/tts); workspace_id only drives the
+  # X-DashScope-WorkSpace header—unset or non-DashScope providers send no header. The exclusive
+  # domain is the official recommended production path (timeout 3600s vs 600s; the dashscope
+  # domain no longer supports new features since 2026-09-30)—uniform across all four providers.
+  # Measured (audio round, 2026-09-18): the compatible-mode path also connects without the header;
+  # the header is kept and sent per the recommended path.
+  audio:
+    vendor: dashscope
+    base_url: "https://${DASHSCOPE_API_HOST}/compatible-mode/v1"
+    api_key: "${DASHSCOPE_API_KEY}"
+    workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+    # 3.8: flat pricing ¥0.8/¥2.7 (per million tokens)—its biggest advantage is price; measured
+    # 60s clip cost ≈ 1/11 of 3.5 (full 25-segment comparison: docs/qwen_audio_analysis.md §4/§5).
+    # Thinking is on by default (xhigh) and explicitly disabled by audio.py (enable_thinking=False)
+    model: qwen3.8-omni-flash
+  vision:
+    vendor: dashscope
+    base_url: "https://${DASHSCOPE_API_HOST}/compatible-mode/v1"
+    api_key: "${DASHSCOPE_API_KEY}"
+    workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+    model: qwen3.7-flash
+  embedding:
+    vendor: dashscope
+    base_url: "https://${DASHSCOPE_API_HOST}/compatible-mode/v1"
+    api_key: "${DASHSCOPE_API_KEY}"
+    workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+    #model: text-embedding-v4
+    model: qwen3.7-text-embedding
+    dim: 1024
+  summary:
+    vendor: dashscope
+    base_url: "https://${DASHSCOPE_API_HOST}/compatible-mode/v1"
+    api_key: "${DASHSCOPE_API_KEY}"
+    workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+    # qwen3.7-flash (fell back from 3.8 on 2026-09-21): object topics schema ({topic, search_words})
+    # retested with 3.7 per user request; 3.8 comparison conclusions in docs/bff_search_fts.md §10.
+    # 3.8 has thinking on by default (xhigh), explicitly disabled by day.py (enable_thinking=False)—when
+    # on, thinking exhausts the output budget and JSON is truncated (measured 09-18/09-20 responses
+    # unclosed); when off it's complete and ~10× faster (~40s→~3s)
+    model: qwen3.7-flash

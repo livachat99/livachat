@@ -1,0 +1,318 @@
+# LivaChat Server — dev configuration
+# Schema: server_design.md §6.2
+#
+# Secrets use ${ENV_VAR} placeholders resolved at startup from the environment.
+# Providers not referenced by active/fallback use a literal empty string for api_key instead of a
+# ${placeholder}: a placeholder forces the corresponding env var to exist (startup fails when
+# unset); when enabling a provider, fill its key directly in the block.
+# Env vars with LIVACHAT__ prefix can override any nested key, e.g.
+#   LIVACHAT__ASR__ACTIVE=deepgram
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  workers: 1
+  max_frame_bytes: 2097152          # 2MB
+  log_level: DEBUG
+#  log_level: INFO
+  ssl:
+    enabled: true
+    certfile: "configs/dev/cert.pem"
+    keyfile: "configs/dev/key.pem"
+
+auth:
+  mode: dev                         # dev | jwt
+  dev_token: "${APP_AUTH_TOKEN}"
+  jwt_algorithm: HS256
+
+session:
+  resume_ttl_s: 30
+  heartbeat_interval_s: 15
+  heartbeat_timeout_s: 45
+  working_memory_turns: 10
+  max_video_frames: 2
+
+media:
+  audio:
+    default_sample_rate: 16000
+    opus_frame_ms: 20
+    opus_bitrate: 32000
+    channels: 1
+  video:
+    max_queue_frames: 3
+    decode: pillow                  # pillow | turbojpeg
+
+# ---------------- ASR ----------------
+asr:
+  active: alibaba_bailian
+  fallback: []
+  providers:
+    deepgram:
+      enabled: false
+      base_url: wss://api.deepgram.com/v1/listen
+      api_key: ""
+      model: nova-2
+      params: { interim_results: true, endpointing: 300, vad_events: true }
+    elevenlabs:
+      enabled: false
+      base_url: wss://api.elevenlabs.io
+      api_key: ""
+      model: scribe_v1
+    alibaba_bailian:
+      enabled: true
+      # Workspace-exclusive domain (official recommended path); workspace_id only drives the
+      # X-DashScope-WorkSpace header. Measured (2026-09-13): this account's ASR also connects
+      # without the header, unlike TTS's 401/411-without-header experience—header kept as the recommended path
+      base_url: "wss://${DASHSCOPE_API_HOST}/api-ws/v1/inference"
+      api_key: "${DASHSCOPE_API_KEY}"
+      model: qwen-audio-3.1-asr-flash-streaming
+      workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+      # The whole params table is merged into run-task parameters (overriding same-name entries):
+      # the session config is the single source of truth for sample rate, so sample_rate is not set;
+      # heartbeat=keepalive during long silence; language_hints ≤4;
+      # max_sentence_silence=VAD sentence-gap silence threshold in ms—linear on 3.1 (measured 2026-10-10:
+      # tail latency ≈ mss + fixed model overhead; default far-field VAD ≈ 790ms, near-field ≈ 220ms);
+      # 600 aligns with the local TurnDetector(medium=600ms); the trade-off is that natural pauses
+      # >600ms get split into two sentences (fragments trigger barge-in). 3.1 migration measurements
+      # and selection rationale: docs/asr_qwen31_migration.md
+      params:
+        heartbeat: true
+        language_hints: ["zh", "en"]
+        max_sentence_silence: 600
+
+# ---------------- LLM ----------------
+llm:
+  active: alibaba_bailian
+  fallback: []
+  system_prompt_path: configs/dev/prompts/companion.txt
+  translate_prompt_path: configs/dev/prompts/translator.txt
+  generation: { temperature: 0.8, max_tokens: 1024, top_p: 0.9 }
+  providers:
+    alibaba_bailian:
+      enabled: true
+      # Workspace-exclusive domain (official recommended production path, higher throughput /
+      # lower latency); workspace_id only drives the X-DashScope-WorkSpace header—the two are used
+      # together and never derived from each other (same as asr/tts).
+      # qwen3.8-max-0902 has native vision understanding; one model handles images, so
+      # vision_model is no longer configured
+      base_url: "https://${DASHSCOPE_API_HOST}/compatible-mode/v1"
+      api_key: "${DASHSCOPE_API_KEY}"
+      #model: qwen3.8-flash
+      model: qwen3.8-max-0902
+      workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+      supports_vision: true
+      extra_body: { enable_thinking: false, enable_search: false }
+    openrouter:
+      enabled: false
+      base_url: https://openrouter.ai/api/v1
+      api_key: ""
+      model: openai/gpt-4o
+      supports_vision: true
+    deepseek:
+      enabled: false
+      base_url: https://api.deepseek.com
+      api_key: ""
+      model: deepseek-chat
+      supports_vision: false
+
+# ---------------- TTS ----------------
+tts:
+  # qwen-audio-3.0-tts-flash (workspace duplex) is primary; realtime kept as fallback
+  active: alibaba_bailian
+  fallback: []
+  providers:
+    cartesia:
+      enabled: false
+      base_url: wss://api.cartesia.ai/tts/websocket
+      api_key: ""
+      model: sonic-2
+      voice: "<voice_id>"
+      output_format: { container: raw, encoding: pcm_s16le, sample_rate: 16000 }
+      version: "2024-06-10"
+    elevenlabs:
+      enabled: false
+      base_url: wss://api.elevenlabs.io
+      api_key: ""
+      model: eleven_turbo_v2_5
+      voice: "<voice_id>"
+      output_format: pcm_16000
+    deepgram:
+      enabled: false
+      base_url: wss://api.deepgram.com/v1/speak
+      api_key: ""
+      model: aura-asteria-en
+    alibaba_bailian:
+      enabled: true
+      # base_url is the actual connection endpoint (workspace models must use the workspace-exclusive
+      # domain); workspace_id only drives the X-DashScope-WorkSpace request header—the two go together;
+      # without the header you get 401/411
+      base_url: "wss://${DASHSCOPE_API_HOST}/api-ws/v1/inference"
+      api_key: "${DASHSCOPE_API_KEY}"
+      model: qwen-audio-3.0-tts-flash
+      voice: longanlingxi
+      workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+
+# ---------------- Omni (omni-modal) ----------------
+# omni.enabled=true → allows the client to switch to omni-modal mode within a session (session.change mode="omni");
+# no longer replaces the asr/llm/tts trio above (both coexist; mode exclusivity is enforced at runtime).
+# See docs/fd_pipeline_omni_mode.md §4 D3.
+omni:
+  enabled: true                         # true → omni-modal mode selectable (on by default); false → mode unavailable (client falls back)
+  active: alibaba_omni
+  fallback: []
+  # Note: openai_realtime is a skeleton; open() raises NotImplementedError.
+  # Do not set openai_realtime as the sole fallback on real devices.
+  system_prompt_path: configs/dev/prompts/companion.txt
+  #system_prompt_path: configs/dev/prompts/translator.txt
+  generation: { temperature: 0.8, max_tokens: 1024, top_p: 0.9 }
+  providers:
+    alibaba_omni:
+      enabled: true
+      # Workspace-exclusive domain (official realtime-family address form wss://{WorkspaceId}.cn-beijing.maas.
+      # aliyuncs.com/api-ws/v1/realtime); workspace_id only drives the X-DashScope-WorkSpace header—
+      # the two go together and never derive from each other (same as asr/tts/llm/translate). In the
+      # realtime-family docs this header is optional; kept per the recommended path
+      base_url: "wss://${DASHSCOPE_API_HOST}/api-ws/v1/realtime?model=qwen3.8-omni-flash-realtime"
+      api_key: "${DASHSCOPE_API_KEY}"
+      model: qwen3.8-omni-flash-realtime
+      voice: Tina
+      workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+      supports_vision: true
+      modalities: [text, audio]
+    openai_realtime:
+      enabled: true
+      base_url: wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview
+      api_key: ""
+      model: gpt-4o-realtime-preview
+      voice: alloy
+      supports_vision: false
+      modalities: [text, audio]
+
+# ---------------- AVDetector (chat-mode proactive audio/video monitoring) ----------------
+# enabled=true → enables side-channel detection in chat mode (docs/fd_pipeline_avdetector.md);
+# false → the service is not created and no code path activates, exactly matching the previous state.
+# Ships with false by default; temporarily set true during real-device acceptance (same discipline as omni).
+avdetector:
+  enabled: true    # temporarily true during real-device acceptance (R2 decision; revert to false after acceptance)
+  active: alibaba_avdetector
+  fallback: []
+  system_prompt_path: configs/dev/prompts/avdetector.txt
+  # [R6] Low temperature + short replies (detection replies are extremely short; constrains cost and randomness)
+  generation: { temperature: 0.2, max_tokens: 256 }
+  check_timeout_s: 8.0           # per-detection query timeout
+  audio_commit_interval_s: 15.0  # silent commit interval (window discipline)
+  check_min_interval_s: 10.0     # global minimum detection interval ([R13])
+  video_check_interval_s: 10.0   # video detection throttle ([R17])
+  image_disable_cooldown_s: 300.0  # image-rejection cooldown ([P6.14]: frame attachments resume after expiry)
+  proactive_cooldown_s: 30.0     # proactive-speech cooldown ([R3]; dangerous events exempt [R15])
+  visual_turn_suppress_s: 5.0    # normal-frame suppression window after the cam first-frame turn ends (D8; danger exempt)
+  reopen_interval_s: 600.0       # periodic detection-stream rebuild (historical quota fallback)
+  providers:
+    alibaba_avdetector:
+      enabled: true
+      # Same as the omni block: workspace-exclusive domain + workspace_id header together (never derived)
+      base_url: "wss://${DASHSCOPE_API_HOST}/api-ws/v1/realtime?model=qwen3.8-omni-flash-realtime"
+      api_key: "${DASHSCOPE_API_KEY}"
+      model: qwen3.8-omni-flash-realtime
+      workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+
+# ---------------- Live Translate (pipeline mode) ----------------
+# Used when session.change { mode: "translate", usecase: "lecture" }
+translate:
+  enabled: true
+  # Workspace-exclusive domain (official realtime-family address form wss://{WorkspaceId}.cn-beijing.maas.
+  # aliyuncs.com/api-ws/v1/realtime); workspace_id only drives the X-DashScope-WorkSpace header—
+  # the two go together and never derive from each other (same as asr/tts). In the realtime-family
+  # docs this header is optional; kept per the recommended path
+  base_url: "wss://${DASHSCOPE_API_HOST}/api-ws/v1/realtime?model=qwen3.8-livetranslate-flash-realtime"
+  api_key: "${DASHSCOPE_API_KEY}"
+  model: qwen3.8-livetranslate-flash-realtime
+  voice: Tina
+  workspace_id: "${DASHSCOPE_WORKSPACE_ID}"
+  input_sample_rate: 16000
+  output_sample_rate: 24000
+  enable_voice_clone: false
+
+# postgres: PG module kept but unused (PostgresConfig defaults); the whole config block is omitted
+
+# redis: DEPRECATED (chatserver_no_redis.md §6.4)—Redis is no longer wired; the whole config
+# block is removed (so an unset ${LIVACHAT__REDIS__URL} reference can't trigger a loader ConfigError).
+# RedisConfig fields keep deprecated defaults for yaml compatibility; the env var is no longer needed.
+
+# SQLite — lvdata foundation (agent_jobs writes directly; lvdata_mcp_service_v2.md §6.2.0 contract)
+# chat_server_db_path: the chat server's only DB (devices/messages/recording_sessions,
+# chatserver_sqlite_store.md §3.1); required—unset or missing parent dir → startup error exit
+sqlite:
+  enabled: true
+  lvdata_db_path: /opt/lvdata/lvdata_inventory.db
+  chat_server_db_path: /opt/lvdata/chat_server.db
+  max_queue_size: 1024
+
+observability:
+  metrics_enabled: true
+  tracing_enabled: false
+  json_logs: true
+  # Log file rotation (docs/server_logging.md): defaults to project_root/logs, 50MB×3 files
+  log_file:
+    enabled: true
+    dir: ""                          # empty = <project_root>/logs (resolve_path semantics)
+    max_bytes: 52428800              # 50MB per-file limit
+    backup_count: 3                  # keep .1~.3
+
+recording:
+  enabled: true
+  base_dir: /opt/lvdata
+  audio_segment_s: 60
+  queue_maxsize: 2048
+  chat_flush_interval_s: 5.0
+  chat_flush_lines: 20
+  fsync_interval_s: 5.0
+  meta_flush_interval_s: 60.0
+  idle_session_ttl_s: 3600
+
+# MyLife BFF (/api/mylife/*): the remove execution plane points at the local lvdata-mcp REST
+# (docs/bff_service_remove.md §2.2; token must match configs/dev/lvdata_mcp.yaml server.token)
+bff:
+  lvdata_api_url: "http://127.0.0.1:8090"
+  lvdata_api_token: "lvdata_dev_token"
+
+# Static hosting for agent-produced web pages (docs/webroot_feature.md §3.1/§3.3)
+# enabled defaults to off (production deployments must enable it explicitly); dev enables it explicitly for agent page capability
+webroot:
+  enabled: true
+  root: ""                          # empty = <recording.base_dir>/webroot (/opt/lvdata/webroot)
+
+# Agent Relay — external agent integration
+agent_relay:
+  enabled: true
+  events_channel: "livachat:agent:events"
+  push_channel_prefix: "livachat:push"
+  max_reply_bytes: 16384
+  default_adapters: ["hermes"]
+  # -- job_status notifications (fd_job_status.md §4.6) --
+  job_status_enabled: true          # master switch; when False, no notifier is created and no hooks are attached
+  job_status_interval_s: 15.0       # periodic push interval (R1)
+  job_status_scan_interval_s: 1.0   # scan tick interval (fallback/timing granularity)
+  adapters:
+    hermes:
+      mode: proactive            # proactive: chatlog watcher polling push only; both: also real-time Q&A
+      base_url: "http://localhost:9119"
+      # Hermes SESSION_TOKEN; the value lives in repo-root .env as HERMES_AUTH_TOKEN (gitignored, never commit)
+      api_key: "${HERMES_AUTH_TOKEN}"
+      # Agent nickname: hermes prompt self-reference + LivaChat acknowledgment + chatlog agent_id
+      nickname: "hermes"
+      # The following two match HermesAdapterConfig defaults; kept visible for ops
+      background_timeout_s: 172800          # running timeout 48h, aligned with JobStore TTL (R2)
+      max_concurrent_jobs_per_device: 10    # per-device quota
+    openclaw:
+      # docs/openclaw_adaptor_design.md (plan B: relay creates its own job sessions)
+      # Auth uses the loopback backend path: gateway-client/backend + shared token
+      # (token from OpenClaw config gateway.auth.token; never commit plaintext)
+      mode: proactive               # proactive: chatlog watcher polling push; both: also real-time Q&A
+      ws_url: "ws://127.0.0.1:18789"
+      # Token value in repo-root .env as OPENCLAW_AUTH_TOKEN; taken from
+      # gateway.auth.token in ~/.openclaw/openclaw.json (startup fails if the variable is unset)
+      token: "${OPENCLAW_AUTH_TOKEN}"
+      agent_id: "main"              # agentId in the session key
+      nickname: "openclaw"                  # Agent nickname (empty = prompts/pushes inject no name)
+

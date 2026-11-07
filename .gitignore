@@ -1,0 +1,21 @@
+__pycache__/
+*.egg-info/
+/.env
+services/.env
+.codegraph/
+.venv/
+.run/
+/logs/
+.vscode/
+
+# livachat.sh test 环境（本地生成，见 docs/livachat_start.md）
+/configs/test/
+/data/
+
+# Node / frontend
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Playwright MCP 测试产物
+.playwright-mcp/

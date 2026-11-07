@@ -1,0 +1,1535 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D1000000000000000000B104 /* AvatarCropMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A104 /* AvatarCropMathTests.swift */; };
+		D1000000000000000000B011 /* AvatarCropMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A011 /* AvatarCropMath.swift */; };
+		D1000000000000000000B010 /* ModeSelectionDialogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A010 /* ModeSelectionDialogs.swift */; };
+		D1000000000000000000B009 /* AvatarCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A009 /* AvatarCropView.swift */; };
+		D1000000000000000000B008 /* CameraPhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A008 /* CameraPhotoPicker.swift */; };
+		D1000000000000000000B007 /* AvatarCustomizationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A007 /* AvatarCustomizationSheet.swift */; };
+		D1000000000000000000B006 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A006 /* AvatarView.swift */; };
+		D1000000000000000000B103 /* AvatarCustomizationModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A103 /* AvatarCustomizationModelTests.swift */; };
+		D1000000000000000000B102 /* AvatarStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A102 /* AvatarStoreTests.swift */; };
+		D1000000000000000000B003 /* AvatarCustomizationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A003 /* AvatarCustomizationModel.swift */; };
+		D1000000000000000000B002 /* AvatarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A002 /* AvatarStore.swift */; };
+		D1000000000000000000B101 /* ConversationModeModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A101 /* ConversationModeModelTests.swift */; };
+		D1000000000000000000B001 /* ConversationModeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1000000000000000000A001 /* ConversationModeModel.swift */; };
+		C735C76612C5C8F92A098627 /* AudioCaptureRetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB67D4FF4ED10AC22A9DEF8 /* AudioCaptureRetryTests.swift */; };
+		E7DA0EFE999A78CD4A2C8C56 /* ScrollFollowPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEA3DA5AC30DCB8E2C9F3849 /* ScrollFollowPolicyTests.swift */; };
+		D66FE5811252988106AE0D5B /* ScrollFollowPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AE0CE0148532AD8B1FAFD8 /* ScrollFollowPolicy.swift */; };
+		7FBC614B8CFC8B46CFF04E95 /* LogFileWriterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E29C18D9B2F1A4B0F913F9 /* LogFileWriterTests.swift */; };
+		7E7A63CC6DC46EE9EC98A19A /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA12F2A36E610601FFACA5CF /* AppLog.swift */; };
+		A4ED473899726EFD4CB0ED70 /* AudioPlaybackControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFE98D6466363F4A14255FF /* AudioPlaybackControllerTests.swift */; };
+		A10000000000000000000073 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000072 /* InfoPlist.strings */; };
+		DCE32F9E1F643270F172D10C /* AppShellUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DBC2521CDA86EAA3B788392 /* AppShellUITests.swift */; };
+		42DE5BA39D532D6B6B4A902E /* AppContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1DFCE3BAE3A63A29AB8A1 /* AppContainerTests.swift */; };
+		4C385A5AC6717F3A602E3EE6 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 856C499462BBFDE31A946813 /* Localizable.xcstrings */; };
+		D40000000000000000000011 /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000001 /* LegalLinks.swift */; };
+		D40000000000000000000012 /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000002 /* LicensesView.swift */; };
+		D40000000000000000000013 /* LICENSES.txt in Resources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* LICENSES.txt */; };
+		86079261F887D89661A1864C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55C131DF5E1B0E376687C66 /* SettingsView.swift */; };
+		E18B65BF91403E67ED7A5045 /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA41191B48A3D48E81B0A73 /* ConversationView.swift */; };
+		A1B2C3D4E5F60718293A4B07 /* MicVolumeGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B08 /* MicVolumeGlyph.swift */; };
+		CFFD52467BB3B383A539A203 /* PermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C12F894ED987375252D1641 /* PermissionView.swift */; };
+		73E21CFAE91D198948472D3B /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E228C6D3DB3A66D6372BAA7C /* SplashView.swift */; };
+		DCE76BEE0455D2F50F4FEDDA /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B8FFC4FD878202C46D2F4BB /* L10n.swift */; };
+		D20000000000000000000002 /* AppLocale.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* AppLocale.swift */; };
+		D20000000000000000000004 /* LocalizedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* LocalizedNumber.swift */; };
+		D20000000000000000000006 /* PosixFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* PosixFormat.swift */; };
+		D20000000000000000000008 /* LocalizedDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* LocalizedDate.swift */; };
+		D2000000000000000000000A /* LocalizationTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000009 /* LocalizationTestSupport.swift */; };
+		D2000000000000000000000C /* AppLocaleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000B /* AppLocaleTests.swift */; };
+		D2000000000000000000000E /* L10nFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000D /* L10nFormattingTests.swift */; };
+		D20000000000000000000010 /* HistoryDateFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000F /* HistoryDateFormattingTests.swift */; };
+		D20000000000000000000012 /* LocalizedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000011 /* LocalizedList.swift */; };
+		D20000000000000000000014 /* AppErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000013 /* AppErrorMessage.swift */; };
+		D20000000000000000000016 /* LocalizationRTLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000015 /* LocalizationRTLTests.swift */; };
+		0075742E0E3542F15A6E4878 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0897F1E0B1EF10BC8EA7C3 /* AppTheme.swift */; };
+		B546898DBBAFAF75CD359055 /* AppLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E3DDAA2B87944C728B40F0 /* AppLaunchOptions.swift */; };
+		DF6DE840758E49565F92960B /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348FA193170FA79FBC54DB57 /* AppRouter.swift */; };
+		8343EFA57D0BE18272F73669 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E52FC1D469B0B5889D07537 /* AppRootView.swift */; };
+		E03EB560C2F1B84262FE2C91 /* SettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A453D7F1D32B089212662DCA /* SettingsViewModelTests.swift */; };
+		605639D5506EBA89F676EFEF /* ServerProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBA01AFBDEB2713E6471847 /* ServerProbeTests.swift */; };
+		FF9344BC659E2BCF23867ECE /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 789BFB1A65E17DA77E4C4968 /* SettingsStoreTests.swift */; };
+		8021AB22B346A27701B7E1E9 /* CredentialStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD37895AB64935A8AE17D3E /* CredentialStoreTests.swift */; };
+		7734AC6CFD86EE232126888D /* ServerAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9AB4ECA5F140097A424C1B /* ServerAddressTests.swift */; };
+		396EB6B09F19F17E1F396E2B /* SystemSettingsOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839E60663E47509034A86B0 /* SystemSettingsOpener.swift */; };
+		F784F9BBDDEE01FAB584E840 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32EEE0A8A6E1333E2FC4A660 /* AppInfo.swift */; };
+		9935C42AB9F874C7D9B28340 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EE9AA64A42B00E7117E43E /* SettingsViewModel.swift */; };
+		B86122205C78B89CFA3797AB /* ServerProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74A48D7477E85C7AF263F82 /* ServerProbe.swift */; };
+		1CECAB7D5978C588595DD5A8 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FCB8048C1FF2C08591D866 /* SettingsStore.swift */; };
+		8EF6665A6B583E7660B99697 /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6A744B7F6B77B9F263BA54 /* CredentialStore.swift */; };
+		AE890C7F8AEB74E49EA7C819 /* ServerAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F02E95E8A3972EA752BFEDD /* ServerAddress.swift */; };
+		5EBD6E42E49EF4BD89E5D1DB /* ConversationRuntimeIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B0F0C9EC5B4DCE083EF6A6 /* ConversationRuntimeIntegrationTests.swift */; };
+		447E082718FA93289C94BF4D /* ConversationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43792063679FA0737CCBA10D /* ConversationViewModelTests.swift */; };
+		602C177F991A2E4C9590DA31 /* ConversationEventAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA17C9C91F53ACDE82794C8 /* ConversationEventAdapterTests.swift */; };
+		649C48EF34D31036068F6829 /* ConversationCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D9531F0E94E8E2798B6401 /* ConversationCoordinatorTests.swift */; };
+		C545D38EA92FD5D3110B3D73 /* ConversationRuntimeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCFA94584FAB28D3AF7679ED /* ConversationRuntimeFactory.swift */; };
+		3C3111CB1DFE5534222A0209 /* ConversationRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD24B9E88A753BB10785DFC /* ConversationRuntime.swift */; };
+		09F07D29B70396401AC3FF93 /* ConversationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36F4ED430DDDA7BE9EDEDCFE /* ConversationCoordinator.swift */; };
+		D7FA289F9FCFCAE5F023E2D7 /* ConversationEventAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5267AE1B7DCF035D16F0F1FB /* ConversationEventAdapter.swift */; };
+		4DE2A26C669DED57C2F7B90C /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A909FC757186E53C5AB3F3 /* ConversationViewModel.swift */; };
+		51B95AA85116C8364465CE5C /* ConversationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051782D748BC75911D286F0D /* ConversationProtocols.swift */; };
+		D0B3E747A39DCDADB3E937DC /* ConversationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7C01460519F526CAE887E8 /* ConversationModels.swift */; };
+		BD8F275E3D34953C484DDA1A /* AudioSpikeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAFA068231587799E2D76D5 /* AudioSpikeUITests.swift */; };
+		A2EED3AC3D42BD500D3B3497 /* InterruptCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50599C14EA0151E714C8C2A4 /* InterruptCoordinatorTests.swift */; };
+		946C26A2F06184274D8BA3E5 /* JitterBufferTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F893954411E85F45D6E4202 /* JitterBufferTests.swift */; };
+		40313370F61623143DD25EAB /* MicLevelMeterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3306EA4C02F206F90BD031A /* MicLevelMeterTests.swift */; };
+		82398DBC90F4D3CD4E784DDD /* SilenceFlushGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD18D8F3A82274DFB741D6A /* SilenceFlushGateTests.swift */; };
+		A3E5765A8B3C2C030F348A3A /* PCMChunkerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9DCFF0776824E9E9276CBE /* PCMChunkerTests.swift */; };
+		A70C1B7E5797D372F807E215 /* AudioSpikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68CCB0A6A80E1FC3C4C77FB3 /* AudioSpikeView.swift */; };
+		B4A13D033CD2A718B054F472 /* InterruptCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32D5FED3A33EC86C22B5B8A /* InterruptCoordinator.swift */; };
+		44C960CE00CBB1CFFAA9A0AC /* HapticController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91116BC66924DE8361809041 /* HapticController.swift */; };
+		57CA19903C65B35594954724 /* AudioPlaybackController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D8D3EA6ED9E01F764BDE4 /* AudioPlaybackController.swift */; };
+		8A33B14BFF72EFA911C1209B /* AudioCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931088D8858C8ADE458FB800 /* AudioCaptureController.swift */; };
+		ED399A722B0A247306D17C99 /* AudioSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8148AF5541B1E8A37731B6EB /* AudioSessionController.swift */; };
+		3AFB3816B22DDE35CEC97280 /* AudioProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8934653A63296125D37AAF /* AudioProtocols.swift */; };
+		210171402F54F1E69012CDE8 /* JitterBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826D5B3560E809423C861E9F /* JitterBuffer.swift */; };
+		8E5E04733AF865B4FF3756C9 /* MicLevelMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B5BD8F3B5916762F1C4B7B /* MicLevelMeter.swift */; };
+		A1B2C3D4E5F60718293A4B01 /* MicLevelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B02 /* MicLevelModel.swift */; };
+		A1B2C3D4E5F60718293A4B03 /* MicLevelModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B04 /* MicLevelModelTests.swift */; };
+		A1B2C3D4E5F60718293A4B05 /* AudioCaptureLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B06 /* AudioCaptureLevelTests.swift */; };
+		F6ED7D179F2629953C61EE1F /* SilenceFlushGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC1E25FDD0339F3107485D3 /* SilenceFlushGate.swift */; };
+		38E2832930D3ABF41EFEF752 /* PCMChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4016468BFF5CF9EDEDB0CE83 /* PCMChunker.swift */; };
+		A10000000000000000000031 /* LivaChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* LivaChatApp.swift */; };
+		A10000000000000000000035 /* AppOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000034 /* AppOrientation.swift */; };
+		C1000000000000000000B001 /* AgentJobStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A001 /* AgentJobStatusModel.swift */; };
+		C1000000000000000000B002 /* AgentJobFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A002 /* AgentJobFormatting.swift */; };
+		C1000000000000000000B003 /* AgentJobCancelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A003 /* AgentJobCancelClient.swift */; };
+		C1000000000000000000B005 /* AgentJobListPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A005 /* AgentJobListPanel.swift */; };
+		C1000000000000000000B004 /* AgentJobStatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A004 /* AgentJobStatusBadge.swift */; };
+		C1000000000000000000B006 /* AgentIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A006 /* AgentIcon.swift */; };
+		C1000000000000000000B007 /* AgentJobResultWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A007 /* AgentJobResultWindow.swift */; };
+		C1000000000000000000B011 /* AgentJobStatusModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A011 /* AgentJobStatusModelTests.swift */; };
+		C1000000000000000000B012 /* AgentJobCancelClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000A012 /* AgentJobCancelClientTests.swift */; };
+		A10000000000000000000033 /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000032 /* AppContainer.swift */; };
+		A1000000000000000000003B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003A /* Assets.xcassets */; };
+		A10000000000000000000042 /* LivaChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000041 /* LivaChatSDK */; };
+		B70000000000000000000001 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = B70000000000000000000011 /* MarkdownUI */; };
+		B20000000000000000000001 /* CameraProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* CameraProtocols.swift */; };
+		B20000000000000000000002 /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* CameraController.swift */; };
+		C2000000000000000000B001 /* CameraOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000000000000000000A001 /* CameraOrientation.swift */; };
+		C2000000000000000000B002 /* CameraDeviceOrientationMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000000000000000000A002 /* CameraDeviceOrientationMonitor.swift */; };
+		B30000000000000000000001 /* GalleryPhotoSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30000000000000000000011 /* GalleryPhotoSender.swift */; };
+		B30000000000000000000002 /* PHPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30000000000000000000012 /* PHPickerView.swift */; };
+		B30000000000000000000003 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30000000000000000000013 /* CameraPreviewView.swift */; };
+		B30000000000000000000004 /* GalleryPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30000000000000000000014 /* GalleryPreviewView.swift */; };
+		B30000000000000000000005 /* CameraModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30000000000000000000015 /* CameraModeView.swift */; };
+		B30000000000000000000006 /* AIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30000000000000000000016 /* AIImageView.swift */; };
+		B40000000000000000000001 /* M2CameraGalleryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000011 /* M2CameraGalleryTests.swift */; };
+		C2000000000000000000B003 /* CameraOrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000000000000000000A003 /* CameraOrientationTests.swift */; };
+		B50000000000000000000001 /* M2DeviceE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000011 /* M2DeviceE2ETests.swift */; };
+		B60000000000000000000001 /* ImageViewerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60000000000000000000011 /* ImageViewerOverlay.swift */; };
+		B60000000000000000000002 /* PhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60000000000000000000012 /* PhotoLibrarySaver.swift */; };
+		B80000000000000000000001 /* WebLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000011 /* WebLinkRouter.swift */; };
+		B80000000000000000000002 /* MarkdownTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000012 /* MarkdownTheme.swift */; };
+		B80000000000000000000003 /* MarkdownTableFallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000013 /* MarkdownTableFallback.swift */; };
+		B80000000000000000000004 /* MarkdownMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000014 /* MarkdownMessageView.swift */; };
+		B80000000000000000000005 /* AgentJobCollapse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000015 /* AgentJobCollapse.swift */; };
+		B80000000000000000000006 /* AgentJobResultOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000016 /* AgentJobResultOverlay.swift */; };
+		B80000000000000000000007 /* M3MarkdownTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000017 /* M3MarkdownTests.swift */; };
+		B90000000000000000000001 /* LivachatURLConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000011 /* LivachatURLConverter.swift */; };
+		B90000000000000000000002 /* WebPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000012 /* WebPageView.swift */; };
+		B90000000000000000000003 /* WebrootSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000013 /* WebrootSupportTests.swift */; };
+		BA00000000000000000000001 /* HistoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00000000000000000000011 /* HistoryModels.swift */; };
+		BA00000000000000000000002 /* HistoryDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00000000000000000000012 /* HistoryDatabase.swift */; };
+		BA00000000000000000000003 /* HistoryImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00000000000000000000013 /* HistoryImageStore.swift */; };
+		BA00000000000000000000004 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00000000000000000000014 /* HistoryService.swift */; };
+		BA00000000000000000000005 /* HistoryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA00000000000000000000015 /* HistoryStorageTests.swift */; };
+		BB00000000000000000000001 /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000000000000000000011 /* MessageBubbleView.swift */; };
+		BC00000000000000000000001 /* HistoryDateFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC00000000000000000000011 /* HistoryDateFormatting.swift */; };
+		BD00000000000000000000001 /* HistoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00000000000000000000011 /* HistoryListViewModel.swift */; };
+		BD00000000000000000000002 /* HistoryDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00000000000000000000012 /* HistoryDetailViewModel.swift */; };
+		BD00000000000000000000003 /* HistoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00000000000000000000013 /* HistoryListView.swift */; };
+		BD00000000000000000000004 /* HistoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00000000000000000000014 /* HistoryDetailView.swift */; };
+		BD00000000000000000000005 /* HistoryFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00000000000000000000015 /* HistoryFlowView.swift */; };
+		BD00000000000000000000006 /* HistoryComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00000000000000000000016 /* HistoryComponents.swift */; };
+		C2A28610F59B417BA4024C05 /* MylifeDTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A18610F59B417BA4024C05 /* MylifeDTOs.swift */; };
+		C2A276334996D6343F26F2D1 /* MylifeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A176334996D6343F26F2D1 /* MylifeModels.swift */; };
+		C2A2D069D65331B2CDA4A5DD /* MylifeErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A1D069D65331B2CDA4A5DD /* MylifeErrors.swift */; };
+		C2A20F93D18BABDE70E3DBAC /* MylifeAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A10F93D18BABDE70E3DBAC /* MylifeAPIClient.swift */; };
+		C2A2D936BB2029C5D670956B /* MylifeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A1D936BB2029C5D670956B /* MylifeStore.swift */; };
+		C2A27488C64BBEDE9940D7E7 /* MylifeDateLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A17488C64BBEDE9940D7E7 /* MylifeDateLabels.swift */; };
+		C2A2A8408566F1B0B53291D6 /* MylifeAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A1A8408566F1B0B53291D6 /* MylifeAggregator.swift */; };
+		C2A300000000000000000001 /* NetworkImage in Frameworks */ = {isa = PBXBuildFile; productRef = C2A300000000000000000002 /* NetworkImage */; };
+		C2B260568AFFF0C611BAA988 /* MylifeDateLabelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B160568AFFF0C611BAA988 /* MylifeDateLabelsTests.swift */; };
+		C2B2E874722A4AC95CE644D0 /* MylifeAggregatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B1E874722A4AC95CE644D0 /* MylifeAggregatorTests.swift */; };
+		C2B205D7A577DF4DF8152EDA /* MylifeAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B105D7A577DF4DF8152EDA /* MylifeAPIClientTests.swift */; };
+		C2B2CEF40AC7A084AE92C339 /* MylifeStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B1CEF40AC7A084AE92C339 /* MylifeStoreTests.swift */; };
+		C2C2E83514BF25B60227D1F7 /* MylifeImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C1E83514BF25B60227D1F7 /* MylifeImageLoader.swift */; };
+		C2C23DE3545705C1FB882EC3 /* TimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C13DE3545705C1FB882EC3 /* TimelineRoute.swift */; };
+		C2C222DD44CD98C7EBC05323 /* TimelineFlowModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C122DD44CD98C7EBC05323 /* TimelineFlowModel.swift */; };
+		C2C247BAED83F751E75CB2BC /* TimelineFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C147BAED83F751E75CB2BC /* TimelineFlowView.swift */; };
+		C2C2568F7E7B3DA240B9470C /* MylifeTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C1568F7E7B3DA240B9470C /* MylifeTheme.swift */; };
+		C2C2B527A52716A76356DDD0 /* MylifeRemoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C1B527A52716A76356DDD0 /* MylifeRemoteImage.swift */; };
+		C2C22836B4D0F9CDF5FD12C8 /* MylifeFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C12836B4D0F9CDF5FD12C8 /* MylifeFlowLayout.swift */; };
+		C2C262BBC08EC66E107B483C /* GranularitySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C162BBC08EC66E107B483C /* GranularitySelector.swift */; };
+		C2C280306C25AB458C7A19D1 /* MylifeSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C180306C25AB458C7A19D1 /* MylifeSearchBar.swift */; };
+		C2C2BA0E92ECDAB1212AF149 /* HotSlotChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C1BA0E92ECDAB1212AF149 /* HotSlotChips.swift */; };
+		C2C29167DBAEEE2A66C16310 /* TopicChipRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C19167DBAEEE2A66C16310 /* TopicChipRow.swift */; };
+		C2C2CE9F695515ED5B8F6DF3 /* AudioEntryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C1CE9F695515ED5B8F6DF3 /* AudioEntryButton.swift */; };
+		C2C21C14E94E81230BFF9F51 /* ScopePill.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C11C14E94E81230BFF9F51 /* ScopePill.swift */; };
+		C2C2A394BEF3C4757DBFB01D /* PeriodCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C1A394BEF3C4757DBFB01D /* PeriodCard.swift */; };
+		C2C279262EF713BDAAF7AC20 /* TimelineHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C179262EF713BDAAF7AC20 /* TimelineHomeViewModel.swift */; };
+		C2C26B61E12015AD4B38FB18 /* TimelineHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C16B61E12015AD4B38FB18 /* TimelineHomeView.swift */; };
+		C2C27095CA8FEF77C0DB4F2E /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C17095CA8FEF77C0DB4F2E /* SearchResultsView.swift */; };
+		C2C27A281AF0D2CF6C5B8DD4 /* UITestMylifeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C17A281AF0D2CF6C5B8DD4 /* UITestMylifeStore.swift */; };
+		C2B201EE02D73CD4ED393CC9 /* TimelineHomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B101EE02D73CD4ED393CC9 /* TimelineHomeViewModelTests.swift */; };
+		C2D25A6C43C6C2B6DD4DE3BF /* HotSlotRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D15A6C43C6C2B6DD4DE3BF /* HotSlotRows.swift */; };
+		C2D27BBC5E0D304583AC7D4E /* HotSlotViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D17BBC5E0D304583AC7D4E /* HotSlotViewModel.swift */; };
+		C2D2940619EDC01DD829608E /* HotSlotScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D1940619EDC01DD829608E /* HotSlotScreen.swift */; };
+		C2D248E0AB60DAE14F3DFE9E /* FrameRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D148E0AB60DAE14F3DFE9E /* FrameRowView.swift */; };
+		C2D2C4FB3879E20A51CE9B96 /* TimelineBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D1C4FB3879E20A51CE9B96 /* TimelineBubbleView.swift */; };
+		C2D248AFB85C31D2680254DF /* FrameViewerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D148AFB85C31D2680254DF /* FrameViewerOverlay.swift */; };
+		C2D2931404FEF7EBF5863F9E /* HotSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D1931404FEF7EBF5863F9E /* HotSlotView.swift */; };
+		C2D26BD6634224CE9899C6F7 /* EventListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D16BD6634224CE9899C6F7 /* EventListView.swift */; };
+		C2B21F9340B6D9DE47A3AC2D /* HotSlotRowsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B11F9340B6D9DE47A3AC2D /* HotSlotRowsTests.swift */; };
+		C2B245173CB11B7136412033 /* HotSlotViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B145173CB11B7136412033 /* HotSlotViewModelTests.swift */; };
+		C2E2B69053F31328F5380F48 /* FrameGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E1B69053F31328F5380F48 /* FrameGalleryViewModel.swift */; };
+		C2E296151E627D2BB840385F /* FrameGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E196151E627D2BB840385F /* FrameGalleryView.swift */; };
+		C2E2EB59EF9976A8DD489504 /* GalleryViewerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E1EB59EF9976A8DD489504 /* GalleryViewerOverlay.swift */; };
+		C2F2C51EEDAEFA271ED56726 /* MylifeAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F1C51EEDAEFA271ED56726 /* MylifeAudioPlayer.swift */; };
+		C2F2CEEC532E6759DB701FE2 /* AudioGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F1CEEC532E6759DB701FE2 /* AudioGalleryViewModel.swift */; };
+		C2F2A326C25088ADE814519E /* AudioGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F1A326C25088ADE814519E /* AudioGalleryView.swift */; };
+		C2F2571487D9838CA9C7F32B /* AudioSegmentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F1571487D9838CA9C7F32B /* AudioSegmentCard.swift */; };
+		C2F2966D09F34CF1C65C72F2 /* SegmentProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F1966D09F34CF1C65C72F2 /* SegmentProgressBar.swift */; };
+		C2B2C118B0AD28F0A0096702 /* AudioGalleryMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B1C118B0AD28F0A0096702 /* AudioGalleryMathTests.swift */; };
+		C2B28C993ECEE04513E04442 /* FrameGalleryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B18C993ECEE04513E04442 /* FrameGalleryViewModelTests.swift */; };
+		C2B2C727AE6B8C5B75EB74E8 /* MylifeAudioPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B1C727AE6B8C5B75EB74E8 /* MylifeAudioPlayerTests.swift */; };
+		A10000000000000000000081 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000080 /* PrivacyInfo.xcprivacy */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10000000000000000000050 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000010;
+			remoteInfo = LivaChatApp;
+		};
+		A1000000000000000000006B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000010;
+			remoteInfo = LivaChatApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D1000000000000000000A104 /* AvatarCropMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCropMathTests.swift; sourceTree = "<group>"; };
+		D1000000000000000000A011 /* AvatarCropMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCropMath.swift; sourceTree = "<group>"; };
+		D1000000000000000000A010 /* ModeSelectionDialogs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeSelectionDialogs.swift; sourceTree = "<group>"; };
+		D1000000000000000000A009 /* AvatarCropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCropView.swift; sourceTree = "<group>"; };
+		D1000000000000000000A008 /* CameraPhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPhotoPicker.swift; sourceTree = "<group>"; };
+		D1000000000000000000A007 /* AvatarCustomizationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCustomizationSheet.swift; sourceTree = "<group>"; };
+		D1000000000000000000A006 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
+		D1000000000000000000A103 /* AvatarCustomizationModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCustomizationModelTests.swift; sourceTree = "<group>"; };
+		D1000000000000000000A102 /* AvatarStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarStoreTests.swift; sourceTree = "<group>"; };
+		D1000000000000000000A003 /* AvatarCustomizationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCustomizationModel.swift; sourceTree = "<group>"; };
+		D1000000000000000000A002 /* AvatarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarStore.swift; sourceTree = "<group>"; };
+		D1000000000000000000A101 /* ConversationModeModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModeModelTests.swift; sourceTree = "<group>"; };
+		D1000000000000000000A001 /* ConversationModeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModeModel.swift; sourceTree = "<group>"; };
+		FCB67D4FF4ED10AC22A9DEF8 /* AudioCaptureRetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureRetryTests.swift; sourceTree = "<group>"; };
+		FEA3DA5AC30DCB8E2C9F3849 /* ScrollFollowPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFollowPolicyTests.swift; sourceTree = "<group>"; };
+		00AE0CE0148532AD8B1FAFD8 /* ScrollFollowPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFollowPolicy.swift; sourceTree = "<group>"; };
+		B5E29C18D9B2F1A4B0F913F9 /* LogFileWriterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFileWriterTests.swift; sourceTree = "<group>"; };
+		EA12F2A36E610601FFACA5CF /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		6FFE98D6466363F4A14255FF /* AudioPlaybackControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackControllerTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000070 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A10000000000000000000071 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		D30000000000000000000001 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		D30000000000000000000002 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000003 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000004 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000005 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000006 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000007 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000008 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D30000000000000000000009 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D3000000000000000000000B /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D3000000000000000000000C /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D3000000000000000000000E /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D3000000000000000000000F /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D3000000000000000000000D /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9DBC2521CDA86EAA3B788392 /* AppShellUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShellUITests.swift; sourceTree = "<group>"; };
+		71D1DFCE3BAE3A63A29AB8A1 /* AppContainerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainerTests.swift; sourceTree = "<group>"; };
+		856C499462BBFDE31A946813 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		E55C131DF5E1B0E376687C66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		D40000000000000000000001 /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
+		D40000000000000000000002 /* LicensesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesView.swift; sourceTree = "<group>"; };
+		D40000000000000000000003 /* LICENSES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Licenses/LICENSES.txt; sourceTree = "<group>"; };
+		7EA41191B48A3D48E81B0A73 /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B08 /* MicVolumeGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicVolumeGlyph.swift; sourceTree = "<group>"; };
+		1C12F894ED987375252D1641 /* PermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionView.swift; sourceTree = "<group>"; };
+		E228C6D3DB3A66D6372BAA7C /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		4B8FFC4FD878202C46D2F4BB /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		D20000000000000000000001 /* AppLocale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocale.swift; sourceTree = "<group>"; };
+		D20000000000000000000003 /* LocalizedNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizedNumber.swift; sourceTree = "<group>"; };
+		D20000000000000000000005 /* PosixFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosixFormat.swift; sourceTree = "<group>"; };
+		D20000000000000000000007 /* LocalizedDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizedDate.swift; sourceTree = "<group>"; };
+		D20000000000000000000009 /* LocalizationTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTestSupport.swift; sourceTree = "<group>"; };
+		D2000000000000000000000B /* AppLocaleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocaleTests.swift; sourceTree = "<group>"; };
+		D2000000000000000000000D /* L10nFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10nFormattingTests.swift; sourceTree = "<group>"; };
+		D2000000000000000000000F /* HistoryDateFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDateFormattingTests.swift; sourceTree = "<group>"; };
+		D20000000000000000000011 /* LocalizedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizedList.swift; sourceTree = "<group>"; };
+		D20000000000000000000013 /* AppErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppErrorMessage.swift; sourceTree = "<group>"; };
+		D20000000000000000000015 /* LocalizationRTLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationRTLTests.swift; sourceTree = "<group>"; };
+		0F0897F1E0B1EF10BC8EA7C3 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		27E3DDAA2B87944C728B40F0 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
+		348FA193170FA79FBC54DB57 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		9E52FC1D469B0B5889D07537 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+		A453D7F1D32B089212662DCA /* SettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelTests.swift; sourceTree = "<group>"; };
+		CFBA01AFBDEB2713E6471847 /* ServerProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerProbeTests.swift; sourceTree = "<group>"; };
+		789BFB1A65E17DA77E4C4968 /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
+		FBD37895AB64935A8AE17D3E /* CredentialStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStoreTests.swift; sourceTree = "<group>"; };
+		0D9AB4ECA5F140097A424C1B /* ServerAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAddressTests.swift; sourceTree = "<group>"; };
+		C839E60663E47509034A86B0 /* SystemSettingsOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSettingsOpener.swift; sourceTree = "<group>"; };
+		32EEE0A8A6E1333E2FC4A660 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		F8EE9AA64A42B00E7117E43E /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		B74A48D7477E85C7AF263F82 /* ServerProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerProbe.swift; sourceTree = "<group>"; };
+		22FCB8048C1FF2C08591D866 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		CD6A744B7F6B77B9F263BA54 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
+		5F02E95E8A3972EA752BFEDD /* ServerAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAddress.swift; sourceTree = "<group>"; };
+		83B0F0C9EC5B4DCE083EF6A6 /* ConversationRuntimeIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRuntimeIntegrationTests.swift; sourceTree = "<group>"; };
+		43792063679FA0737CCBA10D /* ConversationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModelTests.swift; sourceTree = "<group>"; };
+		AFA17C9C91F53ACDE82794C8 /* ConversationEventAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationEventAdapterTests.swift; sourceTree = "<group>"; };
+		45D9531F0E94E8E2798B6401 /* ConversationCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCoordinatorTests.swift; sourceTree = "<group>"; };
+		DCFA94584FAB28D3AF7679ED /* ConversationRuntimeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRuntimeFactory.swift; sourceTree = "<group>"; };
+		FDD24B9E88A753BB10785DFC /* ConversationRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRuntime.swift; sourceTree = "<group>"; };
+		36F4ED430DDDA7BE9EDEDCFE /* ConversationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCoordinator.swift; sourceTree = "<group>"; };
+		5267AE1B7DCF035D16F0F1FB /* ConversationEventAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationEventAdapter.swift; sourceTree = "<group>"; };
+		68A909FC757186E53C5AB3F3 /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
+		051782D748BC75911D286F0D /* ConversationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationProtocols.swift; sourceTree = "<group>"; };
+		6B7C01460519F526CAE887E8 /* ConversationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModels.swift; sourceTree = "<group>"; };
+		7FAFA068231587799E2D76D5 /* AudioSpikeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpikeUITests.swift; sourceTree = "<group>"; };
+		50599C14EA0151E714C8C2A4 /* InterruptCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterruptCoordinatorTests.swift; sourceTree = "<group>"; };
+		3F893954411E85F45D6E4202 /* JitterBufferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JitterBufferTests.swift; sourceTree = "<group>"; };
+		A3306EA4C02F206F90BD031A /* MicLevelMeterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicLevelMeterTests.swift; sourceTree = "<group>"; };
+		8BD18D8F3A82274DFB741D6A /* SilenceFlushGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilenceFlushGateTests.swift; sourceTree = "<group>"; };
+		1A9DCFF0776824E9E9276CBE /* PCMChunkerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMChunkerTests.swift; sourceTree = "<group>"; };
+		68CCB0A6A80E1FC3C4C77FB3 /* AudioSpikeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpikeView.swift; sourceTree = "<group>"; };
+		C32D5FED3A33EC86C22B5B8A /* InterruptCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterruptCoordinator.swift; sourceTree = "<group>"; };
+		91116BC66924DE8361809041 /* HapticController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticController.swift; sourceTree = "<group>"; };
+		4C1D8D3EA6ED9E01F764BDE4 /* AudioPlaybackController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackController.swift; sourceTree = "<group>"; };
+		931088D8858C8ADE458FB800 /* AudioCaptureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureController.swift; sourceTree = "<group>"; };
+		8148AF5541B1E8A37731B6EB /* AudioSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionController.swift; sourceTree = "<group>"; };
+		2A8934653A63296125D37AAF /* AudioProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProtocols.swift; sourceTree = "<group>"; };
+		826D5B3560E809423C861E9F /* JitterBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JitterBuffer.swift; sourceTree = "<group>"; };
+		D0B5BD8F3B5916762F1C4B7B /* MicLevelMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicLevelMeter.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B02 /* MicLevelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicLevelModel.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B04 /* MicLevelModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicLevelModelTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B06 /* AudioCaptureLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureLevelTests.swift; sourceTree = "<group>"; };
+		9AC1E25FDD0339F3107485D3 /* SilenceFlushGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilenceFlushGate.swift; sourceTree = "<group>"; };
+		4016468BFF5CF9EDEDB0CE83 /* PCMChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMChunker.swift; sourceTree = "<group>"; };
+		A10000000000000000000012 /* LivaChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LivaChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000013 /* LivaChatAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LivaChatAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000061 /* LivaChatAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LivaChatAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000030 /* LivaChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivaChatApp.swift; sourceTree = "<group>"; };
+		A10000000000000000000032 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
+		A10000000000000000000034 /* AppOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOrientation.swift; sourceTree = "<group>"; };
+		A1000000000000000000003A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B20000000000000000000011 /* CameraProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraProtocols.swift; sourceTree = "<group>"; };
+		B20000000000000000000012 /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraController.swift; sourceTree = "<group>"; };
+		C2000000000000000000A001 /* CameraOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOrientation.swift; sourceTree = "<group>"; };
+		C2000000000000000000A002 /* CameraDeviceOrientationMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraDeviceOrientationMonitor.swift; sourceTree = "<group>"; };
+		B30000000000000000000011 /* GalleryPhotoSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryPhotoSender.swift; sourceTree = "<group>"; };
+		B30000000000000000000012 /* PHPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHPickerView.swift; sourceTree = "<group>"; };
+		B30000000000000000000013 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		B30000000000000000000014 /* GalleryPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryPreviewView.swift; sourceTree = "<group>"; };
+		B30000000000000000000015 /* CameraModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraModeView.swift; sourceTree = "<group>"; };
+		B30000000000000000000016 /* AIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIImageView.swift; sourceTree = "<group>"; };
+		B40000000000000000000011 /* M2CameraGalleryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M2CameraGalleryTests.swift; sourceTree = "<group>"; };
+		C2000000000000000000A003 /* CameraOrientationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOrientationTests.swift; sourceTree = "<group>"; };
+		B50000000000000000000011 /* M2DeviceE2ETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M2DeviceE2ETests.swift; sourceTree = "<group>"; };
+		B60000000000000000000011 /* ImageViewerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerOverlay.swift; sourceTree = "<group>"; };
+		B60000000000000000000012 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		B80000000000000000000011 /* WebLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebLinkRouter.swift; sourceTree = "<group>"; };
+		B80000000000000000000012 /* MarkdownTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTheme.swift; sourceTree = "<group>"; };
+		B80000000000000000000013 /* MarkdownTableFallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTableFallback.swift; sourceTree = "<group>"; };
+		B80000000000000000000014 /* MarkdownMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMessageView.swift; sourceTree = "<group>"; };
+		B80000000000000000000015 /* AgentJobCollapse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobCollapse.swift; sourceTree = "<group>"; };
+		B80000000000000000000016 /* AgentJobResultOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobResultOverlay.swift; sourceTree = "<group>"; };
+		B80000000000000000000017 /* M3MarkdownTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3MarkdownTests.swift; sourceTree = "<group>"; };
+		B90000000000000000000011 /* LivachatURLConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivachatURLConverter.swift; sourceTree = "<group>"; };
+		B90000000000000000000012 /* WebPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPageView.swift; sourceTree = "<group>"; };
+		B90000000000000000000013 /* WebrootSupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebrootSupportTests.swift; sourceTree = "<group>"; };
+		BA00000000000000000000011 /* HistoryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModels.swift; sourceTree = "<group>"; };
+		BA00000000000000000000012 /* HistoryDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDatabase.swift; sourceTree = "<group>"; };
+		BA00000000000000000000013 /* HistoryImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryImageStore.swift; sourceTree = "<group>"; };
+		BA00000000000000000000014 /* HistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryService.swift; sourceTree = "<group>"; };
+		BA00000000000000000000015 /* HistoryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStorageTests.swift; sourceTree = "<group>"; };
+		BB00000000000000000000011 /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
+		BC00000000000000000000011 /* HistoryDateFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDateFormatting.swift; sourceTree = "<group>"; };
+		BD00000000000000000000011 /* HistoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModel.swift; sourceTree = "<group>"; };
+		BD00000000000000000000012 /* HistoryDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDetailViewModel.swift; sourceTree = "<group>"; };
+		BD00000000000000000000013 /* HistoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListView.swift; sourceTree = "<group>"; };
+		BD00000000000000000000014 /* HistoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDetailView.swift; sourceTree = "<group>"; };
+		BD00000000000000000000015 /* HistoryFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryFlowView.swift; sourceTree = "<group>"; };
+		BD00000000000000000000016 /* HistoryComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryComponents.swift; sourceTree = "<group>"; };
+		C1000000000000000000A001 /* AgentJobStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobStatusModel.swift; sourceTree = "<group>"; };
+		C1000000000000000000A002 /* AgentJobFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobFormatting.swift; sourceTree = "<group>"; };
+		C1000000000000000000A003 /* AgentJobCancelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobCancelClient.swift; sourceTree = "<group>"; };
+		C1000000000000000000A004 /* AgentJobStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobStatusBadge.swift; sourceTree = "<group>"; };
+		C1000000000000000000A005 /* AgentJobListPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobListPanel.swift; sourceTree = "<group>"; };
+		C1000000000000000000A006 /* AgentIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentIcon.swift; sourceTree = "<group>"; };
+		C1000000000000000000A007 /* AgentJobResultWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobResultWindow.swift; sourceTree = "<group>"; };
+		C1000000000000000000A011 /* AgentJobStatusModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobStatusModelTests.swift; sourceTree = "<group>"; };
+		C1000000000000000000A012 /* AgentJobCancelClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentJobCancelClientTests.swift; sourceTree = "<group>"; };
+		C2A18610F59B417BA4024C05 /* MylifeDTOs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeDTOs.swift; sourceTree = "<group>"; };
+		C2A176334996D6343F26F2D1 /* MylifeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeModels.swift; sourceTree = "<group>"; };
+		C2A1D069D65331B2CDA4A5DD /* MylifeErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeErrors.swift; sourceTree = "<group>"; };
+		C2A10F93D18BABDE70E3DBAC /* MylifeAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeAPIClient.swift; sourceTree = "<group>"; };
+		C2A1D936BB2029C5D670956B /* MylifeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeStore.swift; sourceTree = "<group>"; };
+		C2A17488C64BBEDE9940D7E7 /* MylifeDateLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeDateLabels.swift; sourceTree = "<group>"; };
+		C2A1A8408566F1B0B53291D6 /* MylifeAggregator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeAggregator.swift; sourceTree = "<group>"; };
+		C2B160568AFFF0C611BAA988 /* MylifeDateLabelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeDateLabelsTests.swift; sourceTree = "<group>"; };
+		C2B1E874722A4AC95CE644D0 /* MylifeAggregatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeAggregatorTests.swift; sourceTree = "<group>"; };
+		C2B105D7A577DF4DF8152EDA /* MylifeAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeAPIClientTests.swift; sourceTree = "<group>"; };
+		C2B1CEF40AC7A084AE92C339 /* MylifeStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeStoreTests.swift; sourceTree = "<group>"; };
+		C2C1E83514BF25B60227D1F7 /* MylifeImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeImageLoader.swift; sourceTree = "<group>"; };
+		C2C13DE3545705C1FB882EC3 /* TimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineRoute.swift; sourceTree = "<group>"; };
+		C2C122DD44CD98C7EBC05323 /* TimelineFlowModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineFlowModel.swift; sourceTree = "<group>"; };
+		C2C147BAED83F751E75CB2BC /* TimelineFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineFlowView.swift; sourceTree = "<group>"; };
+		C2C1568F7E7B3DA240B9470C /* MylifeTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeTheme.swift; sourceTree = "<group>"; };
+		C2C1B527A52716A76356DDD0 /* MylifeRemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeRemoteImage.swift; sourceTree = "<group>"; };
+		C2C12836B4D0F9CDF5FD12C8 /* MylifeFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeFlowLayout.swift; sourceTree = "<group>"; };
+		C2C162BBC08EC66E107B483C /* GranularitySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GranularitySelector.swift; sourceTree = "<group>"; };
+		C2C180306C25AB458C7A19D1 /* MylifeSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeSearchBar.swift; sourceTree = "<group>"; };
+		C2C1BA0E92ECDAB1212AF149 /* HotSlotChips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotChips.swift; sourceTree = "<group>"; };
+		C2C19167DBAEEE2A66C16310 /* TopicChipRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicChipRow.swift; sourceTree = "<group>"; };
+		C2C1CE9F695515ED5B8F6DF3 /* AudioEntryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEntryButton.swift; sourceTree = "<group>"; };
+		C2C11C14E94E81230BFF9F51 /* ScopePill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopePill.swift; sourceTree = "<group>"; };
+		C2C1A394BEF3C4757DBFB01D /* PeriodCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodCard.swift; sourceTree = "<group>"; };
+		C2C179262EF713BDAAF7AC20 /* TimelineHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHomeViewModel.swift; sourceTree = "<group>"; };
+		C2C16B61E12015AD4B38FB18 /* TimelineHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHomeView.swift; sourceTree = "<group>"; };
+		C2C17095CA8FEF77C0DB4F2E /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
+		C2C17A281AF0D2CF6C5B8DD4 /* UITestMylifeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestMylifeStore.swift; sourceTree = "<group>"; };
+		C2B101EE02D73CD4ED393CC9 /* TimelineHomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHomeViewModelTests.swift; sourceTree = "<group>"; };
+		C2D15A6C43C6C2B6DD4DE3BF /* HotSlotRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotRows.swift; sourceTree = "<group>"; };
+		C2D17BBC5E0D304583AC7D4E /* HotSlotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotViewModel.swift; sourceTree = "<group>"; };
+		C2D1940619EDC01DD829608E /* HotSlotScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotScreen.swift; sourceTree = "<group>"; };
+		C2D148E0AB60DAE14F3DFE9E /* FrameRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRowView.swift; sourceTree = "<group>"; };
+		C2D1C4FB3879E20A51CE9B96 /* TimelineBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBubbleView.swift; sourceTree = "<group>"; };
+		C2D148AFB85C31D2680254DF /* FrameViewerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameViewerOverlay.swift; sourceTree = "<group>"; };
+		C2D1931404FEF7EBF5863F9E /* HotSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotView.swift; sourceTree = "<group>"; };
+		C2D16BD6634224CE9899C6F7 /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
+		C2B11F9340B6D9DE47A3AC2D /* HotSlotRowsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotRowsTests.swift; sourceTree = "<group>"; };
+		C2B145173CB11B7136412033 /* HotSlotViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotSlotViewModelTests.swift; sourceTree = "<group>"; };
+		C2E1B69053F31328F5380F48 /* FrameGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameGalleryViewModel.swift; sourceTree = "<group>"; };
+		C2E196151E627D2BB840385F /* FrameGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameGalleryView.swift; sourceTree = "<group>"; };
+		C2E1EB59EF9976A8DD489504 /* GalleryViewerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewerOverlay.swift; sourceTree = "<group>"; };
+		C2F1C51EEDAEFA271ED56726 /* MylifeAudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeAudioPlayer.swift; sourceTree = "<group>"; };
+		C2F1CEEC532E6759DB701FE2 /* AudioGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioGalleryViewModel.swift; sourceTree = "<group>"; };
+		C2F1A326C25088ADE814519E /* AudioGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioGalleryView.swift; sourceTree = "<group>"; };
+		C2F1571487D9838CA9C7F32B /* AudioSegmentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSegmentCard.swift; sourceTree = "<group>"; };
+		C2F1966D09F34CF1C65C72F2 /* SegmentProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentProgressBar.swift; sourceTree = "<group>"; };
+		C2B1C118B0AD28F0A0096702 /* AudioGalleryMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioGalleryMathTests.swift; sourceTree = "<group>"; };
+		C2B18C993ECEE04513E04442 /* FrameGalleryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameGalleryViewModelTests.swift; sourceTree = "<group>"; };
+		C2B1C727AE6B8C5B75EB74E8 /* MylifeAudioPlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MylifeAudioPlayerTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000080 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000015 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2A300000000000000000001 /* NetworkImage in Frameworks */,
+				A10000000000000000000042 /* LivaChatSDK in Frameworks */,
+				B70000000000000000000001 /* MarkdownUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000018 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000066 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E74680E53F3891CD30247774 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				E55C131DF5E1B0E376687C66 /* SettingsView.swift */,
+				D40000000000000000000002 /* LicensesView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		B90000000000000000000020 /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				B90000000000000000000012 /* WebPageView.swift */,
+			);
+			path = WebView;
+			sourceTree = "<group>";
+		};
+		688551A4405BB7A587C55AE8 /* Conversation */ = {
+			isa = PBXGroup;
+			children = (
+				D1000000000000000000A011 /* AvatarCropMath.swift */,
+				D1000000000000000000A010 /* ModeSelectionDialogs.swift */,
+				D1000000000000000000A009 /* AvatarCropView.swift */,
+				D1000000000000000000A007 /* AvatarCustomizationSheet.swift */,
+				D1000000000000000000A006 /* AvatarView.swift */,
+				7EA41191B48A3D48E81B0A73 /* ConversationView.swift */,
+				A1B2C3D4E5F60718293A4B08 /* MicVolumeGlyph.swift */,
+				C1000000000000000000A004 /* AgentJobStatusBadge.swift */,
+				C1000000000000000000A005 /* AgentJobListPanel.swift */,
+				C1000000000000000000A006 /* AgentIcon.swift */,
+				C1000000000000000000A007 /* AgentJobResultWindow.swift */,
+				B30000000000000000000015 /* CameraModeView.swift */,
+				B30000000000000000000014 /* GalleryPreviewView.swift */,
+				B30000000000000000000016 /* AIImageView.swift */,
+				B60000000000000000000011 /* ImageViewerOverlay.swift */,
+				BB00000000000000000000011 /* MessageBubbleView.swift */,
+				B80000000000000000000012 /* MarkdownTheme.swift */,
+				B80000000000000000000013 /* MarkdownTableFallback.swift */,
+				B80000000000000000000014 /* MarkdownMessageView.swift */,
+				B80000000000000000000015 /* AgentJobCollapse.swift */,
+				B80000000000000000000016 /* AgentJobResultOverlay.swift */,
+				B90000000000000000000011 /* LivachatURLConverter.swift */,
+			);
+			path = Conversation;
+			sourceTree = "<group>";
+		};
+		0625EF96CE332EBC7FF55110 /* Permission */ = {
+			isa = PBXGroup;
+			children = (
+				1C12F894ED987375252D1641 /* PermissionView.swift */,
+			);
+			path = Permission;
+			sourceTree = "<group>";
+		};
+		E92D7AD11338F3BCFB4AC35D /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				E228C6D3DB3A66D6372BAA7C /* SplashView.swift */,
+			);
+			path = Splash;
+			sourceTree = "<group>";
+		};
+		6D74CF04085A5030629B77D2 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				0F0897F1E0B1EF10BC8EA7C3 /* AppTheme.swift */,
+				4B8FFC4FD878202C46D2F4BB /* L10n.swift */,
+				D20000000000000000000001 /* AppLocale.swift */,
+				D20000000000000000000003 /* LocalizedNumber.swift */,
+				D20000000000000000000011 /* LocalizedList.swift */,
+				D20000000000000000000013 /* AppErrorMessage.swift */,
+				D20000000000000000000005 /* PosixFormat.swift */,
+				D20000000000000000000007 /* LocalizedDate.swift */,
+				00AE0CE0148532AD8B1FAFD8 /* ScrollFollowPolicy.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		FF5742B9935084315B98352E /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				32EEE0A8A6E1333E2FC4A660 /* AppInfo.swift */,
+				C839E60663E47509034A86B0 /* SystemSettingsOpener.swift */,
+				EA12F2A36E610601FFACA5CF /* AppLog.swift */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+		7A7546145BB3CC8A0AE05C2A /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5F02E95E8A3972EA752BFEDD /* ServerAddress.swift */,
+				CD6A744B7F6B77B9F263BA54 /* CredentialStore.swift */,
+				22FCB8048C1FF2C08591D866 /* SettingsStore.swift */,
+				B74A48D7477E85C7AF263F82 /* ServerProbe.swift */,
+				F8EE9AA64A42B00E7117E43E /* SettingsViewModel.swift */,
+				D40000000000000000000001 /* LegalLinks.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		9393365FD5198AA69BCFEC04 /* Conversation */ = {
+			isa = PBXGroup;
+			children = (
+				D1000000000000000000A003 /* AvatarCustomizationModel.swift */,
+				D1000000000000000000A002 /* AvatarStore.swift */,
+				D1000000000000000000A001 /* ConversationModeModel.swift */,
+				6B7C01460519F526CAE887E8 /* ConversationModels.swift */,
+				C1000000000000000000A001 /* AgentJobStatusModel.swift */,
+				C1000000000000000000A002 /* AgentJobFormatting.swift */,
+				C1000000000000000000A003 /* AgentJobCancelClient.swift */,
+				051782D748BC75911D286F0D /* ConversationProtocols.swift */,
+				68A909FC757186E53C5AB3F3 /* ConversationViewModel.swift */,
+				5267AE1B7DCF035D16F0F1FB /* ConversationEventAdapter.swift */,
+				36F4ED430DDDA7BE9EDEDCFE /* ConversationCoordinator.swift */,
+				FDD24B9E88A753BB10785DFC /* ConversationRuntime.swift */,
+				DCFA94584FAB28D3AF7679ED /* ConversationRuntimeFactory.swift */,
+			);
+			path = Conversation;
+			sourceTree = "<group>";
+		};
+		92DBD8DF5B0B9CFBB61FA308 /* AudioSpike */ = {
+			isa = PBXGroup;
+			children = (
+				68CCB0A6A80E1FC3C4C77FB3 /* AudioSpikeView.swift */,
+			);
+			path = AudioSpike;
+			sourceTree = "<group>";
+		};
+		7C7EACA0A604559DE0FEA859 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				C2F1C51EEDAEFA271ED56726 /* MylifeAudioPlayer.swift */,
+				4016468BFF5CF9EDEDB0CE83 /* PCMChunker.swift */,
+				9AC1E25FDD0339F3107485D3 /* SilenceFlushGate.swift */,
+				D0B5BD8F3B5916762F1C4B7B /* MicLevelMeter.swift */,
+				A1B2C3D4E5F60718293A4B02 /* MicLevelModel.swift */,
+				826D5B3560E809423C861E9F /* JitterBuffer.swift */,
+				2A8934653A63296125D37AAF /* AudioProtocols.swift */,
+				8148AF5541B1E8A37731B6EB /* AudioSessionController.swift */,
+				931088D8858C8ADE458FB800 /* AudioCaptureController.swift */,
+				4C1D8D3EA6ED9E01F764BDE4 /* AudioPlaybackController.swift */,
+				91116BC66924DE8361809041 /* HapticController.swift */,
+				C32D5FED3A33EC86C22B5B8A /* InterruptCoordinator.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		B30000000000000000000020 /* PlatformAdapters */ = {
+			isa = PBXGroup;
+			children = (
+				D1000000000000000000A008 /* CameraPhotoPicker.swift */,
+				B30000000000000000000012 /* PHPickerView.swift */,
+				B30000000000000000000013 /* CameraPreviewView.swift */,
+				C2000000000000000000A002 /* CameraDeviceOrientationMonitor.swift */,
+				B60000000000000000000012 /* PhotoLibrarySaver.swift */,
+				B80000000000000000000011 /* WebLinkRouter.swift */,
+			);
+			path = PlatformAdapters;
+			sourceTree = "<group>";
+		};
+		B20000000000000000000010 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000011 /* CameraProtocols.swift */,
+				B20000000000000000000012 /* CameraController.swift */,
+				C2000000000000000000A001 /* CameraOrientation.swift */,
+				B30000000000000000000011 /* GalleryPhotoSender.swift */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
+		BA00000000000000000000020 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				BA00000000000000000000011 /* HistoryModels.swift */,
+				BA00000000000000000000012 /* HistoryDatabase.swift */,
+				BA00000000000000000000013 /* HistoryImageStore.swift */,
+				BA00000000000000000000014 /* HistoryService.swift */,
+				BC00000000000000000000011 /* HistoryDateFormatting.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		410188F9DC6E499FEC68BCF6 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C2A000000000000000000001 /* Mylife */,
+				7C7EACA0A604559DE0FEA859 /* Audio */,
+				B20000000000000000000010 /* Video */,
+				B30000000000000000000020 /* PlatformAdapters */,
+				9393365FD5198AA69BCFEC04 /* Conversation */,
+				BA00000000000000000000020 /* History */,
+				7A7546145BB3CC8A0AE05C2A /* Settings */,
+				FF5742B9935084315B98352E /* Platform */,
+				6D74CF04085A5030629B77D2 /* UI */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000004 /* App */,
+				A10000000000000000000005 /* Features */,
+				A10000000000000000000007 /* Resources */,
+				A10000000000000000000008 /* LivaChatAppTests */,
+				A10000000000000000000062 /* LivaChatAppUITests */,
+				A10000000000000000000003 /* Products */,
+				410188F9DC6E499FEC68BCF6 /* Core */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000012 /* LivaChatApp.app */,
+				A10000000000000000000013 /* LivaChatAppTests.xctest */,
+				A10000000000000000000061 /* LivaChatAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000004 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000030 /* LivaChatApp.swift */,
+				A10000000000000000000032 /* AppContainer.swift */,
+				A10000000000000000000034 /* AppOrientation.swift */,
+				9E52FC1D469B0B5889D07537 /* AppRootView.swift */,
+				348FA193170FA79FBC54DB57 /* AppRouter.swift */,
+				27E3DDAA2B87944C728B40F0 /* AppLaunchOptions.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		BD00000000000000000000020 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				BD00000000000000000000011 /* HistoryListViewModel.swift */,
+				BD00000000000000000000012 /* HistoryDetailViewModel.swift */,
+				BD00000000000000000000013 /* HistoryListView.swift */,
+				BD00000000000000000000014 /* HistoryDetailView.swift */,
+				BD00000000000000000000015 /* HistoryFlowView.swift */,
+				BD00000000000000000000016 /* HistoryComponents.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000005 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				C2A000000000000000000010 /* Timeline */,
+				92DBD8DF5B0B9CFBB61FA308 /* AudioSpike */,
+				E92D7AD11338F3BCFB4AC35D /* Splash */,
+				0625EF96CE332EBC7FF55110 /* Permission */,
+				688551A4405BB7A587C55AE8 /* Conversation */,
+				B90000000000000000000020 /* WebView */,
+				E74680E53F3891CD30247774 /* Settings */,
+				BD00000000000000000000020 /* History */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000007 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000000003A /* Assets.xcassets */,
+				856C499462BBFDE31A946813 /* Localizable.xcstrings */,
+				A10000000000000000000072 /* InfoPlist.strings */,
+				A10000000000000000000080 /* PrivacyInfo.xcprivacy */,
+				D40000000000000000000003 /* LICENSES.txt */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000008 /* LivaChatAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				C2B1C727AE6B8C5B75EB74E8 /* MylifeAudioPlayerTests.swift */,
+				C2B18C993ECEE04513E04442 /* FrameGalleryViewModelTests.swift */,
+				C2B1C118B0AD28F0A0096702 /* AudioGalleryMathTests.swift */,
+				C2B145173CB11B7136412033 /* HotSlotViewModelTests.swift */,
+				C2B11F9340B6D9DE47A3AC2D /* HotSlotRowsTests.swift */,
+				C2B101EE02D73CD4ED393CC9 /* TimelineHomeViewModelTests.swift */,
+				C2B1CEF40AC7A084AE92C339 /* MylifeStoreTests.swift */,
+				C2B105D7A577DF4DF8152EDA /* MylifeAPIClientTests.swift */,
+				C2B1E874722A4AC95CE644D0 /* MylifeAggregatorTests.swift */,
+				C2B160568AFFF0C611BAA988 /* MylifeDateLabelsTests.swift */,
+				D1000000000000000000A104 /* AvatarCropMathTests.swift */,
+				D1000000000000000000A103 /* AvatarCustomizationModelTests.swift */,
+				D1000000000000000000A102 /* AvatarStoreTests.swift */,
+				D1000000000000000000A101 /* ConversationModeModelTests.swift */,
+				1A9DCFF0776824E9E9276CBE /* PCMChunkerTests.swift */,
+				8BD18D8F3A82274DFB741D6A /* SilenceFlushGateTests.swift */,
+				A3306EA4C02F206F90BD031A /* MicLevelMeterTests.swift */,
+				A1B2C3D4E5F60718293A4B04 /* MicLevelModelTests.swift */,
+				A1B2C3D4E5F60718293A4B06 /* AudioCaptureLevelTests.swift */,
+				3F893954411E85F45D6E4202 /* JitterBufferTests.swift */,
+				50599C14EA0151E714C8C2A4 /* InterruptCoordinatorTests.swift */,
+				45D9531F0E94E8E2798B6401 /* ConversationCoordinatorTests.swift */,
+				AFA17C9C91F53ACDE82794C8 /* ConversationEventAdapterTests.swift */,
+				43792063679FA0737CCBA10D /* ConversationViewModelTests.swift */,
+				83B0F0C9EC5B4DCE083EF6A6 /* ConversationRuntimeIntegrationTests.swift */,
+				0D9AB4ECA5F140097A424C1B /* ServerAddressTests.swift */,
+				FBD37895AB64935A8AE17D3E /* CredentialStoreTests.swift */,
+				789BFB1A65E17DA77E4C4968 /* SettingsStoreTests.swift */,
+				CFBA01AFBDEB2713E6471847 /* ServerProbeTests.swift */,
+				A453D7F1D32B089212662DCA /* SettingsViewModelTests.swift */,
+				71D1DFCE3BAE3A63A29AB8A1 /* AppContainerTests.swift */,
+				6FFE98D6466363F4A14255FF /* AudioPlaybackControllerTests.swift */,
+				B5E29C18D9B2F1A4B0F913F9 /* LogFileWriterTests.swift */,
+				FEA3DA5AC30DCB8E2C9F3849 /* ScrollFollowPolicyTests.swift */,
+				FCB67D4FF4ED10AC22A9DEF8 /* AudioCaptureRetryTests.swift */,
+				B40000000000000000000011 /* M2CameraGalleryTests.swift */,
+				C2000000000000000000A003 /* CameraOrientationTests.swift */,
+				B80000000000000000000017 /* M3MarkdownTests.swift */,
+				BA00000000000000000000015 /* HistoryStorageTests.swift */,
+				B90000000000000000000013 /* WebrootSupportTests.swift */,
+				C1000000000000000000A011 /* AgentJobStatusModelTests.swift */,
+				C1000000000000000000A012 /* AgentJobCancelClientTests.swift */,
+				D20000000000000000000009 /* LocalizationTestSupport.swift */,
+				D2000000000000000000000B /* AppLocaleTests.swift */,
+				D2000000000000000000000D /* L10nFormattingTests.swift */,
+				D2000000000000000000000F /* HistoryDateFormattingTests.swift */,
+				D20000000000000000000015 /* LocalizationRTLTests.swift */,
+			);
+			path = LivaChatAppTests;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000062 /* LivaChatAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7FAFA068231587799E2D76D5 /* AudioSpikeUITests.swift */,
+				9DBC2521CDA86EAA3B788392 /* AppShellUITests.swift */,
+				B50000000000000000000011 /* M2DeviceE2ETests.swift */,
+			);
+			path = LivaChatAppUITests;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000001 /* Mylife */ = {
+			isa = PBXGroup;
+			children = (
+				C2C17A281AF0D2CF6C5B8DD4 /* UITestMylifeStore.swift */,
+				C2C1E83514BF25B60227D1F7 /* MylifeImageLoader.swift */,
+				C2A1A8408566F1B0B53291D6 /* MylifeAggregator.swift */,
+				C2A17488C64BBEDE9940D7E7 /* MylifeDateLabels.swift */,
+				C2A1D936BB2029C5D670956B /* MylifeStore.swift */,
+				C2A10F93D18BABDE70E3DBAC /* MylifeAPIClient.swift */,
+				C2A1D069D65331B2CDA4A5DD /* MylifeErrors.swift */,
+				C2A176334996D6343F26F2D1 /* MylifeModels.swift */,
+				C2A18610F59B417BA4024C05 /* MylifeDTOs.swift */,
+			);
+			path = Mylife;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000010 /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				C2C147BAED83F751E75CB2BC /* TimelineFlowView.swift */,
+				C2C122DD44CD98C7EBC05323 /* TimelineFlowModel.swift */,
+				C2C13DE3545705C1FB882EC3 /* TimelineRoute.swift */,
+				C2A000000000000000000015 /* Audio */,
+				C2A000000000000000000014 /* Gallery */,
+				C2A000000000000000000013 /* HotSlot */,
+				C2A000000000000000000012 /* Home */,
+				C2A000000000000000000011 /* Components */,
+			);
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000011 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				C2C1A394BEF3C4757DBFB01D /* PeriodCard.swift */,
+				C2C11C14E94E81230BFF9F51 /* ScopePill.swift */,
+				C2C1CE9F695515ED5B8F6DF3 /* AudioEntryButton.swift */,
+				C2C19167DBAEEE2A66C16310 /* TopicChipRow.swift */,
+				C2C1BA0E92ECDAB1212AF149 /* HotSlotChips.swift */,
+				C2C180306C25AB458C7A19D1 /* MylifeSearchBar.swift */,
+				C2C162BBC08EC66E107B483C /* GranularitySelector.swift */,
+				C2C12836B4D0F9CDF5FD12C8 /* MylifeFlowLayout.swift */,
+				C2C1B527A52716A76356DDD0 /* MylifeRemoteImage.swift */,
+				C2C1568F7E7B3DA240B9470C /* MylifeTheme.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000012 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				C2C17095CA8FEF77C0DB4F2E /* SearchResultsView.swift */,
+				C2C16B61E12015AD4B38FB18 /* TimelineHomeView.swift */,
+				C2C179262EF713BDAAF7AC20 /* TimelineHomeViewModel.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000013 /* HotSlot */ = {
+			isa = PBXGroup;
+			children = (
+				C2D16BD6634224CE9899C6F7 /* EventListView.swift */,
+				C2D1931404FEF7EBF5863F9E /* HotSlotView.swift */,
+				C2D148AFB85C31D2680254DF /* FrameViewerOverlay.swift */,
+				C2D1C4FB3879E20A51CE9B96 /* TimelineBubbleView.swift */,
+				C2D148E0AB60DAE14F3DFE9E /* FrameRowView.swift */,
+				C2D1940619EDC01DD829608E /* HotSlotScreen.swift */,
+				C2D17BBC5E0D304583AC7D4E /* HotSlotViewModel.swift */,
+				C2D15A6C43C6C2B6DD4DE3BF /* HotSlotRows.swift */,
+			);
+			path = HotSlot;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000014 /* Gallery */ = {
+			isa = PBXGroup;
+			children = (
+				C2E1EB59EF9976A8DD489504 /* GalleryViewerOverlay.swift */,
+				C2E196151E627D2BB840385F /* FrameGalleryView.swift */,
+				C2E1B69053F31328F5380F48 /* FrameGalleryViewModel.swift */,
+			);
+			path = Gallery;
+			sourceTree = "<group>";
+		};
+		C2A000000000000000000015 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				C2F1966D09F34CF1C65C72F2 /* SegmentProgressBar.swift */,
+				C2F1571487D9838CA9C7F32B /* AudioSegmentCard.swift */,
+				C2F1A326C25088ADE814519E /* AudioGalleryView.swift */,
+				C2F1CEEC532E6759DB701FE2 /* AudioGalleryViewModel.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000000000000000000010 /* LivaChatApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000000000000000000001A /* Build configuration list for PBXNativeTarget "LivaChatApp" */;
+			buildPhases = (
+				A10000000000000000000014 /* Sources */,
+				A10000000000000000000015 /* Frameworks */,
+				A10000000000000000000016 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LivaChatApp;
+			packageProductDependencies = (
+				C2A300000000000000000002 /* NetworkImage */,
+				A10000000000000000000041 /* LivaChatSDK */,
+				B70000000000000000000011 /* MarkdownUI */,
+			);
+			productName = LivaChatApp;
+			productReference = A10000000000000000000012 /* LivaChatApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A10000000000000000000011 /* LivaChatAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000000000000000000001B /* Build configuration list for PBXNativeTarget "LivaChatAppTests" */;
+			buildPhases = (
+				A10000000000000000000017 /* Sources */,
+				A10000000000000000000018 /* Frameworks */,
+				A10000000000000000000019 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000000000000000000051 /* PBXTargetDependency */,
+			);
+			name = LivaChatAppTests;
+			productName = LivaChatAppTests;
+			productReference = A10000000000000000000013 /* LivaChatAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A10000000000000000000060 /* LivaChatAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000068 /* Build configuration list for PBXNativeTarget "LivaChatAppUITests" */;
+			buildPhases = (
+				A10000000000000000000065 /* Sources */,
+				A10000000000000000000066 /* Frameworks */,
+				A10000000000000000000067 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1000000000000000000006C /* PBXTargetDependency */,
+			);
+			name = LivaChatAppUITests;
+			productName = LivaChatAppUITests;
+			productReference = A10000000000000000000061 /* LivaChatAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					A10000000000000000000010 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					A10000000000000000000011 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = A10000000000000000000010;
+					};
+					A10000000000000000000060 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = A10000000000000000000010;
+					};
+				};
+			};
+			buildConfigurationList = A1000000000000000000001C /* Build configuration list for PBXProject "LivaChatApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				"zh-Hans",
+				"zh-Hant",
+				ja,
+				ko,
+				ru,
+				de,
+				fr,
+				it,
+				es,
+				pt,
+				hi,
+				id,
+				th,
+				vi,
+				ar,
+				Base,
+			);
+			mainGroup = A10000000000000000000002;
+			packageReferences = (
+				A10000000000000000000040 /* XCLocalSwiftPackageReference "LivaChatSDK" */,
+				B70000000000000000000010 /* XCLocalSwiftPackageReference "MarkdownUI" */,
+				C2A300000000000000000003 /* XCLocalSwiftPackageReference "NetworkImage" */,
+			);
+			productRefGroup = A10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000000000000000000010 /* LivaChatApp */,
+				A10000000000000000000011 /* LivaChatAppTests */,
+				A10000000000000000000060 /* LivaChatAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000016 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000000000000000000003B /* Assets.xcassets in Resources */,
+				4C385A5AC6717F3A602E3EE6 /* Localizable.xcstrings in Resources */,
+				A10000000000000000000073 /* InfoPlist.strings in Resources */,
+				A10000000000000000000081 /* PrivacyInfo.xcprivacy in Resources */,
+				D40000000000000000000013 /* LICENSES.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000019 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000067 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000014 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2F2966D09F34CF1C65C72F2 /* SegmentProgressBar.swift in Sources */,
+				C2F2571487D9838CA9C7F32B /* AudioSegmentCard.swift in Sources */,
+				C2F2A326C25088ADE814519E /* AudioGalleryView.swift in Sources */,
+				C2F2CEEC532E6759DB701FE2 /* AudioGalleryViewModel.swift in Sources */,
+				C2F2C51EEDAEFA271ED56726 /* MylifeAudioPlayer.swift in Sources */,
+				C2E2EB59EF9976A8DD489504 /* GalleryViewerOverlay.swift in Sources */,
+				C2E296151E627D2BB840385F /* FrameGalleryView.swift in Sources */,
+				C2E2B69053F31328F5380F48 /* FrameGalleryViewModel.swift in Sources */,
+				C2D26BD6634224CE9899C6F7 /* EventListView.swift in Sources */,
+				C2D2931404FEF7EBF5863F9E /* HotSlotView.swift in Sources */,
+				C2D248AFB85C31D2680254DF /* FrameViewerOverlay.swift in Sources */,
+				C2D2C4FB3879E20A51CE9B96 /* TimelineBubbleView.swift in Sources */,
+				C2D248E0AB60DAE14F3DFE9E /* FrameRowView.swift in Sources */,
+				C2D2940619EDC01DD829608E /* HotSlotScreen.swift in Sources */,
+				C2D27BBC5E0D304583AC7D4E /* HotSlotViewModel.swift in Sources */,
+				C2D25A6C43C6C2B6DD4DE3BF /* HotSlotRows.swift in Sources */,
+				C2C27A281AF0D2CF6C5B8DD4 /* UITestMylifeStore.swift in Sources */,
+				C2C27095CA8FEF77C0DB4F2E /* SearchResultsView.swift in Sources */,
+				C2C26B61E12015AD4B38FB18 /* TimelineHomeView.swift in Sources */,
+				C2C279262EF713BDAAF7AC20 /* TimelineHomeViewModel.swift in Sources */,
+				C2C2A394BEF3C4757DBFB01D /* PeriodCard.swift in Sources */,
+				C2C21C14E94E81230BFF9F51 /* ScopePill.swift in Sources */,
+				C2C2CE9F695515ED5B8F6DF3 /* AudioEntryButton.swift in Sources */,
+				C2C29167DBAEEE2A66C16310 /* TopicChipRow.swift in Sources */,
+				C2C2BA0E92ECDAB1212AF149 /* HotSlotChips.swift in Sources */,
+				C2C280306C25AB458C7A19D1 /* MylifeSearchBar.swift in Sources */,
+				C2C262BBC08EC66E107B483C /* GranularitySelector.swift in Sources */,
+				C2C22836B4D0F9CDF5FD12C8 /* MylifeFlowLayout.swift in Sources */,
+				C2C2B527A52716A76356DDD0 /* MylifeRemoteImage.swift in Sources */,
+				C2C2568F7E7B3DA240B9470C /* MylifeTheme.swift in Sources */,
+				C2C247BAED83F751E75CB2BC /* TimelineFlowView.swift in Sources */,
+				C2C222DD44CD98C7EBC05323 /* TimelineFlowModel.swift in Sources */,
+				C2C23DE3545705C1FB882EC3 /* TimelineRoute.swift in Sources */,
+				C2C2E83514BF25B60227D1F7 /* MylifeImageLoader.swift in Sources */,
+				C2A2A8408566F1B0B53291D6 /* MylifeAggregator.swift in Sources */,
+				C2A27488C64BBEDE9940D7E7 /* MylifeDateLabels.swift in Sources */,
+				C2A2D936BB2029C5D670956B /* MylifeStore.swift in Sources */,
+				C2A20F93D18BABDE70E3DBAC /* MylifeAPIClient.swift in Sources */,
+				C2A2D069D65331B2CDA4A5DD /* MylifeErrors.swift in Sources */,
+				C2A276334996D6343F26F2D1 /* MylifeModels.swift in Sources */,
+				C2A28610F59B417BA4024C05 /* MylifeDTOs.swift in Sources */,
+				D1000000000000000000B011 /* AvatarCropMath.swift in Sources */,
+				D1000000000000000000B010 /* ModeSelectionDialogs.swift in Sources */,
+				D1000000000000000000B009 /* AvatarCropView.swift in Sources */,
+				D1000000000000000000B008 /* CameraPhotoPicker.swift in Sources */,
+				D1000000000000000000B007 /* AvatarCustomizationSheet.swift in Sources */,
+				D1000000000000000000B006 /* AvatarView.swift in Sources */,
+				D1000000000000000000B003 /* AvatarCustomizationModel.swift in Sources */,
+				D1000000000000000000B002 /* AvatarStore.swift in Sources */,
+				D1000000000000000000B001 /* ConversationModeModel.swift in Sources */,
+				A10000000000000000000031 /* LivaChatApp.swift in Sources */,
+				A10000000000000000000033 /* AppContainer.swift in Sources */,
+				A10000000000000000000035 /* AppOrientation.swift in Sources */,
+				38E2832930D3ABF41EFEF752 /* PCMChunker.swift in Sources */,
+				F6ED7D179F2629953C61EE1F /* SilenceFlushGate.swift in Sources */,
+				8E5E04733AF865B4FF3756C9 /* MicLevelMeter.swift in Sources */,
+				A1B2C3D4E5F60718293A4B01 /* MicLevelModel.swift in Sources */,
+				210171402F54F1E69012CDE8 /* JitterBuffer.swift in Sources */,
+				3AFB3816B22DDE35CEC97280 /* AudioProtocols.swift in Sources */,
+				ED399A722B0A247306D17C99 /* AudioSessionController.swift in Sources */,
+				8A33B14BFF72EFA911C1209B /* AudioCaptureController.swift in Sources */,
+				57CA19903C65B35594954724 /* AudioPlaybackController.swift in Sources */,
+				44C960CE00CBB1CFFAA9A0AC /* HapticController.swift in Sources */,
+				B4A13D033CD2A718B054F472 /* InterruptCoordinator.swift in Sources */,
+				A70C1B7E5797D372F807E215 /* AudioSpikeView.swift in Sources */,
+				D0B3E747A39DCDADB3E937DC /* ConversationModels.swift in Sources */,
+				51B95AA85116C8364465CE5C /* ConversationProtocols.swift in Sources */,
+				4DE2A26C669DED57C2F7B90C /* ConversationViewModel.swift in Sources */,
+				D7FA289F9FCFCAE5F023E2D7 /* ConversationEventAdapter.swift in Sources */,
+				09F07D29B70396401AC3FF93 /* ConversationCoordinator.swift in Sources */,
+				3C3111CB1DFE5534222A0209 /* ConversationRuntime.swift in Sources */,
+				C545D38EA92FD5D3110B3D73 /* ConversationRuntimeFactory.swift in Sources */,
+				AE890C7F8AEB74E49EA7C819 /* ServerAddress.swift in Sources */,
+				8EF6665A6B583E7660B99697 /* CredentialStore.swift in Sources */,
+				1CECAB7D5978C588595DD5A8 /* SettingsStore.swift in Sources */,
+				B86122205C78B89CFA3797AB /* ServerProbe.swift in Sources */,
+				9935C42AB9F874C7D9B28340 /* SettingsViewModel.swift in Sources */,
+				D40000000000000000000011 /* LegalLinks.swift in Sources */,
+				D40000000000000000000012 /* LicensesView.swift in Sources */,
+				F784F9BBDDEE01FAB584E840 /* AppInfo.swift in Sources */,
+				396EB6B09F19F17E1F396E2B /* SystemSettingsOpener.swift in Sources */,
+				8343EFA57D0BE18272F73669 /* AppRootView.swift in Sources */,
+				DF6DE840758E49565F92960B /* AppRouter.swift in Sources */,
+				B546898DBBAFAF75CD359055 /* AppLaunchOptions.swift in Sources */,
+				0075742E0E3542F15A6E4878 /* AppTheme.swift in Sources */,
+				DCE76BEE0455D2F50F4FEDDA /* L10n.swift in Sources */,
+				D20000000000000000000002 /* AppLocale.swift in Sources */,
+				D20000000000000000000004 /* LocalizedNumber.swift in Sources */,
+				D20000000000000000000012 /* LocalizedList.swift in Sources */,
+				D20000000000000000000014 /* AppErrorMessage.swift in Sources */,
+				D20000000000000000000006 /* PosixFormat.swift in Sources */,
+				D20000000000000000000008 /* LocalizedDate.swift in Sources */,
+				73E21CFAE91D198948472D3B /* SplashView.swift in Sources */,
+				CFFD52467BB3B383A539A203 /* PermissionView.swift in Sources */,
+				E18B65BF91403E67ED7A5045 /* ConversationView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B07 /* MicVolumeGlyph.swift in Sources */,
+				86079261F887D89661A1864C /* SettingsView.swift in Sources */,
+				7E7A63CC6DC46EE9EC98A19A /* AppLog.swift in Sources */,
+				D66FE5811252988106AE0D5B /* ScrollFollowPolicy.swift in Sources */,
+				B20000000000000000000001 /* CameraProtocols.swift in Sources */,
+				B20000000000000000000002 /* CameraController.swift in Sources */,
+				C2000000000000000000B001 /* CameraOrientation.swift in Sources */,
+				C2000000000000000000B002 /* CameraDeviceOrientationMonitor.swift in Sources */,
+				B30000000000000000000001 /* GalleryPhotoSender.swift in Sources */,
+				B30000000000000000000002 /* PHPickerView.swift in Sources */,
+				B30000000000000000000003 /* CameraPreviewView.swift in Sources */,
+				B30000000000000000000004 /* GalleryPreviewView.swift in Sources */,
+				B30000000000000000000005 /* CameraModeView.swift in Sources */,
+				B30000000000000000000006 /* AIImageView.swift in Sources */,
+				B60000000000000000000001 /* ImageViewerOverlay.swift in Sources */,
+				B60000000000000000000002 /* PhotoLibrarySaver.swift in Sources */,
+				B80000000000000000000001 /* WebLinkRouter.swift in Sources */,
+				B80000000000000000000002 /* MarkdownTheme.swift in Sources */,
+				B80000000000000000000003 /* MarkdownTableFallback.swift in Sources */,
+				B80000000000000000000004 /* MarkdownMessageView.swift in Sources */,
+				B80000000000000000000005 /* AgentJobCollapse.swift in Sources */,
+				B80000000000000000000006 /* AgentJobResultOverlay.swift in Sources */,
+				B90000000000000000000001 /* LivachatURLConverter.swift in Sources */,
+				B90000000000000000000002 /* WebPageView.swift in Sources */,
+				BB00000000000000000000001 /* MessageBubbleView.swift in Sources */,
+				BA00000000000000000000001 /* HistoryModels.swift in Sources */,
+				BA00000000000000000000002 /* HistoryDatabase.swift in Sources */,
+				BA00000000000000000000003 /* HistoryImageStore.swift in Sources */,
+				BA00000000000000000000004 /* HistoryService.swift in Sources */,
+				BC00000000000000000000001 /* HistoryDateFormatting.swift in Sources */,
+				BD00000000000000000000001 /* HistoryListViewModel.swift in Sources */,
+				BD00000000000000000000002 /* HistoryDetailViewModel.swift in Sources */,
+				BD00000000000000000000003 /* HistoryListView.swift in Sources */,
+				BD00000000000000000000004 /* HistoryDetailView.swift in Sources */,
+				BD00000000000000000000005 /* HistoryFlowView.swift in Sources */,
+				BD00000000000000000000006 /* HistoryComponents.swift in Sources */,
+				C1000000000000000000B001 /* AgentJobStatusModel.swift in Sources */,
+				C1000000000000000000B002 /* AgentJobFormatting.swift in Sources */,
+				C1000000000000000000B003 /* AgentJobCancelClient.swift in Sources */,
+				C1000000000000000000B005 /* AgentJobListPanel.swift in Sources */,
+				C1000000000000000000B004 /* AgentJobStatusBadge.swift in Sources */,
+				C1000000000000000000B006 /* AgentIcon.swift in Sources */,
+				C1000000000000000000B007 /* AgentJobResultWindow.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000017 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2B2C727AE6B8C5B75EB74E8 /* MylifeAudioPlayerTests.swift in Sources */,
+				C2B28C993ECEE04513E04442 /* FrameGalleryViewModelTests.swift in Sources */,
+				C2B2C118B0AD28F0A0096702 /* AudioGalleryMathTests.swift in Sources */,
+				C2B245173CB11B7136412033 /* HotSlotViewModelTests.swift in Sources */,
+				C2B21F9340B6D9DE47A3AC2D /* HotSlotRowsTests.swift in Sources */,
+				C2B201EE02D73CD4ED393CC9 /* TimelineHomeViewModelTests.swift in Sources */,
+				C2B2CEF40AC7A084AE92C339 /* MylifeStoreTests.swift in Sources */,
+				C2B205D7A577DF4DF8152EDA /* MylifeAPIClientTests.swift in Sources */,
+				C2B2E874722A4AC95CE644D0 /* MylifeAggregatorTests.swift in Sources */,
+				C2B260568AFFF0C611BAA988 /* MylifeDateLabelsTests.swift in Sources */,
+				D1000000000000000000B104 /* AvatarCropMathTests.swift in Sources */,
+				D1000000000000000000B103 /* AvatarCustomizationModelTests.swift in Sources */,
+				D1000000000000000000B102 /* AvatarStoreTests.swift in Sources */,
+				D1000000000000000000B101 /* ConversationModeModelTests.swift in Sources */,
+				A3E5765A8B3C2C030F348A3A /* PCMChunkerTests.swift in Sources */,
+				82398DBC90F4D3CD4E784DDD /* SilenceFlushGateTests.swift in Sources */,
+				40313370F61623143DD25EAB /* MicLevelMeterTests.swift in Sources */,
+				A1B2C3D4E5F60718293A4B03 /* MicLevelModelTests.swift in Sources */,
+				A1B2C3D4E5F60718293A4B05 /* AudioCaptureLevelTests.swift in Sources */,
+				946C26A2F06184274D8BA3E5 /* JitterBufferTests.swift in Sources */,
+				A2EED3AC3D42BD500D3B3497 /* InterruptCoordinatorTests.swift in Sources */,
+				649C48EF34D31036068F6829 /* ConversationCoordinatorTests.swift in Sources */,
+				602C177F991A2E4C9590DA31 /* ConversationEventAdapterTests.swift in Sources */,
+				447E082718FA93289C94BF4D /* ConversationViewModelTests.swift in Sources */,
+				5EBD6E42E49EF4BD89E5D1DB /* ConversationRuntimeIntegrationTests.swift in Sources */,
+				7734AC6CFD86EE232126888D /* ServerAddressTests.swift in Sources */,
+				8021AB22B346A27701B7E1E9 /* CredentialStoreTests.swift in Sources */,
+				FF9344BC659E2BCF23867ECE /* SettingsStoreTests.swift in Sources */,
+				605639D5506EBA89F676EFEF /* ServerProbeTests.swift in Sources */,
+				E03EB560C2F1B84262FE2C91 /* SettingsViewModelTests.swift in Sources */,
+				42DE5BA39D532D6B6B4A902E /* AppContainerTests.swift in Sources */,
+				A4ED473899726EFD4CB0ED70 /* AudioPlaybackControllerTests.swift in Sources */,
+				7FBC614B8CFC8B46CFF04E95 /* LogFileWriterTests.swift in Sources */,
+				E7DA0EFE999A78CD4A2C8C56 /* ScrollFollowPolicyTests.swift in Sources */,
+				C735C76612C5C8F92A098627 /* AudioCaptureRetryTests.swift in Sources */,
+				B40000000000000000000001 /* M2CameraGalleryTests.swift in Sources */,
+				C2000000000000000000B003 /* CameraOrientationTests.swift in Sources */,
+				B80000000000000000000007 /* M3MarkdownTests.swift in Sources */,
+				BA00000000000000000000005 /* HistoryStorageTests.swift in Sources */,
+				B90000000000000000000003 /* WebrootSupportTests.swift in Sources */,
+				C1000000000000000000B011 /* AgentJobStatusModelTests.swift in Sources */,
+				C1000000000000000000B012 /* AgentJobCancelClientTests.swift in Sources */,
+				D2000000000000000000000A /* LocalizationTestSupport.swift in Sources */,
+				D2000000000000000000000C /* AppLocaleTests.swift in Sources */,
+				D2000000000000000000000E /* L10nFormattingTests.swift in Sources */,
+				D20000000000000000000010 /* HistoryDateFormattingTests.swift in Sources */,
+				D20000000000000000000016 /* LocalizationRTLTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000065 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD8F275E3D34953C484DDA1A /* AudioSpikeUITests.swift in Sources */,
+				DCE32F9E1F643270F172D10C /* AppShellUITests.swift in Sources */,
+				B50000000000000000000001 /* M2DeviceE2ETests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A10000000000000000000051 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000010 /* LivaChatApp */;
+			targetProxy = A10000000000000000000050 /* PBXContainerItemProxy */;
+		};
+		A1000000000000000000006C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000010 /* LivaChatApp */;
+			targetProxy = A1000000000000000000006B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A10000000000000000000072 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A10000000000000000000070 /* en */,
+				A10000000000000000000071 /* zh-Hans */,
+				D30000000000000000000001 /* zh-Hant */,
+				D30000000000000000000002 /* ja */,
+				D30000000000000000000003 /* ko */,
+				D30000000000000000000004 /* ru */,
+				D30000000000000000000005 /* de */,
+				D30000000000000000000006 /* fr */,
+				D30000000000000000000007 /* it */,
+				D30000000000000000000008 /* es */,
+				D30000000000000000000009 /* pt */,
+				D3000000000000000000000B /* hi */,
+				D3000000000000000000000C /* id */,
+				D3000000000000000000000E /* th */,
+				D3000000000000000000000F /* vi */,
+				D3000000000000000000000D /* ar */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A1000000000000000000001D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.livachat.livachatapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A1000000000000000000001E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.livachat.livachatapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		A1000000000000000000001F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.livachat.livachatapp.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LivaChatApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LivaChatApp";
+			};
+			name = Debug;
+		};
+		A10000000000000000000020 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.livachat.livachatapp.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LivaChatApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LivaChatApp";
+			};
+			name = Release;
+		};
+		A10000000000000000000069 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.livachat.livachatapp.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = LivaChatApp;
+			};
+			name = Debug;
+		};
+		A1000000000000000000006A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.livachat.livachatapp.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = LivaChatApp;
+			};
+			name = Release;
+		};
+		A10000000000000000000021 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1000000000000000000001A /* Build configuration list for PBXNativeTarget "LivaChatApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000000000000000000001D /* Debug */,
+				A1000000000000000000001E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000000000000000000001B /* Build configuration list for PBXNativeTarget "LivaChatAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000000000000000000001F /* Debug */,
+				A10000000000000000000020 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000000000000000000001C /* Build configuration list for PBXProject "LivaChatApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000021 /* Debug */,
+				A10000000000000000000022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000068 /* Build configuration list for PBXNativeTarget "LivaChatAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000069 /* Debug */,
+				A1000000000000000000006A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A10000000000000000000040 /* XCLocalSwiftPackageReference "LivaChatSDK" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../LivaChatSDK;
+		};
+		B70000000000000000000010 /* XCLocalSwiftPackageReference "MarkdownUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../deps/MarkdownUI;
+		};
+		C2A300000000000000000003 /* XCLocalSwiftPackageReference "NetworkImage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../deps/NetworkImage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000041 /* LivaChatSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LivaChatSDK;
+		};
+		B70000000000000000000011 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B70000000000000000000010 /* XCLocalSwiftPackageReference "MarkdownUI" */;
+			productName = MarkdownUI;
+		};
+		C2A300000000000000000002 /* NetworkImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C2A300000000000000000003 /* XCLocalSwiftPackageReference "NetworkImage" */;
+			productName = NetworkImage;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A10000000000000000000001 /* Project object */;
+}

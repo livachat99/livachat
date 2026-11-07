@@ -1,0 +1,1 @@
+{"type":"session.ready","seq":1,"timestamp":1700000000000,"payload":{"session_id":"abc123","session_restored":false,"server_time_ms":1700000000000,"keepalive_interval_s":15,"server_version":"0.1.0"}}

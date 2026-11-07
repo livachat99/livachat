@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/ai-audio.json",
+  "title": "ai_audio — TTS Audio Chunk",
+  "description": "Server sends Opus-encoded TTS audio chunks to the client. Client should maintain a playback queue: decode each chunk to PCM, enqueue, and play sequentially. Linked to ai_text via message_id.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "ai_audio"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "data",
+        "codec",
+        "message_id",
+        "index",
+        "duration_ms",
+        "is_final"
+      ],
+      "properties": {
+        "data": {
+          "$ref": "../common.json#/$defs/Base64String",
+          "description": "Base64-encoded Opus audio chunk."
+        },
+        "codec": {
+          "$ref": "../common.json#/$defs/AudioCodec"
+        },
+        "message_id": {
+          "$ref": "../common.json#/$defs/MessageId",
+          "description": "Links this audio to the corresponding ai_text reply."
+        },
+        "index": {
+          "$ref": "../common.json#/$defs/UInt32",
+          "description": "Zero-based audio chunk index within this message."
+        },
+        "duration_ms": {
+          "$ref": "../common.json#/$defs/AudioDurationMs",
+          "description": "Playback duration in milliseconds. Used for client playback scheduling."
+        },
+        "is_final": {
+          "type": "boolean",
+          "description": "true = last audio chunk for this message_id. Client marks end of playback queue."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "ai_audio",
+      "seq": 40,
+      "timestamp": 1712345684200,
+      "payload": {
+        "data": "Ly9VUXhBQUFBQUtBQVlBQUFBQ0FBb0FCZ0FBQUFJQUFBQURBQUE9PQ==",
+        "codec": "opus",
+        "message_id": "msg_xyz789abcdef",
+        "index": 0,
+        "duration_ms": 40,
+        "is_final": false
+      }
+    }
+  ]
+}

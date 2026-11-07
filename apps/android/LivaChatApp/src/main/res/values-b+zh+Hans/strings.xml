@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- 通用（跨屏复用；中文原文逐字保留） -->
+    <string name="common_retry">重试</string>
+    <string name="common_close">关闭</string>
+    <string name="common_back">返回</string>
+    <string name="common_view_full_result">查看完整结果</string>
+
+    <!-- 对话页：底部工具栏 -->
+    <string name="conv_toolbar_mic_on">麦克风 已开启</string>
+    <string name="conv_toolbar_mic_off">麦克风 已关闭</string>
+    <string name="conv_toolbar_speaker_on">扬声器 已开启</string>
+    <string name="conv_toolbar_speaker_off">扬声器 已关闭</string>
+    <string name="conv_toolbar_camera_on">摄像头 已开启</string>
+    <string name="conv_toolbar_camera_off">摄像头 已关闭</string>
+    <string name="conv_select_mic_device">选择麦克风设备</string>
+    <string name="conv_select_speaker_device">选择扬声器设备</string>
+
+    <!-- 对话页：状态指示 -->
+    <string name="conv_status_idle">随时可以说</string>
+    <string name="conv_status_connecting">正在连接...</string>
+    <string name="conv_status_listening">我在听...</string>
+    <string name="conv_status_thinking">让我想想...</string>
+    <string name="conv_status_disconnected">连接断开</string>
+    <string name="ai_generated_notice">对话内容有AI生成，请仔细鉴别.</string>
+
+    <!-- 对话页：欢迎引导（chip 文案会作为用户消息原样上行，WYSIWYG） -->
+    <string name="conv_welcome_title">欢迎来到 LivaChat</string>
+    <string name="conv_welcome_subtitle">我是你的 AI 伙伴，随时可以和我聊天</string>
+    <string name="conv_welcome_chip_voice">语音聊天</string>
+    <string name="conv_welcome_chip_video">视频聊天</string>
+    <string name="conv_welcome_chip_speaking">口语练习</string>
+    <string name="conv_welcome_chip_translate">同声翻译</string>
+    <string name="conv_welcome_chip_daily">日常记录</string>
+
+    <!-- 权限说明（弹窗） -->
+    <string name="perm_dialog_title">开始之前，需要你的许可</string>
+    <string name="perm_mic_title">麦克风权限</string>
+    <string name="perm_mic_desc">让我听见你的声音，更好地陪伴和倾听</string>
+    <string name="perm_camera_title">摄像头权限 (可选)</string>
+    <string name="perm_camera_desc">让我看见你的周围环境，需要时再打开也可以</string>
+    <string name="perm_start_chat">开始聊天</string>
+    <string name="perm_screen_camera_title">摄像头权限（可选）</string>
+    <string name="perm_mic_required_hint">请先授权麦克风权限才能开始聊天</string>
+    <string name="perm_go_to_settings">前往系统设置</string>
+    <string name="perm_grant_action">授权</string>
+    <string name="perm_granted">已授权</string>
+
+    <!-- 摄像头切换 -->
+    <string name="conv_switch_to_back_camera">切换到后置摄像头</string>
+    <string name="conv_switch_to_front_camera">切换到前置摄像头</string>
+
+    <!-- 头像 / 图片 -->
+    <string name="avatar_custom_image_desc">自定义头像</string>
+    <string name="chat_ai_image">AI 图片</string>
+
+    <!-- Agent 任务 -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="other">Agent任务 (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">开始于 %1$s</string>
+    <string name="conv_agent_job_cancel_action">取消 Agent任务</string>
+    <string name="conv_agent_job_cancel_question">取消 Agent任务？</string>
+    <string name="conv_agent_job_cancel_yes">是</string>
+    <string name="conv_agent_job_cancel_no">否</string>
+    <string name="conv_agent_job_cancel_in_progress">正在取消…</string>
+    <string name="conv_agent_job_cancel_failed">取消失败，请重试</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="other">Agent任务，%1$d 个运行中</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="other">查看全文 · 还有 %1$s 字</item>
+    </plurals>
+
+    <!-- WebView 页 -->
+    <string name="webview_unsupported_link">链接格式不受支持</string>
+    <string name="webview_open_in_browser">在浏览器中打开</string>
+    <string name="webview_load_failed">页面加载失败，请检查网络后重试</string>
+    <string name="webview_cannot_open">无法打开该页面</string>
+
+    <!-- 启动页 -->
+    <string name="splash_tagline">你的AI伙伴</string>
+    <string name="splash_waking">正在唤醒你的伙伴...</string>
+
+    <!-- 通用（Wave3 增补） -->
+    <string name="common_cancel">取消</string>
+    <string name="common_stop">停止</string>
+    <string name="common_save_image">保存图片</string>
+    <string name="common_saved_to_gallery">已保存到本地相册</string>
+    <string name="common_save_failed">保存失败</string>
+    <string name="common_save_failed_storage">保存失败：需要存储权限</string>
+    <string name="common_go_to_settings">去设置</string>
+    <string name="common_time_machine">时光机</string>
+
+    <!-- 对话页（Wave3） -->
+    <string name="conv_menu_stop_recording">停止录制</string>
+    <string name="conv_menu_start_recording">开始录制</string>
+    <string name="conv_menu_more">更多选项</string>
+    <string name="conv_menu_chats">对话</string>
+    <string name="conv_menu_settings">设置</string>
+    <string name="conv_screen_capture_rationale_title">启动屏幕交互</string>
+    <string name="conv_screen_capture_rationale_text">和AI进行屏幕内容交互，比如文章内容提问、视频吐槽等。\n\n授权后屏幕边缘会出现 AI 浮窗，点按浮窗即抓取当前屏幕的一张画面发给AI</string>
+    <string name="conv_continue">继续</string>
+    <string name="conv_screen_capture_stop_title">停止屏幕交互</string>
+    <string name="conv_screen_capture_stop_message">屏幕AI交互已经启动，需要停下来吗？</string>
+    <string name="conv_conn_timeout">连接超时</string>
+    <string name="conv_permission_denied_fmt">权限不足: %1$s</string>
+    <string name="conv_omni">全模态</string>
+    <string name="conv_omni_intro">使用全模态AI模型，可以降低交互延迟</string>
+    <string name="conv_enable">开启</string>
+    <string name="conv_take_photo">拍照</string>
+    <string name="conv_camera_unavailable">无法打开相机</string>
+    <string name="conv_camera_permission_guide">使用相机功能需要相机权限。请检查 LivaChat 的相机权限设置后重试。</string>
+    <string name="conv_select_peer_language">选择对方语言</string>
+    <string name="conv_select_speaker_language">选择演讲者的语言</string>
+    <string name="conv_server_config_required">需要先配置服务器</string>
+    <string name="conv_server_config_hint">请先在设置中填写服务器地址与认证密钥。</string>
+    <string name="conv_mode_translate">翻译模式</string>
+    <string name="conv_mode_transcribe">转录模式</string>
+    <string name="conv_mode_omni">全模态模式</string>
+    <string name="conv_language_auto">自动识别</string>
+    <string name="conv_picker_confirm">确定</string>
+    <string name="conv_transcribe_source_title">选择现场录音模式</string>
+    <string name="conv_transcribe_source_original">原声</string>
+    <string name="conv_transcribe_source_original_desc">保留现场原始声音</string>
+    <string name="conv_transcribe_source_voice">语音</string>
+    <string name="conv_transcribe_source_voice_desc">针对语音增强</string>
+    <string name="conv_mode_dialogue">对话模式</string>
+    <string name="conv_mode_dialogue_desc">实时翻译对话内容</string>
+    <string name="conv_mode_lecture">听众模式</string>
+    <string name="conv_mode_lecture_desc">实时翻译演讲内容</string>
+    <string name="conv_mode_transcribe_desc">实时转录现场声音</string>
+    <string name="conv_omni_desc">使用全模态模型</string>
+    <string name="conv_avatar_picker_title">头像选择</string>
+    <string name="conv_avatar_from_gallery">从相册选择</string>
+    <string name="conv_avatar_reset">恢复默认头像</string>
+    <string name="conv_avatar_scale_normal">正常</string>
+    <string name="conv_avatar_scale_shrink">缩小</string>
+    <string name="conv_avatar_drag_hint">拖动图片调整位置</string>
+    <string name="conv_confirm">确认</string>
+    <string name="conv_gallery_send">发送</string>
+    <string name="conv_image_action_text">描述图片内容</string>
+    <string name="conv_gallery_preview_image">图片预览</string>
+    <string name="conv_gallery_preview_failed">无法加载图片</string>
+    <string name="conv_system_default">系统默认</string>
+    <string name="conv_overlay_permission_required">需要「显示在其他应用上层」权限才能使用浮窗抓屏</string>
+    <string name="conv_avatar_save_failed">保存头像失败: %1$s</string>
+    <string name="conv_camera_start_failed">相机启动失败，请检查相机权限</string>
+    <string name="conv_screen_capture_unsupported">当前模式下不支持屏幕交互</string>
+    <string name="conv_msg_suffix_transcript">(转录)</string>
+    <string name="conv_msg_suffix_original">(原文)</string>
+    <string name="conv_msg_suffix_translation">(译文)</string>
+
+    <!-- 通用（Wave4 增补） -->
+    <string name="common_view">查看</string>
+
+    <!-- 设置页（Wave4） -->
+    <string name="settings_title">设置</string>
+    <string name="settings_section_service">服务</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_section_video">视频</string>
+    <string name="settings_default_front_camera">默认前置摄像头</string>
+    <string name="settings_default_front_camera_desc">开启视频时默认使用前置摄像头</string>
+    <string name="settings_auto_camera_on_join">进入对话时自动开启摄像头</string>
+    <string name="settings_auto_camera_on_join_desc">每次开始对话时自动启用视频</string>
+    <string name="settings_section_general">通用</string>
+    <string name="settings_haptic">触觉反馈</string>
+    <string name="settings_haptic_desc">状态变化时产生轻微震动</string>
+    <string name="settings_ai_proactive">允许 AI 主动搭话</string>
+    <string name="settings_ai_proactive_desc">AI 可以根据声音或画面主动关心你</string>
+    <string name="settings_section_about">关于</string>
+    <string name="settings_privacy_policy">隐私政策</string>
+    <string name="settings_eula">用户协议</string>
+    <string name="settings_support">支持</string>
+    <string name="settings_open_source_licenses">开源许可证</string>
+    <string name="licenses_title">开源许可证</string>
+    <string name="licenses_unavailable">许可证信息不可用。</string>
+    <string name="settings_server_updated">服务器配置已更新</string>
+    <string name="settings_restart_to_apply">重新打开 App 后生效。</string>
+    <string name="settings_exit">退出</string>
+    <string name="settings_save_failed_message">请填写正确的服务器地址与认证密钥。</string>
+    <string name="settings_server_label">服务器</string>
+    <string name="settings_server_placeholder">ip:port 或 域名:port</string>
+    <string name="settings_auth_token">认证密钥</string>
+    <string name="settings_auth_token_placeholder">查看 server 配置文件获取</string>
+    <string name="settings_tls_allow_self_signed">允许自签名证书</string>
+    <string name="settings_tls_allow_self_signed_desc">仅用于可信的本地服务器，会关闭证书校验。</string>
+    <string name="settings_hide_token">隐藏密钥</string>
+    <string name="settings_show_token">显示密钥</string>
+    <string name="settings_check_service">检测服务</string>
+    <string name="settings_check_service_desc">连接服务器并校验认证密钥</string>
+    <string name="settings_check_action">检测</string>
+    <string name="settings_status_available">可用</string>
+    <string name="settings_status_auth_failed">认证失败</string>
+    <string name="settings_status_unavailable">不可用</string>
+
+    <!-- 通用（Wave5 增补） -->
+    <string name="common_delete">删除</string>
+
+    <!-- 历史页（Wave5） -->
+    <string name="history_title">对话历史</string>
+    <string name="history_clear">清空</string>
+    <string name="history_search_placeholder">搜索对话...</string>
+    <string name="history_empty_title">还没有对话记录</string>
+    <string name="history_empty_subtitle">开始你的第一次对话吧</string>
+    <string name="history_delete_title">删除对话</string>
+    <string name="history_delete_message">确定要删除这条对话记录吗？</string>
+    <string name="history_clear_all_title">清空所有会话</string>
+    <string name="history_clear_all_message">确定要删除所有对话记录吗？</string>
+    <string name="history_untitled">未命名对话</string>
+    <string name="history_detail_title">对话详情</string>
+    <string name="history_detail_delete_message">确定要删除整个对话吗？</string>
+    <plurals name="history_item_meta">
+        <item quantity="other">%1$s，%2$s，%3$d条消息</item>
+    </plurals>
+
+    <!-- 通用（Wave6 增补） -->
+    <string name="common_clear">清除</string>
+    <string name="common_play">播放</string>
+    <string name="common_pause">暂停</string>
+
+    <!-- MyLife（Wave6） -->
+    <string name="mylife_loading">加载中…</string>
+    <string name="mylife_analyzing">分析中…</string>
+    <string name="mylife_analysis_pending">分析完成后会自动出现</string>
+    <string name="mylife_load_failed">加载失败</string>
+    <string name="mylife_search_failed">搜索失败</string>
+    <string name="mylife_agent_task">Agent任务</string>
+    <string name="mylife_refresh">刷新</string>
+    <string name="mylife_analyzing_content">内容分析中…</string>
+    <string name="mylife_hotslot_empty">该时段没有可展示的内容</string>
+    <string name="mylife_max_selection">最多选择 50 张</string>
+    <string name="mylife_delete_timeout">删除超时，请稍后重试</string>
+    <string name="mylife_delete_failed">删除失败</string>
+    <string name="mylife_no_records_in_scope">%1$s没有记录</string>
+    <string name="mylife_no_records_yet">还没有记录，开始一次对话吧</string>
+    <string name="mylife_load_failed_retry">加载失败，点击重试</string>
+    <string name="mylife_loading_earlier">加载更早的记录…</string>
+    <string name="mylife_load_earlier">加载更早</string>
+    <string name="mylife_reached_start">已到最早</string>
+    <string name="mylife_search_min_chars">至少输入 2 个字</string>
+    <string name="mylife_searching">搜索中…</string>
+    <string name="mylife_search_no_results">没有找到相关结果</string>
+    <string name="mylife_search_placeholder">搜索…</string>
+    <string name="mylife_edit">编辑</string>
+    <string name="mylife_edit_exit">退出</string>
+    <string name="mylife_gallery_empty_title">这段时间还没有画面</string>
+    <string name="mylife_deleting">删除中…</string>
+    <string name="mylife_delete_photos">删除照片</string>
+    <string name="mylife_select_photo">选择照片</string>
+    <string name="mylife_audio_empty_title">这一天没有语音</string>
+    <string name="mylife_audio_time_desc">查看 %1$s 前后 10 分钟的事件</string>
+    <string name="mylife_overview_month">%1$d年 · %2$s</string>
+    <string name="mylife_scope_filter">只看 %1$s ✕</string>
+    <string name="mylife_granularity_day">日</string>
+    <string name="mylife_granularity_week">周</string>
+    <string name="mylife_granularity_month">月</string>
+    <string name="mylife_granularity_year">年</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="other">语音记录，%1$d 段</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="other">%1$d 张</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="other">分析中… · %1$d 张</item>
+    </plurals>
+    <string name="mylife_delete_count">删除 (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="other">确定删除选中的 %1$d 张照片？</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="other">%1$d 段</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d 条</string>
+    <plurals name="mylife_search_total">
+        <item quantity="other">共 %1$d 条结果</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="other">已删除 %1$d 张</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">%1$d 张已删除，%2$d 张失败</string>
+    <string name="mylife_week_label">%1$d周</string>
+
+    <!-- 通知（Wave7） -->
+    <string name="notif_mic_channel">麦克风</string>
+    <string name="notif_mic_title">正在使用麦克风</string>
+    <string name="notif_mic_text">语音将发送给 AI 用于对话</string>
+    <string name="notif_screen_channel">屏幕交互</string>
+    <string name="notif_screen_title">屏幕抓取已就绪</string>
+    <string name="notif_screen_text">点按屏幕边缘的浮窗即可抓取当前画面发送给 AI</string>
+
+    <!-- 屏幕抓取气泡与错误（Wave7） -->
+    <string name="cap_bubble_sent">屏幕截图已发送</string>
+    <string name="cap_bubble_foreground">切到其他应用后点击</string>
+    <string name="cap_bubble_locked">解锁后使用</string>
+    <string name="cap_bubble_failed">抓取失败，请重试</string>
+    <string name="capture_start_failed">屏幕交互启动失败: %1$s</string>
+    <string name="capture_overlay_failed">浮窗启动失败，屏幕抓取不可用</string>
+    <string name="capture_stopped">屏幕交互异常停止</string>
+
+    <!-- 音频播放（Wave7） -->
+    <string name="player_play_failed">播放失败</string>
+
+    <!-- 设备标签（Wave7；中文原文逐字保留） -->
+    <string name="device_wired_headset">有线耳机</string>
+    <string name="device_bt_sco">蓝牙耳机</string>
+    <string name="device_ble_headset">蓝牙 LE 耳机</string>
+    <string name="device_usb_device">USB 音频设备</string>
+    <string name="device_usb_headset">USB 耳机</string>
+    <string name="device_speaker">扬声器</string>
+    <string name="device_earpiece">听筒</string>
+    <string name="device_wired_headphones">有线耳机（无麦）</string>
+    <string name="device_bt_a2dp">蓝牙音乐</string>
+    <string name="device_ble_speaker">蓝牙 LE 扬声器</string>
+    <string name="device_hearing_aid">助听器</string>
+    <string name="device_output_fallback">音频输出设备</string>
+    <string name="device_builtin_mic">内置麦克风</string>
+    <string name="device_input_fallback">音频输入设备</string>
+    <string name="device_tag_bt_voice">蓝牙语音</string>
+    <string name="device_tag_bt_music">蓝牙音乐</string>
+    <string name="device_label_join">%1$s（%2$s）</string>
+
+    <!-- MyLife API 协议异常文案（Wave8） -->
+    <string name="mylife_api_empty_response">空响应</string>
+    <string name="mylife_api_json_parse_failed">JSON 解析失败: %1$s</string>
+</resources>

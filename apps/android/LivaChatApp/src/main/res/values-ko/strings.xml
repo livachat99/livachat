@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- 공통 (화면 간 재사용; 해요체, docs/android_multilingual.md §10.3) -->
+    <string name="common_retry">다시 시도</string>
+    <string name="common_close">닫기</string>
+    <string name="common_back">뒤로</string>
+    <string name="common_view_full_result">전체 결과 보기</string>
+
+    <!-- 대화 페이지: 하단 툴바 (caption은 「X 켜짐/꺼짐」 공백 분사 유지) -->
+    <string name="conv_toolbar_mic_on">마이크 켜짐</string>
+    <string name="conv_toolbar_mic_off">마이크 꺼짐</string>
+    <string name="conv_toolbar_speaker_on">스피커 켜짐</string>
+    <string name="conv_toolbar_speaker_off">스피커 꺼짐</string>
+    <string name="conv_toolbar_camera_on">카메라 켜짐</string>
+    <string name="conv_toolbar_camera_off">카메라 꺼짐</string>
+    <string name="conv_select_mic_device">마이크 기기 선택</string>
+    <string name="conv_select_speaker_device">스피커 기기 선택</string>
+
+    <!-- 대화 페이지: 상태 표시 -->
+    <string name="conv_status_idle">언제든 말해 보세요</string>
+    <string name="conv_status_connecting">연결 중...</string>
+    <string name="conv_status_listening">듣고 있어요...</string>
+    <string name="conv_status_thinking">잠시 생각해 볼게요...</string>
+    <string name="conv_status_disconnected">연결 끊김</string>
+    <string name="ai_generated_notice">대화 내용은 AI가 생성합니다. 신중하게 확인하세요.</string>
+
+    <!-- 대화 페이지: 웰컴 가이드 (chip 문구는 그대로 사용자 메시지로 전송, WYSIWYG) -->
+    <string name="conv_welcome_title">LivaChat에 어서 오세요</string>
+    <string name="conv_welcome_subtitle">저는 여러분의 AI 동반자예요. 언제든 저와 이야기해요</string>
+    <string name="conv_welcome_chip_voice">음성 대화</string>
+    <string name="conv_welcome_chip_video">영상 통화</string>
+    <string name="conv_welcome_chip_speaking">회화 연습</string>
+    <string name="conv_welcome_chip_translate">실시간 번역</string>
+    <string name="conv_welcome_chip_daily">일상 기록</string>
+
+    <!-- 권한 설명 (다이얼로그) -->
+    <string name="perm_dialog_title">시작하기 전에 권한이 필요해요</string>
+    <string name="perm_mic_title">마이크 권한</string>
+    <string name="perm_mic_desc">목소리를 듣고 함께 곁에 있기 위해 필요해요</string>
+    <string name="perm_camera_title">카메라 권한 (선택)</string>
+    <string name="perm_camera_desc">주변 환경을 볼 수 있어요. 나중에 필요할 때 켜도 돼요</string>
+    <string name="perm_start_chat">대화 시작하기</string>
+    <string name="perm_screen_camera_title">카메라 권한 (선택)</string>
+    <string name="perm_mic_required_hint">대화를 시작하려면 마이크 권한이 필요해요</string>
+    <string name="perm_go_to_settings">시스템 설정으로 이동</string>
+    <string name="perm_grant_action">허용</string>
+    <string name="perm_granted">허용됨</string>
+
+    <!-- 카메라 전환 -->
+    <string name="conv_switch_to_back_camera">후면 카메라로 전환</string>
+    <string name="conv_switch_to_front_camera">전면 카메라로 전환</string>
+
+    <!-- 아바타 / 이미지 -->
+    <string name="avatar_custom_image_desc">사용자 지정 아바타</string>
+    <string name="chat_ai_image">AI 이미지</string>
+
+    <!-- Agent 작업 -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="other">Agent 작업 (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">시작: %1$s</string>
+    <string name="conv_agent_job_cancel_action">Agent 작업 취소</string>
+    <string name="conv_agent_job_cancel_question">Agent 작업을 취소할까요?</string>
+    <string name="conv_agent_job_cancel_yes">예</string>
+    <string name="conv_agent_job_cancel_no">아니요</string>
+    <string name="conv_agent_job_cancel_in_progress">취소 중…</string>
+    <string name="conv_agent_job_cancel_failed">취소하지 못했습니다. 다시 시도하세요</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="other">Agent 작업, %1$d개 실행 중</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="other">전체 텍스트 보기 · %1$s자 남음</item>
+    </plurals>
+
+    <!-- WebView 페이지 -->
+    <string name="webview_unsupported_link">지원되지 않는 링크 형식</string>
+    <string name="webview_open_in_browser">브라우저에서 열기</string>
+    <string name="webview_load_failed">페이지를 불러오지 못했어요. 네트워크를 확인하고 다시 시도해 주세요</string>
+    <string name="webview_cannot_open">이 페이지를 열 수 없어요</string>
+
+    <!-- 시작 페이지 -->
+    <string name="splash_tagline">나만의 AI 동반자</string>
+    <string name="splash_waking">동반자를 깨우는 중...</string>
+
+    <!-- 공통 (Wave3 추가) -->
+    <string name="common_cancel">취소</string>
+    <string name="common_stop">중지</string>
+    <string name="common_save_image">이미지 저장</string>
+    <string name="common_saved_to_gallery">갤러리에 저장했어요</string>
+    <string name="common_save_failed">저장 실패</string>
+    <string name="common_save_failed_storage">저장 실패: 저장소 권한이 필요해요</string>
+    <string name="common_go_to_settings">설정으로 이동</string>
+    <string name="common_time_machine">타임머신</string>
+
+    <!-- 대화 페이지 (Wave3) -->
+    <string name="conv_menu_stop_recording">녹화 중지</string>
+    <string name="conv_menu_start_recording">녹화 시작</string>
+    <string name="conv_menu_more">더보기</string>
+    <string name="conv_menu_chats">대화</string>
+    <string name="conv_menu_settings">설정</string>
+    <string name="conv_screen_capture_rationale_title">화면 인터랙션 시작</string>
+    <string name="conv_screen_capture_rationale_text">화면 속 콘텐츠로 AI와 인터랙션할 수 있어요. 글 내용에 대해 질문하고 영상에 반응하는 등 다양하게 활용해 보세요.\n\n권한을 허용하면 화면 가장자리에 AI 플로팅 버블이 나타나요. 버블을 탭하면 현재 화면을 캡처해 AI에게 보내요</string>
+    <string name="conv_continue">계속</string>
+    <string name="conv_screen_capture_stop_title">화면 인터랙션 중지</string>
+    <string name="conv_screen_capture_stop_message">화면 AI 인터랙션이 실행 중이에요. 중지할까요?</string>
+    <string name="conv_conn_timeout">연결 시간 초과</string>
+    <string name="conv_permission_denied_fmt">권한 부족: %1$s</string>
+    <string name="conv_omni">옴니</string>
+    <string name="conv_omni_intro">옴니 AI 모델을 사용하면 인터랙션 지연을 줄일 수 있어요</string>
+    <string name="conv_enable">켜기</string>
+    <string name="conv_take_photo">사진 촬영</string>
+    <string name="conv_camera_unavailable">카메라를 열 수 없어요</string>
+    <string name="conv_camera_permission_guide">카메라 기능을 사용하려면 카메라 권한이 필요해요. 시스템 설정에서 LivaChat의 카메라 권한을 확인한 뒤 다시 시도해 주세요.</string>
+    <string name="conv_select_peer_language">상대방 언어</string>
+    <string name="conv_select_speaker_language">화자의 언어</string>
+    <string name="conv_server_config_required">먼저 서버를 설정해야 해요</string>
+    <string name="conv_server_config_hint">설정에서 서버 주소와 인증 키를 먼저 입력해 주세요.</string>
+    <string name="conv_mode_translate">번역 모드</string>
+    <string name="conv_mode_transcribe">전사 모드</string>
+    <string name="conv_mode_omni">옴니 모드</string>
+    <string name="conv_language_auto">자동 감지</string>
+    <string name="conv_picker_confirm">확인</string>
+    <string name="conv_transcribe_source_title">녹음 소스 선택</string>
+    <string name="conv_transcribe_source_original">원음</string>
+    <string name="conv_transcribe_source_original_desc">현장 원본 소리 유지</string>
+    <string name="conv_transcribe_source_voice">음성</string>
+    <string name="conv_transcribe_source_voice_desc">음성에 최적화</string>
+    <string name="conv_mode_dialogue">대화 모드</string>
+    <string name="conv_mode_dialogue_desc">대화 내용 실시간 번역</string>
+    <string name="conv_mode_lecture">강연 모드</string>
+    <string name="conv_mode_lecture_desc">강연 내용 실시간 번역</string>
+    <string name="conv_mode_transcribe_desc">현장 음성 실시간 전사</string>
+    <string name="conv_omni_desc">옴니 모델 사용</string>
+    <string name="conv_avatar_picker_title">아바타</string>
+    <string name="conv_avatar_from_gallery">갤러리에서 선택</string>
+    <string name="conv_avatar_reset">기본 아바타로 복원</string>
+    <string name="conv_avatar_scale_normal">보통</string>
+    <string name="conv_avatar_scale_shrink">축소</string>
+    <string name="conv_avatar_drag_hint">드래그하여 위치 조정</string>
+    <string name="conv_confirm">확인</string>
+    <string name="conv_gallery_send">보내기</string>
+    <string name="conv_image_action_text">이미지 내용을 설명해 주세요</string>
+    <string name="conv_gallery_preview_image">사진 미리보기</string>
+    <string name="conv_gallery_preview_failed">사진을 불러올 수 없습니다</string>
+    <string name="conv_system_default">시스템 기본</string>
+    <string name="conv_overlay_permission_required">화면 캡처를 사용하려면 \"다른 앱 위에 표시\" 권한이 필요해요</string>
+    <string name="conv_avatar_save_failed">아바타 저장 실패: %1$s</string>
+    <string name="conv_camera_start_failed">카메라를 시작하지 못했어요. 카메라 권한을 확인해 주세요</string>
+    <string name="conv_screen_capture_unsupported">현재 모드에서는 화면 인터랙션을 지원하지 않아요</string>
+    <string name="conv_msg_suffix_transcript">(전사)</string>
+    <string name="conv_msg_suffix_original">(원문)</string>
+    <string name="conv_msg_suffix_translation">(번역)</string>
+
+    <!-- 공통 (Wave4 추가) -->
+    <string name="common_view">보기</string>
+
+    <!-- 설정 페이지 (Wave4) -->
+    <string name="settings_title">설정</string>
+    <string name="settings_section_service">서비스</string>
+    <string name="settings_save">저장</string>
+    <string name="settings_section_video">영상</string>
+    <string name="settings_default_front_camera">기본 전면 카메라</string>
+    <string name="settings_default_front_camera_desc">영상을 시작할 때 기본으로 전면 카메라를 사용해요</string>
+    <string name="settings_auto_camera_on_join">대화 시작 시 카메라 자동 켜기</string>
+    <string name="settings_auto_camera_on_join_desc">대화를 시작할 때마다 영상을 자동으로 켜요</string>
+    <string name="settings_section_general">일반</string>
+    <string name="settings_haptic">햅틱 피드백</string>
+    <string name="settings_haptic_desc">상태가 바뀔 때 가볍게 진동해요</string>
+    <string name="settings_ai_proactive">AI가 먼저 말 걸기 허용</string>
+    <string name="settings_ai_proactive_desc">AI가 소리나 화면 변화에 먼저 반응할 수 있습니다</string>
+    <string name="settings_section_about">정보</string>
+    <string name="settings_privacy_policy">개인정보 처리방침</string>
+    <string name="settings_eula">최종 사용자 라이선스 계약</string>
+    <string name="settings_support">지원</string>
+    <string name="settings_open_source_licenses">오픈 소스 라이선스</string>
+    <string name="licenses_title">오픈 소스 라이선스</string>
+    <string name="licenses_unavailable">라이선스 정보를 사용할 수 없습니다.</string>
+    <string name="settings_server_updated">서버 설정이 업데이트되었어요</string>
+    <string name="settings_restart_to_apply">앱을 다시 열면 적용돼요.</string>
+    <string name="settings_exit">종료</string>
+    <string name="settings_save_failed_message">올바른 서버 주소와 인증 키를 입력해 주세요.</string>
+    <string name="settings_server_label">서버</string>
+    <string name="settings_server_placeholder">ip:port 또는 도메인:port</string>
+    <string name="settings_auth_token">인증 키</string>
+    <string name="settings_auth_token_placeholder">server 설정 파일에서 확인</string>
+    <string name="settings_tls_allow_self_signed">자체 서명 인증서 허용</string>
+    <string name="settings_tls_allow_self_signed_desc">신뢰할 수 있는 로컬 서버에서만 사용하세요. 인증서 검증이 비활성화돼요.</string>
+    <string name="settings_hide_token">키 숨기기</string>
+    <string name="settings_show_token">키 표시</string>
+    <string name="settings_check_service">서비스 확인</string>
+    <string name="settings_check_service_desc">서버에 연결해 인증 키를 검증해요</string>
+    <string name="settings_check_action">확인</string>
+    <string name="settings_status_available">사용 가능</string>
+    <string name="settings_status_auth_failed">인증 실패</string>
+    <string name="settings_status_unavailable">사용 불가</string>
+
+    <!-- 공통 (Wave5 추가) -->
+    <string name="common_delete">삭제</string>
+
+    <!-- 기록 페이지 (Wave5) -->
+    <string name="history_title">대화 기록</string>
+    <string name="history_clear">지우기</string>
+    <string name="history_search_placeholder">대화 검색...</string>
+    <string name="history_empty_title">아직 대화 기록이 없어요</string>
+    <string name="history_empty_subtitle">첫 대화를 시작해 보세요</string>
+    <string name="history_delete_title">대화 삭제</string>
+    <string name="history_delete_message">이 대화를 삭제할까요?</string>
+    <string name="history_clear_all_title">모든 대화 지우기</string>
+    <string name="history_clear_all_message">모든 대화 기록을 삭제할까요?</string>
+    <string name="history_untitled">제목 없는 대화</string>
+    <string name="history_detail_title">대화 상세</string>
+    <string name="history_detail_delete_message">이 대화 전체를 삭제할까요?</string>
+    <plurals name="history_item_meta">
+        <item quantity="other">%1$s, %2$s, 메시지 %3$d개</item>
+    </plurals>
+
+    <!-- 공통 (Wave6 추가) -->
+    <string name="common_clear">지우기</string>
+    <string name="common_play">재생</string>
+    <string name="common_pause">일시정지</string>
+
+    <!-- MyLife (Wave6) -->
+    <string name="mylife_loading">불러오는 중…</string>
+    <string name="mylife_analyzing">분석 중…</string>
+    <string name="mylife_analysis_pending">분석이 완료되면 자동으로 나타나요</string>
+    <string name="mylife_load_failed">불러오기 실패</string>
+    <string name="mylife_search_failed">검색 실패</string>
+    <string name="mylife_agent_task">Agent 작업</string>
+    <string name="mylife_refresh">새로 고침</string>
+    <string name="mylife_analyzing_content">콘텐츠 분석 중…</string>
+    <string name="mylife_hotslot_empty">이 시간대에 표시할 콘텐츠가 없어요</string>
+    <string name="mylife_max_selection">최대 50장까지 선택할 수 있어요</string>
+    <string name="mylife_delete_timeout">삭제 시간 초과, 잠시 후 다시 시도해 주세요</string>
+    <string name="mylife_delete_failed">삭제 실패</string>
+    <string name="mylife_no_records_in_scope">%1$s에 기록이 없어요</string>
+    <string name="mylife_no_records_yet">아직 기록이 없어요. 대화를 시작해 보세요</string>
+    <string name="mylife_load_failed_retry">불러오기 실패, 탭해서 다시 시도</string>
+    <string name="mylife_loading_earlier">이전 기록 불러오는 중…</string>
+    <string name="mylife_load_earlier">이전 기록 불러오기</string>
+    <string name="mylife_reached_start">더 이상 이전 기록이 없습니다</string>
+    <string name="mylife_search_min_chars">최소 2자 이상 입력해 주세요</string>
+    <string name="mylife_searching">검색 중…</string>
+    <string name="mylife_search_no_results">검색 결과가 없어요</string>
+    <string name="mylife_search_placeholder">검색…</string>
+    <string name="mylife_edit">편집</string>
+    <string name="mylife_edit_exit">완료</string>
+    <string name="mylife_gallery_empty_title">이 기간에는 사진이 없어요</string>
+    <string name="mylife_deleting">삭제 중…</string>
+    <string name="mylife_delete_photos">사진 삭제</string>
+    <string name="mylife_select_photo">사진 선택</string>
+    <string name="mylife_audio_empty_title">이 날에는 음성이 없어요</string>
+    <string name="mylife_audio_time_desc">%1$s 전후 10분의 이벤트 보기</string>
+    <string name="mylife_overview_month">%1$d년 · %2$s</string>
+    <string name="mylife_scope_filter">%1$s만 보기 ✕</string>
+    <string name="mylife_granularity_day">일</string>
+    <string name="mylife_granularity_week">주</string>
+    <string name="mylife_granularity_month">월</string>
+    <string name="mylife_granularity_year">년</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="other">음성 기록, %1$d개</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="other">%1$d장</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="other">분석 중… · %1$d장</item>
+    </plurals>
+    <string name="mylife_delete_count">삭제 (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="other">선택한 사진 %1$d장을 삭제할까요?</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="other">%1$d개</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="other">총 %1$d개 결과</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="other">%1$d장 삭제했어요</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">%1$d장 삭제, %2$d장 실패</string>
+    <string name="mylife_week_label">%1$d주차</string>
+
+    <!-- 알림 (Wave7) -->
+    <string name="notif_mic_channel">마이크</string>
+    <string name="notif_mic_title">마이크 사용 중</string>
+    <string name="notif_mic_text">음성이 AI에게 전송되어 대화에 사용돼요</string>
+    <string name="notif_screen_channel">화면 인터랙션</string>
+    <string name="notif_screen_title">화면 캡처 준비 완료</string>
+    <string name="notif_screen_text">화면 가장자리의 버블을 탭하면 현재 화면을 캡처해 AI에게 보내요</string>
+
+    <!-- 화면 캡처 버블과 오류 (Wave7) -->
+    <string name="cap_bubble_sent">스크린샷 전송됨</string>
+    <string name="cap_bubble_foreground">다른 앱으로 전환한 뒤 탭하세요</string>
+    <string name="cap_bubble_locked">잠금 해제 후 사용하세요</string>
+    <string name="cap_bubble_failed">캡처 실패, 다시 시도해 주세요</string>
+    <string name="capture_start_failed">화면 인터랙션 시작 실패: %1$s</string>
+    <string name="capture_overlay_failed">플로팅 버블 시작 실패, 화면 캡처를 사용할 수 없어요</string>
+    <string name="capture_stopped">화면 인터랙션이 비정상적으로 중지되었어요</string>
+
+    <!-- 오디오 재생 (Wave7) -->
+    <string name="player_play_failed">재생 실패</string>
+
+    <!-- 기기 라벨 (Wave7) -->
+    <string name="device_wired_headset">유선 헤드셋</string>
+    <string name="device_bt_sco">블루투스 헤드셋</string>
+    <string name="device_ble_headset">블루투스 LE 헤드셋</string>
+    <string name="device_usb_device">USB 오디오 기기</string>
+    <string name="device_usb_headset">USB 헤드셋</string>
+    <string name="device_speaker">스피커</string>
+    <string name="device_earpiece">수화부</string>
+    <string name="device_wired_headphones">유선 헤드폰 (마이크 없음)</string>
+    <string name="device_bt_a2dp">블루투스 오디오</string>
+    <string name="device_ble_speaker">블루투스 LE 스피커</string>
+    <string name="device_hearing_aid">보청기</string>
+    <string name="device_output_fallback">오디오 출력 기기</string>
+    <string name="device_builtin_mic">내장 마이크</string>
+    <string name="device_input_fallback">오디오 입력 기기</string>
+    <string name="device_tag_bt_voice">블루투스 음성</string>
+    <string name="device_tag_bt_music">블루투스 오디오</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- MyLife API 프로토콜 예외 문구 (Wave8) -->
+    <string name="mylife_api_empty_response">빈 응답</string>
+    <string name="mylife_api_json_parse_failed">JSON 파싱 실패: %1$s</string>
+</resources>

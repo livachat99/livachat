@@ -1,0 +1,4 @@
+"NSMicrophoneUsageDescription" = "Para oír tu voz y acompañarte";
+"NSLocalNetworkUsageDescription" = "Conéctate a tu servidor LivaChat en la red local.";
+"NSCameraUsageDescription" = "Para ver lo que te rodea: puedes activarla más tarde.";
+"NSPhotoLibraryAddUsageDescription" = "Permite guardar las imágenes de IA en tu fototeca.";

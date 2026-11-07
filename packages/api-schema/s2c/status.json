@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/status.json",
+  "title": "status — Session State Change",
+  "description": "Server-driven notification of dialog state machine transition. Client must update local state and UI indicator accordingly. The server is the sole authority on state transitions; clients must NOT infer state independently.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "status"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["session_status", "reason"],
+      "properties": {
+        "session_status": {
+          "$ref": "../common.json#/$defs/SessionStatusCode"
+        },
+        "reason": {
+          "$ref": "../common.json#/$defs/StatusReasonCode"
+        },
+        "hint": {
+          "type": "string",
+          "description": "Optional advisory hint for the client (e.g., 'reduce_video_quality' on bandwidth degradation)."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "status",
+      "seq": 20,
+      "timestamp": 1712345683600,
+      "payload": {
+        "session_status": "thinking",
+        "reason": "asr_final"
+      }
+    }
+  ]
+}

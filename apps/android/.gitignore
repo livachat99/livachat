@@ -1,0 +1,11 @@
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+.cxx/
+.DS_Store
+
+# 发布签名（upload keystore/口令只存本地，禁止提交）
+keystore/
+keystore.properties

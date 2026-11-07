@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/message.json",
+  "title": "Message — Full Protocol Discriminated Union",
+  "description": "Validates any LivaChat WebSocket message (C2S or S2C). All 20 message types across both directions, discriminated by the 'type' field.",
+  "anyOf": [
+    { "$ref": "./c2s/session-start.json" },
+    { "$ref": "./c2s/session-end.json" },
+    { "$ref": "./c2s/session-change.json" },
+    { "$ref": "./c2s/audio.json" },
+    { "$ref": "./c2s/video.json" },
+    { "$ref": "./c2s/interrupt.json" },
+    { "$ref": "./c2s/ping.json" },
+    { "$ref": "./c2s/pong.json" },
+    { "$ref": "./s2c/session-ready.json" },
+    { "$ref": "./s2c/session-ended.json" },
+    { "$ref": "./s2c/session-changed.json" },
+    { "$ref": "./s2c/transcription.json" },
+    { "$ref": "./s2c/ai-text.json" },
+    { "$ref": "./s2c/job-status.json" },
+    { "$ref": "./s2c/ai-audio.json" },
+    { "$ref": "./s2c/ai-video-ack.json" },
+    { "$ref": "./s2c/status.json" },
+    { "$ref": "./s2c/error.json" },
+    { "$ref": "./s2c/ping.json" },
+    { "$ref": "./s2c/pong.json" }
+  ]
+}

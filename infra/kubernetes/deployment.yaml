@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livachat-server
+  labels:
+    app: livachat-server
+spec:
+  # 单副本约束（docs/chatserver_no_redis.md §4.4 D4/§9.1：去 Redis 后多实例能力放弃，
+  # 进程内事件总线/push/会话归属均仅本进程有效）——多副本部署会破坏该架构
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: livachat-server
+  template:
+    metadata:
+      labels:
+        app: livachat-server
+    spec:
+      terminationGracePeriodSeconds: 15
+      containers:
+        - name: server
+          image: livachat-server:latest
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9090
+              name: metrics
+          envFrom:
+            - secretRef:
+                name: livachat-secrets
+          env:
+            - name: LIVACHAT_INSTANCE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LIVA_CHAT_CONFIG
+              value: /app/configs/prod/server.yaml
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 2000m
+              memory: 1Gi
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs/prod
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: livachat-config

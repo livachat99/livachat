@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-abyss: #0a0e1a;
+  --color-void: #0d1220;
+  --color-panel: #141a2e;
+  --color-line: #232c47;
+  --color-star: #e8ecff;
+  --color-dust: #8b93b8;
+  --color-gold: #f5c86e;
+  --color-pink: #f28bb0;
+  --color-blue: #7db4f5;
+  --color-purple: #b58cf5;
+  --color-cyan: #6fd6d0;
+  --color-red: #f56e6e;
+  --color-green: #6ef5a8;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-abyss);
+  color: var(--color-star);
+  font-family:
+    -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 深空星点背景 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.25) 50%, transparent 50%),
+    radial-gradient(1px 1px at 70% 15%, rgba(255, 255, 255, 0.18) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 40% 70%, rgba(245, 200, 110, 0.2) 50%, transparent 50%),
+    radial-gradient(1px 1px at 85% 60%, rgba(255, 255, 255, 0.15) 50%, transparent 50%),
+    radial-gradient(1px 1px at 10% 85%, rgba(125, 180, 245, 0.2) 50%, transparent 50%);
+  opacity: 0.5;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* 安全区适配（移动端底部 tab） */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}

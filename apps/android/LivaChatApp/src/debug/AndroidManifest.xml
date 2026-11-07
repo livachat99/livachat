@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  仅 Debug：允许明文流量，供 E2E/仪器测试的本地 MockWebServer（ws://127.0.0.1）
+  与局域网调试使用。Release 保持 main manifest 的 usesCleartextTraffic="false"，
+  上线版本只允许 TLS。
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:usesCleartextTraffic="true"
+        tools:replace="android:usesCleartextTraffic" />
+</manifest>

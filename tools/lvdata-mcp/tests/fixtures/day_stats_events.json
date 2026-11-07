@@ -1,0 +1,574 @@
+[
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:000",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1786896000000,
+  "local": "2026-08-17 00:00:00.000",
+  "summary": "day start",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:001",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1786924800000,
+  "local": "2026-08-17 08:00:00.000",
+  "summary": "a1",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:002",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1786925100000,
+  "local": "2026-08-17 08:05:00.000",
+  "summary": "a2",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:transcribe:003",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "transcribe",
+  "ts_ms": 1786929000000,
+  "local": "2026-08-17 09:10:00.000",
+  "summary": "a3",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:agent_job:004",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "agent_job",
+  "ts_ms": 1786932000000,
+  "local": "2026-08-17 10:00:00.000",
+  "summary": "a4",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:translate:005",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "translate",
+  "ts_ms": 1786935600000,
+  "local": "2026-08-17 11:00:00.000",
+  "summary": "a5",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:006",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1786942800000,
+  "local": "2026-08-17 13:00:00.000",
+  "summary": "a6",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-8fc29ccdab01",
+   "window_id": "wA1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:window:007",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "window",
+  "ts_ms": 1786944600000,
+  "local": "2026-08-17 13:30:00.000",
+  "summary": "a7",
+  "payload": {
+   "window_id": "wA1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:audio:008",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "audio",
+  "ts_ms": 1786946400000,
+  "local": "2026-08-17 14:00:00.000",
+  "summary": "a8",
+  "payload": {
+   "segment_id": "segA1",
+   "summary": "环境声"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:009",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1786950000000,
+  "local": "2026-08-17 15:00:00.000",
+  "summary": "a9",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:010",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1786982399999,
+  "local": "2026-08-17 23:59:59.999",
+  "summary": "day end",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:011",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787014800000,
+  "local": "2026-08-18 09:00:00.000",
+  "summary": "b1",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:012",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787016600000,
+  "local": "2026-08-18 09:30:00.000",
+  "summary": "b2",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:013",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787018400000,
+  "local": "2026-08-18 10:00:00.000",
+  "summary": "b3",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:014",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787020200000,
+  "local": "2026-08-18 10:30:00.000",
+  "summary": "b4",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:015",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787025600000,
+  "local": "2026-08-18 12:00:00.000",
+  "summary": "b5",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:016",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787031000000,
+  "local": "2026-08-18 13:30:00.000",
+  "summary": "b6",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:017",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787014800000,
+  "local": "2026-08-18 09:00:00.000",
+  "summary": "f10",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000010",
+   "window_id": "w1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:018",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787015100000,
+  "local": "2026-08-18 09:05:00.000",
+  "summary": "f11",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000011",
+   "window_id": "w1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:019",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787015400000,
+  "local": "2026-08-18 09:10:00.000",
+  "summary": "f12",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000012",
+   "window_id": "w1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:020",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787016000000,
+  "local": "2026-08-18 09:20:00.000",
+  "summary": "f20",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000020",
+   "window_id": "w2"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:021",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787016300000,
+  "local": "2026-08-18 09:25:00.000",
+  "summary": "f21",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000021",
+   "window_id": "w2"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:022",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787017200000,
+  "local": "2026-08-18 09:40:00.000",
+  "summary": "f30",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000030"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:023",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787017500000,
+  "local": "2026-08-18 09:45:00.000",
+  "summary": "f31",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000031"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:024",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787014800000,
+  "local": "2026-08-18 09:00:00.000",
+  "summary": "f40",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000040",
+   "window_id": "w3"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:025",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787017800000,
+  "local": "2026-08-18 09:50:00.000",
+  "summary": "no frame_id",
+  "payload": {
+   "window_id": "w1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:026",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "",
+  "type": "video",
+  "ts_ms": 1787018100000,
+  "local": "2026-08-18 09:55:00.000",
+  "summary": "no rsession",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000050",
+   "window_id": "w2"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:chat:027",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "chat",
+  "ts_ms": 1787104800000,
+  "local": "2026-08-19 10:00:00.000",
+  "summary": "c1",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787e:chat:028",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000002",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787e",
+  "type": "chat",
+  "ts_ms": 1787106600000,
+  "local": "2026-08-19 10:30:00.000",
+  "summary": "c2",
+  "payload": {}
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787e:video:029",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000002",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787e",
+  "type": "video",
+  "ts_ms": 1787108400000,
+  "local": "2026-08-19 11:00:00.000",
+  "summary": "f60",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000060",
+   "window_id": "w1"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:030",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191200000,
+  "local": "2026-08-20 10:00:00.000",
+  "summary": "pool00",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000100",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:031",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191260000,
+  "local": "2026-08-20 10:01:00.000",
+  "summary": "pool01",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000101",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:032",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191320000,
+  "local": "2026-08-20 10:02:00.000",
+  "summary": "pool02",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000102",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:033",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191380000,
+  "local": "2026-08-20 10:03:00.000",
+  "summary": "pool03",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000103",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:034",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191440000,
+  "local": "2026-08-20 10:04:00.000",
+  "summary": "pool04",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000104",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:035",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191500000,
+  "local": "2026-08-20 10:05:00.000",
+  "summary": "pool05",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000105",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:036",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191560000,
+  "local": "2026-08-20 10:06:00.000",
+  "summary": "pool06",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000106",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:037",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191620000,
+  "local": "2026-08-20 10:07:00.000",
+  "summary": "pool07",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000107",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:038",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191680000,
+  "local": "2026-08-20 10:08:00.000",
+  "summary": "pool08",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000108",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:039",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191740000,
+  "local": "2026-08-20 10:09:00.000",
+  "summary": "pool09",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000109",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:040",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191800000,
+  "local": "2026-08-20 10:10:00.000",
+  "summary": "pool10",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000110",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:041",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191860000,
+  "local": "2026-08-20 10:11:00.000",
+  "summary": "pool11",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000111",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:042",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191920000,
+  "local": "2026-08-20 10:12:00.000",
+  "summary": "pool12",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000112",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:043",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787191980000,
+  "local": "2026-08-20 10:13:00.000",
+  "summary": "pool13",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000113",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:044",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787192040000,
+  "local": "2026-08-20 10:14:00.000",
+  "summary": "pool14",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000114",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:045",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787192100000,
+  "local": "2026-08-20 10:15:00.000",
+  "summary": "pool15",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000115",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:046",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787192160000,
+  "local": "2026-08-20 10:16:00.000",
+  "summary": "pool16",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000116",
+   "window_id": "w9"
+  }
+ },
+ {
+  "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:047",
+  "device_uuid": "b53985c7-0000-4000-8000-000000000001",
+  "rsession_id": "019fabe0-3b0f-7947-8000-1e567def787d",
+  "type": "video",
+  "ts_ms": 1787192220000,
+  "local": "2026-08-20 10:17:00.000",
+  "summary": "pool17",
+  "payload": {
+   "frame_id": "019fabe5-b00e-7b8d-8000-000000000117",
+   "window_id": "w9"
+  }
+ }
+]

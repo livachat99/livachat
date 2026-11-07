@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Glow ring — positioned outside the main circle for a halo effect -->
+    <path
+        android:pathData="M54,16 C75.05,16 92,32.95 92,54 C92,75.05 75.05,92 54,92 C32.95,92 16,75.05 16,54 C16,32.95 32.95,16 54,16 Z"
+        android:strokeWidth="2"
+        android:strokeColor="#26FFFFFF"
+        android:fillColor="@null" />
+
+    <!-- Main brand circle — gradient fill matching the AI avatar -->
+    <path
+        android:pathData="M54,20 C72.78,20 88,35.22 88,54 C88,72.78 72.78,88 54,88 C35.22,88 20,72.78 20,54 C20,35.22 35.22,20 54,20 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startColor="#6366F1"
+                android:endColor="#8B5CF6"
+                android:startX="20"
+                android:startY="20"
+                android:endX="88"
+                android:endY="88"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+
+    <!-- Sparkle — 4-point star suggesting AI / intelligence -->
+    <path
+        android:pathData="M54,40 L56,44 L60,45 L56,46 L54,50 L52,46 L48,45 L52,44 Z"
+        android:fillColor="#E6FFFFFF"
+        android:strokeWidth="0" />
+
+    <!-- Voice waveform bars — 3 bars below sparkle, communicating "voice" -->
+    <path
+        android:pathData="M46,58 h2.5 v4 h-2.5 Z M51.5,55 h2.5 v8 h-2.5 Z M57,56.5 h2.5 v6 h-2.5 Z"
+        android:fillColor="#CCFFFFFF"
+        android:strokeWidth="0" />
+
+</vector>

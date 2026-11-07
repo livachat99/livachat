@@ -1,0 +1,4 @@
+# Copy this file to local.properties and fill in your paths
+sdk.dir=/path/to/Android/sdk
+# ndk.dir is optional; NDK will be configured in Phase 4
+# ndk.dir=/path/to/Android/sdk/ndk/26.1.10909125

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- Общие (межэкранные; нейтрально-вежливый стиль, docs/android_multilingual.md §11.3) -->
+    <string name="common_retry">Повторить</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_back">Назад</string>
+    <string name="common_view_full_result">Показать результат полностью</string>
+
+    <!-- Экран диалога: нижняя панель («X вкл./выкл.» с пробелом) -->
+    <string name="conv_toolbar_mic_on">Микрофон вкл.</string>
+    <string name="conv_toolbar_mic_off">Микрофон выкл.</string>
+    <string name="conv_toolbar_speaker_on">Динамик вкл.</string>
+    <string name="conv_toolbar_speaker_off">Динамик выкл.</string>
+    <string name="conv_toolbar_camera_on">Камера вкл.</string>
+    <string name="conv_toolbar_camera_off">Камера выкл.</string>
+    <string name="conv_select_mic_device">Выбор микрофона</string>
+    <string name="conv_select_speaker_device">Выбор динамика</string>
+
+    <!-- Экран диалога: статус -->
+    <string name="conv_status_idle">Говорите в любое время</string>
+    <string name="conv_status_connecting">Подключение...</string>
+    <string name="conv_status_listening">Слушаю...</string>
+    <string name="conv_status_thinking">Дайте подумать...</string>
+    <string name="conv_status_disconnected">Соединение прервано</string>
+    <string name="ai_generated_notice">Содержимое диалога создано ИИ. Пожалуйста, оценивайте его внимательно.</string>
+
+    <!-- Экран диалога: приветствие (текст чипов отправляется как сообщение, WYSIWYG) -->
+    <string name="conv_welcome_title">Добро пожаловать в LivaChat</string>
+    <string name="conv_welcome_subtitle">Я ваш ИИ-компаньон. Общайтесь со мной в любое время</string>
+    <string name="conv_welcome_chip_voice">Голосовой чат</string>
+    <string name="conv_welcome_chip_video">Видеозвонок</string>
+    <string name="conv_welcome_chip_speaking">Разговорная практика</string>
+    <string name="conv_welcome_chip_translate">Синхронный перевод</string>
+    <string name="conv_welcome_chip_daily">Ежедневные записи</string>
+
+    <!-- Разрешения (диалог) -->
+    <string name="perm_dialog_title">Перед началом нужно разрешение</string>
+    <string name="perm_mic_title">Разрешение на микрофон</string>
+    <string name="perm_mic_desc">Чтобы слышать вас и быть рядом</string>
+    <string name="perm_camera_title">Разрешение на камеру (необязательно)</string>
+    <string name="perm_camera_desc">Чтобы видеть, что вас окружает. Можно включить позже</string>
+    <string name="perm_start_chat">Начать общение</string>
+    <string name="perm_screen_camera_title">Разрешение на камеру (необязательно)</string>
+    <string name="perm_mic_required_hint">Для начала общения нужно разрешение на микрофон</string>
+    <string name="perm_go_to_settings">Открыть настройки системы</string>
+    <string name="perm_grant_action">Разрешить</string>
+    <string name="perm_granted">Разрешено</string>
+
+    <!-- Переключение камеры -->
+    <string name="conv_switch_to_back_camera">Переключить на заднюю камеру</string>
+    <string name="conv_switch_to_front_camera">Переключить на переднюю камеру</string>
+
+    <!-- Аватар / изображение -->
+    <string name="avatar_custom_image_desc">Свой аватар</string>
+    <string name="chat_ai_image">Изображение от ИИ</string>
+
+    <!-- Задачи агента -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="one">Задача агента (%1$d)</item>
+        <item quantity="few">Задачи агента (%1$d)</item>
+        <item quantity="many">Задачи агента (%1$d)</item>
+        <item quantity="other">Задачи агента (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">Начато: %1$s</string>
+    <string name="conv_agent_job_cancel_action">Отменить задачу агента</string>
+    <string name="conv_agent_job_cancel_question">Отменить задачу агента?</string>
+    <string name="conv_agent_job_cancel_yes">Да</string>
+    <string name="conv_agent_job_cancel_no">Нет</string>
+    <string name="conv_agent_job_cancel_in_progress">Отмена…</string>
+    <string name="conv_agent_job_cancel_failed">Не удалось отменить. Повторите попытку</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="one">Запущена %1$d задача агента</item>
+        <item quantity="few">Запущены %1$d задачи агента</item>
+        <item quantity="many">Запущено %1$d задач агента</item>
+        <item quantity="other">Запущено %1$d задачи агента</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="one">Показать весь текст · остался %1$s символ</item>
+        <item quantity="few">Показать весь текст · осталось %1$s символа</item>
+        <item quantity="many">Показать весь текст · осталось %1$s символов</item>
+        <item quantity="other">Показать весь текст · осталось %1$s символа</item>
+    </plurals>
+
+    <!-- WebView -->
+    <string name="webview_unsupported_link">Неподдерживаемый формат ссылки</string>
+    <string name="webview_open_in_browser">Открыть в браузере</string>
+    <string name="webview_load_failed">Не удалось загрузить страницу. Проверьте сеть и повторите попытку</string>
+    <string name="webview_cannot_open">Не удалось открыть страницу</string>
+
+    <!-- Экран запуска -->
+    <string name="splash_tagline">Ваш ИИ-компаньон</string>
+    <string name="splash_waking">Будим вашего компаньона...</string>
+
+    <!-- Общие (Wave3) -->
+    <string name="common_cancel">Отмена</string>
+    <string name="common_stop">Остановить</string>
+    <string name="common_save_image">Сохранить изображение</string>
+    <string name="common_saved_to_gallery">Сохранено в галерее</string>
+    <string name="common_save_failed">Не удалось сохранить</string>
+    <string name="common_save_failed_storage">Не удалось сохранить: нужно разрешение на доступ к хранилищу</string>
+    <string name="common_go_to_settings">Перейти в настройки</string>
+    <string name="common_time_machine">Машина времени</string>
+
+    <!-- Экран диалога (Wave3) -->
+    <string name="conv_menu_stop_recording">Остановить запись</string>
+    <string name="conv_menu_start_recording">Начать запись</string>
+    <string name="conv_menu_more">Ещё</string>
+    <string name="conv_menu_chats">Чаты</string>
+    <string name="conv_menu_settings">Настройки</string>
+    <string name="conv_screen_capture_rationale_title">Запуск взаимодействия с экраном</string>
+    <string name="conv_screen_capture_rationale_text">Общайтесь с ИИ о том, что на экране, — задавайте вопросы по статьям, реагируйте на видео и многое другое.\n\nПосле предоставления разрешения у края экрана появится ИИ-пузырь. Нажмите на него, чтобы отправить ИИ снимок экрана</string>
+    <string name="conv_continue">Продолжить</string>
+    <string name="conv_screen_capture_stop_title">Остановка взаимодействия с экраном</string>
+    <string name="conv_screen_capture_stop_message">Взаимодействие с экраном активно. Остановить?</string>
+    <string name="conv_conn_timeout">Время соединения истекло</string>
+    <string name="conv_permission_denied_fmt">Нет разрешения: %1$s</string>
+    <string name="conv_omni">Омни</string>
+    <string name="conv_omni_intro">Использование модели «Омни» снижает задержку при общении</string>
+    <string name="conv_enable">Включить</string>
+    <string name="conv_take_photo">Сделать фото</string>
+    <string name="conv_camera_unavailable">Не удалось открыть камеру</string>
+    <string name="conv_camera_permission_guide">Для работы камеры нужно разрешение. Проверьте разрешение камеры для LivaChat в настройках системы и повторите попытку.</string>
+    <string name="conv_select_peer_language">Язык собеседника</string>
+    <string name="conv_select_speaker_language">Язык спикера</string>
+    <string name="conv_server_config_required">Сначала нужно настроить сервер</string>
+    <string name="conv_server_config_hint">Укажите адрес сервера и ключ авторизации в настройках.</string>
+    <string name="conv_mode_translate">Режим перевода</string>
+    <string name="conv_mode_transcribe">Режим расшифровки</string>
+    <string name="conv_mode_omni">Режим «Омни»</string>
+    <string name="conv_language_auto">Автоопределение</string>
+    <string name="conv_picker_confirm">ОК</string>
+    <string name="conv_transcribe_source_title">Выбор источника записи</string>
+    <string name="conv_transcribe_source_original">Оригинал</string>
+    <string name="conv_transcribe_source_original_desc">Исходный звук без обработки</string>
+    <string name="conv_transcribe_source_voice">Голос</string>
+    <string name="conv_transcribe_source_voice_desc">Оптимизировано для речи</string>
+    <string name="conv_mode_dialogue">Режим диалога</string>
+    <string name="conv_mode_dialogue_desc">Перевод разговоров в реальном времени</string>
+    <string name="conv_mode_lecture">Режим лекции</string>
+    <string name="conv_mode_lecture_desc">Перевод выступлений в реальном времени</string>
+    <string name="conv_mode_transcribe_desc">Расшифровка речи в реальном времени</string>
+    <string name="conv_omni_desc">Использовать модель «Омни»</string>
+    <string name="conv_avatar_picker_title">Аватар</string>
+    <string name="conv_avatar_from_gallery">Выбрать из галереи</string>
+    <string name="conv_avatar_reset">Сбросить к стандартному аватару</string>
+    <string name="conv_avatar_scale_normal">Обычный</string>
+    <string name="conv_avatar_scale_shrink">Уменьшенный</string>
+    <string name="conv_avatar_drag_hint">Перетащите, чтобы настроить положение</string>
+    <string name="conv_confirm">Подтвердить</string>
+    <string name="conv_gallery_send">Отправить</string>
+    <string name="conv_image_action_text">Опишите содержимое изображения</string>
+    <string name="conv_gallery_preview_image">Просмотр фото</string>
+    <string name="conv_gallery_preview_failed">Не удалось загрузить фото</string>
+    <string name="conv_system_default">Системный по умолчанию</string>
+    <string name="conv_overlay_permission_required">Для захвата экрана нужно разрешение «Поверх других приложений»</string>
+    <string name="conv_avatar_save_failed">Не удалось сохранить аватар: %1$s</string>
+    <string name="conv_camera_start_failed">Не удалось запустить камеру — проверьте разрешение</string>
+    <string name="conv_screen_capture_unsupported">Взаимодействие с экраном недоступно в этом режиме</string>
+    <string name="conv_msg_suffix_transcript">(расшифровка)</string>
+    <string name="conv_msg_suffix_original">(оригинал)</string>
+    <string name="conv_msg_suffix_translation">(перевод)</string>
+
+    <!-- Общие (Wave4) -->
+    <string name="common_view">Просмотр</string>
+
+    <!-- Настройки (Wave4) -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_section_service">Сервис</string>
+    <string name="settings_save">Сохранить</string>
+    <string name="settings_section_video">Видео</string>
+    <string name="settings_default_front_camera">Передняя камера по умолчанию</string>
+    <string name="settings_default_front_camera_desc">Использовать переднюю камеру при запуске видео</string>
+    <string name="settings_auto_camera_on_join">Автовключение камеры при входе в чат</string>
+    <string name="settings_auto_camera_on_join_desc">Включать видео при каждом начале чата</string>
+    <string name="settings_section_general">Общие</string>
+    <string name="settings_haptic">Виброотклик</string>
+    <string name="settings_haptic_desc">Лёгкая вибрация при изменении состояния</string>
+    <string name="settings_ai_proactive">Разрешить проактивную заботу ИИ</string>
+    <string name="settings_ai_proactive_desc">ИИ может проактивно реагировать на звуки или изменения в изображении</string>
+    <string name="settings_section_about">О приложении</string>
+    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="settings_eula">Лицензионное соглашение</string>
+    <string name="settings_support">Поддержка</string>
+    <string name="settings_open_source_licenses">Лицензии открытого исходного кода</string>
+    <string name="licenses_title">Лицензии открытого исходного кода</string>
+    <string name="licenses_unavailable">Информация о лицензиях недоступна.</string>
+    <string name="settings_server_updated">Настройки сервера обновлены</string>
+    <string name="settings_restart_to_apply">Применится после повторного открытия приложения.</string>
+    <string name="settings_exit">Выход</string>
+    <string name="settings_save_failed_message">Укажите корректный адрес сервера и ключ авторизации.</string>
+    <string name="settings_server_label">Сервер</string>
+    <string name="settings_server_placeholder">ip:port или домен:port</string>
+    <string name="settings_auth_token">Ключ авторизации</string>
+    <string name="settings_auth_token_placeholder">См. конфигурацию server</string>
+    <string name="settings_tls_allow_self_signed">Разрешить самоподписанный сертификат</string>
+    <string name="settings_tls_allow_self_signed_desc">Только для доверенных локальных серверов. Отключает проверку сертификата.</string>
+    <string name="settings_hide_token">Скрыть ключ</string>
+    <string name="settings_show_token">Показать ключ</string>
+    <string name="settings_check_service">Проверка сервиса</string>
+    <string name="settings_check_service_desc">Подключиться к серверу и проверить ключ</string>
+    <string name="settings_check_action">Проверить</string>
+    <string name="settings_status_available">Доступен</string>
+    <string name="settings_status_auth_failed">Ошибка авторизации</string>
+    <string name="settings_status_unavailable">Недоступен</string>
+
+    <!-- Общие (Wave5) -->
+    <string name="common_delete">Удалить</string>
+
+    <!-- История (Wave5) -->
+    <string name="history_title">История чатов</string>
+    <string name="history_clear">Очистить</string>
+    <string name="history_search_placeholder">Поиск по чатам...</string>
+    <string name="history_empty_title">Пока нет истории чатов</string>
+    <string name="history_empty_subtitle">Начните первый разговор</string>
+    <string name="history_delete_title">Удаление чата</string>
+    <string name="history_delete_message">Удалить этот чат?</string>
+    <string name="history_clear_all_title">Очистить все чаты</string>
+    <string name="history_clear_all_message">Удалить всю историю чатов?</string>
+    <string name="history_untitled">Чат без названия</string>
+    <string name="history_detail_title">Детали чата</string>
+    <string name="history_detail_delete_message">Удалить весь этот чат?</string>
+    <plurals name="history_item_meta">
+        <item quantity="one">%1$s, %2$s, %3$d сообщение</item>
+        <item quantity="few">%1$s, %2$s, %3$d сообщения</item>
+        <item quantity="many">%1$s, %2$s, %3$d сообщений</item>
+        <item quantity="other">%1$s, %2$s, %3$d сообщения</item>
+    </plurals>
+
+    <!-- Общие (Wave6) -->
+    <string name="common_clear">Очистить</string>
+    <string name="common_play">Воспроизвести</string>
+    <string name="common_pause">Пауза</string>
+
+    <!-- MyLife (Wave6) -->
+    <string name="mylife_loading">Загрузка…</string>
+    <string name="mylife_analyzing">Анализ…</string>
+    <string name="mylife_analysis_pending">Появится после завершения анализа</string>
+    <string name="mylife_load_failed">Не удалось загрузить</string>
+    <string name="mylife_search_failed">Ошибка поиска</string>
+    <string name="mylife_agent_task">Задача агента</string>
+    <string name="mylife_refresh">Обновить</string>
+    <string name="mylife_analyzing_content">Анализ содержимого…</string>
+    <string name="mylife_hotslot_empty">В этот период нечего показать</string>
+    <string name="mylife_max_selection">Можно выбрать до 50 фото</string>
+    <string name="mylife_delete_timeout">Время удаления истекло, повторите позже</string>
+    <string name="mylife_delete_failed">Не удалось удалить</string>
+    <string name="mylife_no_records_in_scope">Нет записей за %1$s</string>
+    <string name="mylife_no_records_yet">Пока нет записей — начните разговор</string>
+    <string name="mylife_load_failed_retry">Не удалось загрузить — нажмите, чтобы повторить</string>
+    <string name="mylife_loading_earlier">Загрузка ранних записей…</string>
+    <string name="mylife_load_earlier">Загрузить более ранние</string>
+    <string name="mylife_reached_start">Это самое начало</string>
+    <string name="mylife_search_min_chars">Введите не менее 2 символов</string>
+    <string name="mylife_searching">Поиск…</string>
+    <string name="mylife_search_no_results">Ничего не найдено</string>
+    <string name="mylife_search_placeholder">Поиск…</string>
+    <string name="mylife_edit">Изменить</string>
+    <string name="mylife_edit_exit">Готово</string>
+    <string name="mylife_gallery_empty_title">В этот период нет фото</string>
+    <string name="mylife_deleting">Удаление…</string>
+    <string name="mylife_delete_photos">Удалить фото</string>
+    <string name="mylife_select_photo">Выбрать фото</string>
+    <string name="mylife_audio_empty_title">В этот день нет аудиозаписей</string>
+    <string name="mylife_audio_time_desc">События за 10 минут до и после %1$s</string>
+    <string name="mylife_overview_month">%2$s %1$d</string>
+    <string name="mylife_scope_filter">Только %1$s ✕</string>
+    <string name="mylife_granularity_day">День</string>
+    <string name="mylife_granularity_week">Неделя</string>
+    <string name="mylife_granularity_month">Месяц</string>
+    <string name="mylife_granularity_year">Год</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="one">Аудиозапись, %1$d фрагмент</item>
+        <item quantity="few">Аудиозаписи, %1$d фрагмента</item>
+        <item quantity="many">Аудиозаписи, %1$d фрагментов</item>
+        <item quantity="other">Аудиозаписи, %1$d фрагмента</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="one">%1$d фото</item>
+        <item quantity="few">%1$d фото</item>
+        <item quantity="many">%1$d фото</item>
+        <item quantity="other">%1$d фото</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="one">Анализ… · %1$d фото</item>
+        <item quantity="few">Анализ… · %1$d фото</item>
+        <item quantity="many">Анализ… · %1$d фото</item>
+        <item quantity="other">Анализ… · %1$d фото</item>
+    </plurals>
+    <string name="mylife_delete_count">Удалить (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="one">Удалить выбранные фото (%1$d)?</item>
+        <item quantity="few">Удалить выбранные фото (%1$d)?</item>
+        <item quantity="many">Удалить выбранные фото (%1$d)?</item>
+        <item quantity="other">Удалить выбранные фото (%1$d)?</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="one">%1$d фрагмент</item>
+        <item quantity="few">%1$d фрагмента</item>
+        <item quantity="many">%1$d фрагментов</item>
+        <item quantity="other">%1$d фрагмента</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="one">Найден %1$d результат</item>
+        <item quantity="few">Найдено %1$d результата</item>
+        <item quantity="many">Найдено %1$d результатов</item>
+        <item quantity="other">Найдено %1$d результата</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="one">Удалено %1$d фото</item>
+        <item quantity="few">Удалено %1$d фото</item>
+        <item quantity="many">Удалено %1$d фото</item>
+        <item quantity="other">Удалено %1$d фото</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">Удалено: %1$d, не удалось: %2$d</string>
+    <string name="mylife_week_label">Неделя %1$d</string>
+
+    <!-- Уведомления (Wave7) -->
+    <string name="notif_mic_channel">Микрофон</string>
+    <string name="notif_mic_title">Микрофон используется</string>
+    <string name="notif_mic_text">Голос отправляется ИИ для общения</string>
+    <string name="notif_screen_channel">Взаимодействие с экраном</string>
+    <string name="notif_screen_title">Захват экрана готов</string>
+    <string name="notif_screen_text">Нажмите пузырь у края экрана, чтобы отправить ИИ снимок экрана</string>
+
+    <!-- Пузырь захвата экрана и ошибки (Wave7) -->
+    <string name="cap_bubble_sent">Снимок отправлен</string>
+    <string name="cap_bubble_foreground">Переключитесь в другое приложение и нажмите</string>
+    <string name="cap_bubble_locked">Разблокируйте, чтобы использовать</string>
+    <string name="cap_bubble_failed">Не удалось сделать снимок, повторите</string>
+    <string name="capture_start_failed">Не удалось запустить взаимодействие с экраном: %1$s</string>
+    <string name="capture_overlay_failed">Не удалось запустить пузырь — захват экрана недоступен</string>
+    <string name="capture_stopped">Взаимодействие с экраном неожиданно остановлено</string>
+
+    <!-- Воспроизведение аудио (Wave7) -->
+    <string name="player_play_failed">Не удалось воспроизвести</string>
+
+    <!-- Метки устройств (Wave7) -->
+    <string name="device_wired_headset">Проводная гарнитура</string>
+    <string name="device_bt_sco">Гарнитура Bluetooth</string>
+    <string name="device_ble_headset">Гарнитура Bluetooth LE</string>
+    <string name="device_usb_device">USB-аудиоустройство</string>
+    <string name="device_usb_headset">USB-гарнитура</string>
+    <string name="device_speaker">Динамик</string>
+    <string name="device_earpiece">Разговорный динамик</string>
+    <string name="device_wired_headphones">Проводные наушники (без микрофона)</string>
+    <string name="device_bt_a2dp">Аудио Bluetooth</string>
+    <string name="device_ble_speaker">Динамик Bluetooth LE</string>
+    <string name="device_hearing_aid">Слуховой аппарат</string>
+    <string name="device_output_fallback">Устройство вывода звука</string>
+    <string name="device_builtin_mic">Встроенный микрофон</string>
+    <string name="device_input_fallback">Устройство ввода звука</string>
+    <string name="device_tag_bt_voice">Голос Bluetooth</string>
+    <string name="device_tag_bt_music">Аудио Bluetooth</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- MyLife API: протокольные ошибки (Wave8) -->
+    <string name="mylife_api_empty_response">Пустой ответ</string>
+    <string name="mylife_api_json_parse_failed">Ошибка разбора JSON: %1$s</string>
+</resources>

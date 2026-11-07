@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/error.json",
+  "title": "error — Error Notification",
+  "description": "Server sends an error notification. Clients should branch on 'code' (not 'message') for logic; use 'message' for debug display only. See ws-protocol-design.md §4.3 for the complete error code table.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "error"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["code", "message", "fatal", "recoverable"],
+      "properties": {
+        "code": {
+          "$ref": "../common.json#/$defs/UInt16",
+          "description": "Machine-readable error code. See §4.3 error code table. Categories: 1xxx=general, 2xxx=auth/session, 3xxx=bandwidth/media, 4xxx=client-timeout."
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error description. For debugging only — client logic MUST branch on 'code', not this field."
+        },
+        "fatal": {
+          "type": "boolean",
+          "description": "true = session will terminate. Client should stop sending and prepare for reconnection."
+        },
+        "recoverable": {
+          "type": "boolean",
+          "description": "true = client may retry automatically (e.g., lower video quality, refresh token)."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "error",
+      "seq": 5,
+      "timestamp": 1712345679000,
+      "payload": {
+        "code": 1001,
+        "message": "ASR service unavailable",
+        "fatal": false,
+        "recoverable": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "title": "LivaChat Server",
+  "uid": "livachat-server",
+  "panels": [
+    {
+      "title": "Active Connections",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "livachat_active_connections",
+          "legendFormat": "connections"
+        }
+      ]
+    },
+    {
+      "title": "Active Sessions",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "livachat_active_sessions",
+          "legendFormat": "sessions"
+        }
+      ]
+    },
+    {
+      "title": "Messages per Second",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(livachat_messages_total[1m])",
+          "legendFormat": "{{direction}}/{{type}}"
+        }
+      ]
+    },
+    {
+      "title": "Errors per Minute",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(livachat_errors_total[1m])",
+          "legendFormat": "code={{code}}"
+        }
+      ]
+    },
+    {
+      "title": "Provider Calls (Success vs Failure)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(livachat_provider_calls_total{success=\"true\"}[1m])",
+          "legendFormat": "{{kind}}/{{provider}} ok"
+        },
+        {
+          "expr": "rate(livachat_provider_calls_total{success=\"false\"}[1m])",
+          "legendFormat": "{{kind}}/{{provider}} fail"
+        }
+      ]
+    },
+    {
+      "title": "Stage Latency (p95)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(livachat_stage_latency_seconds_bucket[1m]))",
+          "legendFormat": "{{stage}}"
+        }
+      ]
+    },
+    {
+      "title": "Provider Latency (p95)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(livachat_provider_latency_seconds_bucket[1m]))",
+          "legendFormat": "{{kind}}/{{provider}}"
+        }
+      ]
+    },
+    {
+      "title": "Interrupts per Minute",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(livachat_interrupts_total[1m])",
+          "legendFormat": "{{reason}}"
+        }
+      ]
+    },
+    {
+      "title": "E2E Turn Latency (p50/p95/p99)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(livachat_stage_latency_seconds_bucket{stage=\"e2e_turn\"}[1m]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(livachat_stage_latency_seconds_bucket{stage=\"e2e_turn\"}[1m]))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(livachat_stage_latency_seconds_bucket{stage=\"e2e_turn\"}[1m]))",
+          "legendFormat": "p99"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s"
+}

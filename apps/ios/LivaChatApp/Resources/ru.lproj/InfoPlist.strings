@@ -1,0 +1,4 @@
+"NSMicrophoneUsageDescription" = "Чтобы слышать вас и быть рядом";
+"NSLocalNetworkUsageDescription" = "Подключение к серверу LivaChat в локальной сети.";
+"NSCameraUsageDescription" = "Чтобы видеть, что вас окружает. Можно включить позже";
+"NSPhotoLibraryAddUsageDescription" = "Разрешить сохранение изображений ИИ в медиатеку.";

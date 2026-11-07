@@ -1,0 +1,1 @@
+{"type":"session.ended","seq":2,"timestamp":1700000001000,"payload":{"reason":"user_quit","session_id":"abc123"}}

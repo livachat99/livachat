@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: livachat-config
+data:
+  server.yaml: |
+    server:
+      host: "0.0.0.0"
+      port: 8080
+      workers: 1
+      max_frame_bytes: 2097152
+      log_level: INFO
+
+    auth:
+      mode: dev
+      dev_token: "${APP_AUTH_TOKEN}"
+      jwt_algorithm: HS256
+
+    session:
+      resume_ttl_s: 30
+      heartbeat_interval_s: 15
+      heartbeat_timeout_s: 45
+      working_memory_turns: 10
+      max_video_frames: 2
+
+    media:
+      audio:
+        default_sample_rate: 16000
+        opus_frame_ms: 20
+        opus_bitrate: 32000
+        channels: 1
+      video:
+        max_queue_frames: 3
+        decode: pillow
+
+    asr:
+      active: deepgram
+      fallback: [alibaba_bailian]
+      language: zh-CN
+      providers:
+        deepgram:
+          enabled: true
+          base_url: wss://api.deepgram.com/v1/listen
+          api_key: "${DEEPGRAM_API_KEY}"
+          model: nova-2
+          params: {interim_results: true, endpointing: 300, vad_events: true}
+        alibaba_bailian:
+          enabled: true
+          base_url: wss://dashscope.aliyuncs.com/api-ws/v1/inference
+          api_key: "${DASHSCOPE_API_KEY}"
+          model: paraformer-realtime-v2
+          params: {sample_rate: 16000}
+
+    llm:
+      active: alibaba_bailian
+      fallback: [openrouter, deepseek]
+      system_prompt_path: configs/dev/prompts/companion.txt
+      generation: {temperature: 0.8, max_tokens: 1024, top_p: 0.9}
+      providers:
+        alibaba_bailian:
+          enabled: true
+          base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+          api_key: "${DASHSCOPE_API_KEY}"
+          model: qwen-plus
+          vision_model: qwen-vl-max
+          supports_vision: true
+        openrouter:
+          enabled: true
+          base_url: https://openrouter.ai/api/v1
+          api_key: "${OPENROUTER_API_KEY}"
+          model: openai/gpt-4o
+          supports_vision: true
+        deepseek:
+          enabled: true
+          base_url: https://api.deepseek.com
+          api_key: "${DEEPSEEK_API_KEY}"
+          model: deepseek-chat
+          supports_vision: false
+
+    tts:
+      active: cartesia
+      fallback: [elevenlabs, alibaba_bailian]
+      providers:
+        cartesia:
+          enabled: true
+          base_url: wss://api.cartesia.ai/tts/websocket
+          api_key: "${CARTESIA_API_KEY}"
+          model: sonic-2
+          voice: "<voice_id>"
+          output_format: {container: raw, encoding: pcm_s16le, sample_rate: 16000}
+          version: "2024-06-10"
+        elevenlabs:
+          enabled: true
+          base_url: wss://api.elevenlabs.io
+          api_key: "${ELEVENLABS_API_KEY}"
+          model: eleven_turbo_v2_5
+          voice: "<voice_id>"
+          output_format: pcm_16000
+        alibaba_bailian:
+          enabled: true
+          # base_url = 连接端点(workspace 专属域名); workspace_id 仅作 X-DashScope-WorkSpace 头
+          base_url: wss://llm-1tmsqifo51cwfadr.cn-beijing.maas.aliyuncs.com/api-ws/v1/inference
+          api_key: "${DASHSCOPE_API_KEY}"
+          model: qwen-audio-3.0-tts-flash
+          voice: longanlingxi
+          workspace_id: llm-1tmsqifo51cwfadr
+
+    postgres:
+      pool_min: 2
+      pool_max: 20
+
+    redis:
+      url: "${LIVACHAT__REDIS__URL}"
+      key_prefix: "livachat"
+
+    observability:
+      metrics_enabled: true
+      tracing_enabled: false
+      json_logs: true
+      # 容器采集提示（docs/server_logging.md §8.6）：log_file.enabled 默认 true = 运行态只写
+      # 容器内文件；依赖 stdout 采集(12-factor)的环境须在此显式加 log_file: {enabled: false}

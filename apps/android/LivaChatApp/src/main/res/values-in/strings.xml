@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- Umum (lintas layar; netral, imperatif telanjang, docs/android_multilingual.md §19.3) -->
+    <string name="common_retry">Coba lagi</string>
+    <string name="common_close">Tutup</string>
+    <string name="common_back">Kembali</string>
+    <string name="common_view_full_result">Lihat hasil lengkap</string>
+
+    <!-- Obrolan: bilah bawah (« X aktif/mati », pemisah spasi) -->
+    <string name="conv_toolbar_mic_on">Mikrofon aktif</string>
+    <string name="conv_toolbar_mic_off">Mikrofon mati</string>
+    <string name="conv_toolbar_speaker_on">Pengeras suara aktif</string>
+    <string name="conv_toolbar_speaker_off">Pengeras suara mati</string>
+    <string name="conv_toolbar_camera_on">Kamera aktif</string>
+    <string name="conv_toolbar_camera_off">Kamera mati</string>
+    <string name="conv_select_mic_device">Pilih mikrofon</string>
+    <string name="conv_select_speaker_device">Pilih pengeras suara</string>
+
+    <!-- Obrolan: status -->
+    <string name="conv_status_idle">Bicara kapan saja</string>
+    <string name="conv_status_connecting">Menghubungkan...</string>
+    <string name="conv_status_listening">Saya mendengarkan...</string>
+    <string name="conv_status_thinking">Biar saya pikirkan...</string>
+    <string name="conv_status_disconnected">Koneksi terputus</string>
+    <string name="ai_generated_notice">Konten percakapan dihasilkan oleh AI. Harap evaluasi dengan cermat.</string>
+
+    <!-- Obrolan: sambutan (teks chip dikirim apa adanya sebagai pesan, WYSIWYG) -->
+    <string name="conv_welcome_title">Selamat datang di LivaChat</string>
+    <string name="conv_welcome_subtitle">Saya teman AI Anda. Bicara dengan saya kapan saja</string>
+    <string name="conv_welcome_chip_voice">Obrolan suara</string>
+    <string name="conv_welcome_chip_video">Panggilan video</string>
+    <string name="conv_welcome_chip_speaking">Latihan bicara</string>
+    <string name="conv_welcome_chip_translate">Terjemahan langsung</string>
+    <string name="conv_welcome_chip_daily">Catatan harian</string>
+
+    <!-- Izin (dialog) -->
+    <string name="perm_dialog_title">Sebelum mulai, diperlukan izin</string>
+    <string name="perm_mic_title">Izin mikrofon</string>
+    <string name="perm_mic_desc">Untuk mendengar suara Anda dan menemani Anda</string>
+    <string name="perm_camera_title">Izin kamera (opsional)</string>
+    <string name="perm_camera_desc">Untuk melihat sekitar Anda. Bisa dinyalakan nanti</string>
+    <string name="perm_start_chat">Mulai mengobrol</string>
+    <string name="perm_screen_camera_title">Izin kamera (opsional)</string>
+    <string name="perm_mic_required_hint">Izin mikrofon diperlukan untuk mulai mengobrol</string>
+    <string name="perm_go_to_settings">Buka setelan sistem</string>
+    <string name="perm_grant_action">Izinkan</string>
+    <string name="perm_granted">Diizinkan</string>
+
+    <!-- Ganti kamera -->
+    <string name="conv_switch_to_back_camera">Beralih ke kamera belakang</string>
+    <string name="conv_switch_to_front_camera">Beralih ke kamera depan</string>
+
+    <!-- Avatar / gambar -->
+    <string name="avatar_custom_image_desc">Avatar khusus</string>
+    <string name="chat_ai_image">Gambar AI</string>
+
+    <!-- Tugas agen -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="other">Tugas agen (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">Dimulai: %1$s</string>
+    <string name="conv_agent_job_cancel_action">Batalkan tugas agen</string>
+    <string name="conv_agent_job_cancel_question">Batalkan tugas agen?</string>
+    <string name="conv_agent_job_cancel_yes">Ya</string>
+    <string name="conv_agent_job_cancel_no">Tidak</string>
+    <string name="conv_agent_job_cancel_in_progress">Membatalkan…</string>
+    <string name="conv_agent_job_cancel_failed">Gagal membatalkan. Coba lagi</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="other">%1$d tugas agen berjalan</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="other">Lihat teks lengkap · %1$s karakter tersisa</item>
+    </plurals>
+
+    <!-- WebView -->
+    <string name="webview_unsupported_link">Format tautan tidak didukung</string>
+    <string name="webview_open_in_browser">Buka di peramban</string>
+    <string name="webview_load_failed">Halaman gagal dimuat. Periksa jaringan dan coba lagi</string>
+    <string name="webview_cannot_open">Tidak dapat membuka halaman ini</string>
+
+    <!-- Layar pembuka -->
+    <string name="splash_tagline">Teman AI Anda</string>
+    <string name="splash_waking">Membangunkan teman Anda...</string>
+
+    <!-- Umum (Wave3) -->
+    <string name="common_cancel">Batal</string>
+    <string name="common_stop">Hentikan</string>
+    <string name="common_save_image">Simpan gambar</string>
+    <string name="common_saved_to_gallery">Tersimpan di galeri</string>
+    <string name="common_save_failed">Gagal menyimpan</string>
+    <string name="common_save_failed_storage">Gagal menyimpan: perlu izin penyimpanan</string>
+    <string name="common_go_to_settings">Buka setelan</string>
+    <string name="common_time_machine">Mesin Waktu</string>
+
+    <!-- Obrolan (Wave3) -->
+    <string name="conv_menu_stop_recording">Hentikan rekaman</string>
+    <string name="conv_menu_start_recording">Mulai rekaman</string>
+    <string name="conv_menu_more">Lainnya</string>
+    <string name="conv_menu_chats">Obrolan</string>
+    <string name="conv_menu_settings">Setelan</string>
+    <string name="conv_screen_capture_rationale_title">Mulai interaksi layar</string>
+    <string name="conv_screen_capture_rationale_text">Berinteraksi dengan AI tentang apa yang ada di layar: ajukan pertanyaan tentang artikel, tanggapi video, dan lainnya.\n\nSetelah izin diberikan, balon AI muncul di tepi layar. Ketuk untuk mengirim tangkapan layar ke AI</string>
+    <string name="conv_continue">Lanjutkan</string>
+    <string name="conv_screen_capture_stop_title">Hentikan interaksi layar</string>
+    <string name="conv_screen_capture_stop_message">Interaksi layar aktif. Hentikan?</string>
+    <string name="conv_conn_timeout">Koneksi habis waktu</string>
+    <string name="conv_permission_denied_fmt">Izin ditolak: %1$s</string>
+    <string name="conv_omni">Omni</string>
+    <string name="conv_omni_intro">Model Omni mengurangi latensi interaksi</string>
+    <string name="conv_enable">Aktifkan</string>
+    <string name="conv_take_photo">Ambil foto</string>
+    <string name="conv_camera_unavailable">Tidak dapat membuka kamera</string>
+    <string name="conv_camera_permission_guide">Izin kamera diperlukan untuk menggunakan kamera. Periksa izin kamera LivaChat di setelan sistem lalu coba lagi.</string>
+    <string name="conv_select_peer_language">Bahasa lawan bicara</string>
+    <string name="conv_select_speaker_language">Bahasa pembicara</string>
+    <string name="conv_server_config_required">Server harus dikonfigurasi dulu</string>
+    <string name="conv_server_config_hint">Isi alamat server dan kunci autentikasi di setelan terlebih dahulu.</string>
+    <string name="conv_mode_translate">Mode terjemahan</string>
+    <string name="conv_mode_transcribe">Mode transkrip</string>
+    <string name="conv_mode_omni">Mode Omni</string>
+    <string name="conv_language_auto">Deteksi otomatis</string>
+    <string name="conv_picker_confirm">OK</string>
+    <string name="conv_transcribe_source_title">Pilih sumber rekaman</string>
+    <string name="conv_transcribe_source_original">Asli</string>
+    <string name="conv_transcribe_source_original_desc">Suara asli lingkungan</string>
+    <string name="conv_transcribe_source_voice">Suara</string>
+    <string name="conv_transcribe_source_voice_desc">Dioptimalkan untuk suara</string>
+    <string name="conv_mode_dialogue">Mode dialog</string>
+    <string name="conv_mode_dialogue_desc">Terjemahkan percakapan secara langsung</string>
+    <string name="conv_mode_lecture">Mode ceramah</string>
+    <string name="conv_mode_lecture_desc">Terjemahkan pidato secara langsung</string>
+    <string name="conv_mode_transcribe_desc">Transkrip suara secara langsung</string>
+    <string name="conv_omni_desc">Gunakan model Omni</string>
+    <string name="conv_avatar_picker_title">Avatar</string>
+    <string name="conv_avatar_from_gallery">Pilih dari galeri</string>
+    <string name="conv_avatar_reset">Kembalikan ke avatar bawaan</string>
+    <string name="conv_avatar_scale_normal">Normal</string>
+    <string name="conv_avatar_scale_shrink">Diperkecil</string>
+    <string name="conv_avatar_drag_hint">Seret untuk menyesuaikan posisi</string>
+    <string name="conv_confirm">Konfirmasi</string>
+    <string name="conv_gallery_send">Kirim</string>
+    <string name="conv_image_action_text">Jelaskan isi gambar</string>
+    <string name="conv_gallery_preview_image">Pratinjau foto</string>
+    <string name="conv_gallery_preview_failed">Foto tidak dapat dimuat</string>
+    <string name="conv_system_default">Bawaan sistem</string>
+    <string name="conv_overlay_permission_required">Izin «Tampilkan di atas aplikasi lain» diperlukan untuk tangkapan layar</string>
+    <string name="conv_avatar_save_failed">Gagal menyimpan avatar: %1$s</string>
+    <string name="conv_camera_start_failed">Kamera gagal dimulai — periksa izin</string>
+    <string name="conv_screen_capture_unsupported">Interaksi layar tidak tersedia dalam mode ini</string>
+    <string name="conv_msg_suffix_transcript">(transkrip)</string>
+    <string name="conv_msg_suffix_original">(asli)</string>
+    <string name="conv_msg_suffix_translation">(terjemahan)</string>
+
+    <!-- Umum (Wave4) -->
+    <string name="common_view">Lihat</string>
+
+    <!-- Setelan (Wave4) -->
+    <string name="settings_title">Setelan</string>
+    <string name="settings_section_service">Layanan</string>
+    <string name="settings_save">Simpan</string>
+    <string name="settings_section_video">Video</string>
+    <string name="settings_default_front_camera">Kamera depan bawaan</string>
+    <string name="settings_default_front_camera_desc">Gunakan kamera depan secara bawaan saat video dimulai</string>
+    <string name="settings_auto_camera_on_join">Nyalakan kamera otomatis saat masuk obrolan</string>
+    <string name="settings_auto_camera_on_join_desc">Aktifkan video setiap obrolan dimulai</string>
+    <string name="settings_section_general">Umum</string>
+    <string name="settings_haptic">Umpan balik haptik</string>
+    <string name="settings_haptic_desc">Getaran halus saat status berubah</string>
+    <string name="settings_ai_proactive">Izinkan Perhatian AI Proaktif</string>
+    <string name="settings_ai_proactive_desc">Biarkan AI merespons secara proaktif terhadap suara atau perubahan tampilan</string>
+    <string name="settings_section_about">Tentang</string>
+    <string name="settings_privacy_policy">Kebijakan Privasi</string>
+    <string name="settings_eula">Perjanjian Lisensi Pengguna Akhir</string>
+    <string name="settings_support">Dukungan</string>
+    <string name="settings_open_source_licenses">Lisensi Sumber Terbuka</string>
+    <string name="licenses_title">Lisensi Sumber Terbuka</string>
+    <string name="licenses_unavailable">Informasi lisensi tidak tersedia.</string>
+    <string name="settings_server_updated">Setelan server diperbarui</string>
+    <string name="settings_restart_to_apply">Berlaku setelah aplikasi dibuka ulang.</string>
+    <string name="settings_exit">Keluar</string>
+    <string name="settings_save_failed_message">Isi alamat server dan kunci autentikasi yang valid.</string>
+    <string name="settings_server_label">Server</string>
+    <string name="settings_server_placeholder">ip:port atau domain:port</string>
+    <string name="settings_auth_token">Kunci autentikasi</string>
+    <string name="settings_auth_token_placeholder">Lihat berkas konfigurasi server</string>
+    <string name="settings_tls_allow_self_signed">Izinkan sertifikat yang ditandatangani sendiri</string>
+    <string name="settings_tls_allow_self_signed_desc">Hanya untuk server lokal terpercaya. Menonaktifkan verifikasi sertifikat.</string>
+    <string name="settings_hide_token">Sembunyikan kunci</string>
+    <string name="settings_show_token">Tampilkan kunci</string>
+    <string name="settings_check_service">Periksa layanan</string>
+    <string name="settings_check_service_desc">Hubungkan ke server dan verifikasi kunci</string>
+    <string name="settings_check_action">Periksa</string>
+    <string name="settings_status_available">Tersedia</string>
+    <string name="settings_status_auth_failed">Autentikasi gagal</string>
+    <string name="settings_status_unavailable">Tidak tersedia</string>
+
+    <!-- Umum (Wave5) -->
+    <string name="common_delete">Hapus</string>
+
+    <!-- Riwayat (Wave5) -->
+    <string name="history_title">Riwayat obrolan</string>
+    <string name="history_clear">Bersihkan</string>
+    <string name="history_search_placeholder">Cari obrolan...</string>
+    <string name="history_empty_title">Belum ada riwayat obrolan</string>
+    <string name="history_empty_subtitle">Mulai percakapan pertama Anda</string>
+    <string name="history_delete_title">Hapus obrolan</string>
+    <string name="history_delete_message">Hapus obrolan ini?</string>
+    <string name="history_clear_all_title">Bersihkan semua obrolan</string>
+    <string name="history_clear_all_message">Hapus semua riwayat obrolan?</string>
+    <string name="history_untitled">Obrolan tanpa judul</string>
+    <string name="history_detail_title">Detail obrolan</string>
+    <string name="history_detail_delete_message">Hapus seluruh obrolan ini?</string>
+    <plurals name="history_item_meta">
+        <item quantity="other">%1$s, %2$s, %3$d pesan</item>
+    </plurals>
+
+    <!-- Umum (Wave6) -->
+    <string name="common_clear">Bersihkan</string>
+    <string name="common_play">Putar</string>
+    <string name="common_pause">Jeda</string>
+
+    <!-- MyLife (Wave6) -->
+    <string name="mylife_loading">Memuat…</string>
+    <string name="mylife_analyzing">Menganalisis…</string>
+    <string name="mylife_analysis_pending">Akan muncul setelah analisis selesai</string>
+    <string name="mylife_load_failed">Gagal memuat</string>
+    <string name="mylife_search_failed">Pencarian gagal</string>
+    <string name="mylife_agent_task">Tugas agen</string>
+    <string name="mylife_refresh">Segarkan</string>
+    <string name="mylife_analyzing_content">Menganalisis konten…</string>
+    <string name="mylife_hotslot_empty">Tidak ada yang ditampilkan dalam periode ini</string>
+    <string name="mylife_max_selection">Maksimal 50 foto dapat dipilih</string>
+    <string name="mylife_delete_timeout">Waktu hapus habis, coba lagi nanti</string>
+    <string name="mylife_delete_failed">Gagal menghapus</string>
+    <string name="mylife_no_records_in_scope">Tidak ada catatan untuk %1$s</string>
+    <string name="mylife_no_records_yet">Belum ada catatan — mulai percakapan</string>
+    <string name="mylife_load_failed_retry">Gagal memuat — ketuk untuk coba lagi</string>
+    <string name="mylife_loading_earlier">Memuat catatan lama…</string>
+    <string name="mylife_load_earlier">Muat yang lebih lama</string>
+    <string name="mylife_reached_start">Ini awal</string>
+    <string name="mylife_search_min_chars">Ketik minimal 2 karakter</string>
+    <string name="mylife_searching">Mencari…</string>
+    <string name="mylife_search_no_results">Tidak ada hasil ditemukan</string>
+    <string name="mylife_search_placeholder">Cari…</string>
+    <string name="mylife_edit">Edit</string>
+    <string name="mylife_edit_exit">Selesai</string>
+    <string name="mylife_gallery_empty_title">Tidak ada foto dalam periode ini</string>
+    <string name="mylife_deleting">Menghapus…</string>
+    <string name="mylife_delete_photos">Hapus foto</string>
+    <string name="mylife_select_photo">Pilih foto</string>
+    <string name="mylife_audio_empty_title">Tidak ada audio hari ini</string>
+    <string name="mylife_audio_time_desc">Peristiwa dalam 10 menit sekitar %1$s</string>
+    <string name="mylife_overview_month">%2$s %1$d</string>
+    <string name="mylife_scope_filter">Hanya %1$s ✕</string>
+    <string name="mylife_granularity_day">Hari</string>
+    <string name="mylife_granularity_week">Pekan</string>
+    <string name="mylife_granularity_month">Bulan</string>
+    <string name="mylife_granularity_year">Tahun</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="other">Rekaman suara, %1$d segmen</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="other">%1$d foto</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="other">Menganalisis… · %1$d foto</item>
+    </plurals>
+    <string name="mylife_delete_count">Hapus (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="other">Hapus %1$d foto yang dipilih?</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="other">%1$d segmen</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="other">%1$d hasil</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="other">%1$d foto dihapus</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">%1$d dihapus, %2$d gagal</string>
+    <string name="mylife_week_label">Pekan %1$d</string>
+
+    <!-- Notifikasi (Wave7) -->
+    <string name="notif_mic_channel">Mikrofon</string>
+    <string name="notif_mic_title">Mikrofon sedang digunakan</string>
+    <string name="notif_mic_text">Suara dikirim ke AI untuk percakapan</string>
+    <string name="notif_screen_channel">Interaksi layar</string>
+    <string name="notif_screen_title">Tangkapan layar siap</string>
+    <string name="notif_screen_text">Ketuk balon di tepi layar untuk mengirim tangkapan layar ke AI</string>
+
+    <!-- Balon tangkapan layar dan galat (Wave7) -->
+    <string name="cap_bubble_sent">Tangkapan layar terkirim</string>
+    <string name="cap_bubble_foreground">Beralih ke aplikasi lain, lalu ketuk</string>
+    <string name="cap_bubble_locked">Buka kunci untuk menggunakan</string>
+    <string name="cap_bubble_failed">Gagal menangkap, coba lagi</string>
+    <string name="capture_start_failed">Gagal memulai interaksi layar: %1$s</string>
+    <string name="capture_overlay_failed">Balon gagal dimulai — tangkapan layar tidak tersedia</string>
+    <string name="capture_stopped">Interaksi layar berhenti tak terduga</string>
+
+    <!-- Pemutaran audio (Wave7) -->
+    <string name="player_play_failed">Gagal memutar</string>
+
+    <!-- Label perangkat (Wave7) -->
+    <string name="device_wired_headset">Headset kabel</string>
+    <string name="device_bt_sco">Headset Bluetooth</string>
+    <string name="device_ble_headset">Headset Bluetooth LE</string>
+    <string name="device_usb_device">Perangkat audio USB</string>
+    <string name="device_usb_headset">Headset USB</string>
+    <string name="device_speaker">Pengeras suara</string>
+    <string name="device_earpiece">Earpiece</string>
+    <string name="device_wired_headphones">Headphone kabel (tanpa mikrofon)</string>
+    <string name="device_bt_a2dp">Audio Bluetooth</string>
+    <string name="device_ble_speaker">Pengeras suara Bluetooth LE</string>
+    <string name="device_hearing_aid">Alat bantu dengar</string>
+    <string name="device_output_fallback">Perangkat keluaran audio</string>
+    <string name="device_builtin_mic">Mikrofon bawaan</string>
+    <string name="device_input_fallback">Perangkat masukan audio</string>
+    <string name="device_tag_bt_voice">Suara Bluetooth</string>
+    <string name="device_tag_bt_music">Audio Bluetooth</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- MyLife API: galat protokol (Wave8) -->
+    <string name="mylife_api_empty_response">Respons kosong</string>
+    <string name="mylife_api_json_parse_failed">Gagal mengurai JSON: %1$s</string>
+</resources>

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/session-ended.json",
+  "title": "session.ended — Session Ended",
+  "description": "Server notifies the client that the session has been terminated. The client should stop sending audio/video and may attempt reconnection.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "session.ended"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["reason", "session_id"],
+      "properties": {
+        "reason": {
+          "$ref": "../common.json#/$defs/SessionEndReason"
+        },
+        "session_id": {
+          "$ref": "../common.json#/$defs/SessionId"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "session.ended",
+      "seq": 204,
+      "timestamp": 1712345778200,
+      "payload": {
+        "reason": "user_quit",
+        "session_id": "sess_abc123def456ghijkl"
+      }
+    }
+  ]
+}

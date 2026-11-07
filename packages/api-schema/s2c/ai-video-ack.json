@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/s2c/ai-video-ack.json",
+  "title": "ai_video_ack — Video Frame Acknowledgement",
+  "description": "Server acknowledges receipt and processing of a client video frame. The sliding-window ack_frame_id allows the client to detect frame loss (gap > 1) and skip already-confirmed frames.",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "ai_video_ack"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["frame_id", "ack_frame_id", "processed"],
+      "properties": {
+        "frame_id": {
+          "$ref": "../common.json#/$defs/UInt32",
+          "description": "Echo of the client's frame_id."
+        },
+        "ack_frame_id": {
+          "$ref": "../common.json#/$defs/UInt32",
+          "description": "Sliding-window acknowledgement: the highest frame_id processed so far. Client detects loss when ack_frame_id - last_sent_frame_id > 1."
+        },
+        "processed": {
+          "type": "boolean",
+          "description": "true = frame was fed to the multimodal LLM. false = frame was discarded (e.g., session was in SPEAKING state, visual processing disabled)."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "ai_video_ack",
+      "seq": 25,
+      "timestamp": 1712345682500,
+      "payload": {
+        "frame_id": 7,
+        "ack_frame_id": 7,
+        "processed": true
+      }
+    }
+  ]
+}

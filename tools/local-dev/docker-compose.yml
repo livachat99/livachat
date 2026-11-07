@@ -1,0 +1,11 @@
+services:
+  mock-server:
+    build:
+      context: ../..
+      dockerfile: tools/local-dev/mock-services/livachat_mock_server/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - MOCK_HOST=0.0.0.0
+      - MOCK_PORT=8080
+      - MOCK_SCENARIO=default

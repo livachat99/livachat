@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livachat.dev/schemas/c2s/audio.json",
+  "title": "audio — Opus Audio Frame",
+  "description": "Client sends an Opus-encoded audio frame every 20ms. Server uses VAD state to detect end of user turn (≥600ms continuous silence).",
+  "type": "object",
+  "required": ["type", "seq", "timestamp", "payload"],
+  "properties": {
+    "type": {
+      "const": "audio"
+    },
+    "seq": {
+      "$ref": "../common.json#/$defs/SeqNumber"
+    },
+    "timestamp": {
+      "$ref": "../common.json#/$defs/Timestamp"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["data", "codec", "duration_ms", "vad_state"],
+      "properties": {
+        "data": {
+          "$ref": "../common.json#/$defs/Base64String",
+          "description": "Base64-encoded Opus audio packet. Encoded at 20ms frame length, 16/24kHz sample rate, CBR mode, 32–64 kbps bitrate."
+        },
+        "codec": {
+          "$ref": "../common.json#/$defs/AudioCodec"
+        },
+        "duration_ms": {
+          "$ref": "../common.json#/$defs/AudioDurationMs"
+        },
+        "vad_state": {
+          "$ref": "../common.json#/$defs/VadState"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "type": "audio",
+      "seq": 34,
+      "timestamp": 1712345681020,
+      "payload": {
+        "data": "Ly9VUXhBQUFBQUtBQVlBQUFBQ0FBb0FCZ0FBQUFJQUFBQURBQUE9PQ==",
+        "codec": "opus",
+        "duration_ms": 20,
+        "vad_state": "speech"
+      }
+    }
+  ]
+}

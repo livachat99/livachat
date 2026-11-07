@@ -1,0 +1,4 @@
+"NSMicrophoneUsageDescription" = "让我听见你的声音，更好地陪伴和倾听";
+"NSLocalNetworkUsageDescription" = "连接局域网内的 LivaChat 服务器";
+"NSCameraUsageDescription" = "让我看见你的周围环境，需要时再打开也可以";
+"NSPhotoLibraryAddUsageDescription" = "允许将 AI 图片保存到你的相册";

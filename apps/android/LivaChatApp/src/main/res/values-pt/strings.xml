@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LivaChat</string>
+
+    <!-- Geral (transversal; neutro, infinitivo primeiro, « você » se necessário, docs/android_multilingual.md §16.3) -->
+    <string name="common_retry">Tentar novamente</string>
+    <string name="common_close">Fechar</string>
+    <string name="common_back">Voltar</string>
+    <string name="common_view_full_result">Ver resultado completo</string>
+
+    <!-- Chat: barra inferior (« X ativado/desativado », separador de espaço) -->
+    <string name="conv_toolbar_mic_on">Microfone ativado</string>
+    <string name="conv_toolbar_mic_off">Microfone desativado</string>
+    <string name="conv_toolbar_speaker_on">Alto-falante ativado</string>
+    <string name="conv_toolbar_speaker_off">Alto-falante desativado</string>
+    <string name="conv_toolbar_camera_on">Câmera ativada</string>
+    <string name="conv_toolbar_camera_off">Câmera desativada</string>
+    <string name="conv_select_mic_device">Escolher microfone</string>
+    <string name="conv_select_speaker_device">Escolher alto-falante</string>
+
+    <!-- Chat: estado -->
+    <string name="conv_status_idle">Fale quando quiser</string>
+    <string name="conv_status_connecting">Conectando...</string>
+    <string name="conv_status_listening">Estou ouvindo...</string>
+    <string name="conv_status_thinking">Deixe-me pensar...</string>
+    <string name="conv_status_disconnected">Conexão interrompida</string>
+    <string name="ai_generated_notice">O conteúdo da conversa é gerado por IA. Avalie com atenção.</string>
+
+    <!-- Chat: boas-vindas (o texto dos chips é enviado como mensagem, WYSIWYG) -->
+    <string name="conv_welcome_title">Bem-vindo ao LivaChat</string>
+    <string name="conv_welcome_subtitle">Sou seu companheiro de IA. Fale comigo quando quiser</string>
+    <string name="conv_welcome_chip_voice">Chat de voz</string>
+    <string name="conv_welcome_chip_video">Videochamada</string>
+    <string name="conv_welcome_chip_speaking">Prática de conversação</string>
+    <string name="conv_welcome_chip_translate">Tradução em tempo real</string>
+    <string name="conv_welcome_chip_daily">Notas diárias</string>
+
+    <!-- Permissões (diálogo) -->
+    <string name="perm_dialog_title">Antes de começar, é necessária uma permissão</string>
+    <string name="perm_mic_title">Permissão de microfone</string>
+    <string name="perm_mic_desc">Para ouvir sua voz e acompanhar você</string>
+    <string name="perm_camera_title">Permissão de câmera (opcional)</string>
+    <string name="perm_camera_desc">Para ver o que está ao seu redor. Você pode ativá-la depois</string>
+    <string name="perm_start_chat">Começar a conversar</string>
+    <string name="perm_screen_camera_title">Permissão de câmera (opcional)</string>
+    <string name="perm_mic_required_hint">Para conversar, é necessária a permissão de microfone</string>
+    <string name="perm_go_to_settings">Abrir as configurações do sistema</string>
+    <string name="perm_grant_action">Permitir</string>
+    <string name="perm_granted">Concedida</string>
+
+    <!-- Troca de câmera -->
+    <string name="conv_switch_to_back_camera">Mudar para a câmera traseira</string>
+    <string name="conv_switch_to_front_camera">Mudar para a câmera frontal</string>
+
+    <!-- Avatar / imagem -->
+    <string name="avatar_custom_image_desc">Avatar personalizado</string>
+    <string name="chat_ai_image">Imagem de IA</string>
+
+    <!-- Tarefas do agente -->
+    <plurals name="conv_agent_jobs_title">
+        <item quantity="one">Tarefa do agente (%1$d)</item>
+        <item quantity="other">Tarefas do agente (%1$d)</item>
+    </plurals>
+    <string name="conv_agent_job_started">Iniciado: %1$s</string>
+    <string name="conv_agent_job_cancel_action">Cancelar tarefa do agente</string>
+    <string name="conv_agent_job_cancel_question">Cancelar tarefa do agente?</string>
+    <string name="conv_agent_job_cancel_yes">Sim</string>
+    <string name="conv_agent_job_cancel_no">Não</string>
+    <string name="conv_agent_job_cancel_in_progress">Cancelando…</string>
+    <string name="conv_agent_job_cancel_failed">Falha ao cancelar. Tente novamente</string>
+    <plurals name="conv_agent_jobs_running">
+        <item quantity="one">%1$d tarefa do agente em andamento</item>
+        <item quantity="other">%1$d tarefas do agente em andamento</item>
+    </plurals>
+    <plurals name="conv_job_remaining_chars">
+        <item quantity="one">Ver o texto completo · resta %1$s caractere</item>
+        <item quantity="other">Ver o texto completo · restam %1$s caracteres</item>
+    </plurals>
+
+    <!-- WebView -->
+    <string name="webview_unsupported_link">Formato de link não compatível</string>
+    <string name="webview_open_in_browser">Abrir no navegador</string>
+    <string name="webview_load_failed">Não foi possível carregar a página. Verifique a rede e tente novamente</string>
+    <string name="webview_cannot_open">Não é possível abrir esta página</string>
+
+    <!-- Tela de inicialização -->
+    <string name="splash_tagline">Seu companheiro de IA</string>
+    <string name="splash_waking">Despertando seu companheiro...</string>
+
+    <!-- Geral (Wave3) -->
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_stop">Parar</string>
+    <string name="common_save_image">Salvar imagem</string>
+    <string name="common_saved_to_gallery">Salvo na galeria</string>
+    <string name="common_save_failed">Falha ao salvar</string>
+    <string name="common_save_failed_storage">Falha ao salvar: permissão de armazenamento necessária</string>
+    <string name="common_go_to_settings">Ir para as configurações</string>
+    <string name="common_time_machine">Máquina do tempo</string>
+
+    <!-- Chat (Wave3) -->
+    <string name="conv_menu_stop_recording">Parar gravação</string>
+    <string name="conv_menu_start_recording">Iniciar gravação</string>
+    <string name="conv_menu_more">Mais</string>
+    <string name="conv_menu_chats">Conversas</string>
+    <string name="conv_menu_settings">Configurações</string>
+    <string name="conv_screen_capture_rationale_title">Iniciar interação com a tela</string>
+    <string name="conv_screen_capture_rationale_text">Interaja com a IA sobre o que está na tela: faça perguntas sobre artigos, reaja a vídeos e muito mais.\n\nApós conceder a permissão, uma bolha de IA aparece na borda da tela. Toque nela para enviar à IA uma captura de tela</string>
+    <string name="conv_continue">Continuar</string>
+    <string name="conv_screen_capture_stop_title">Parar interação com a tela</string>
+    <string name="conv_screen_capture_stop_message">A interação com a tela está ativa. Deseja parar?</string>
+    <string name="conv_conn_timeout">Tempo de conexão esgotado</string>
+    <string name="conv_permission_denied_fmt">Permissão negada: %1$s</string>
+    <string name="conv_omni">Omni</string>
+    <string name="conv_omni_intro">O modelo Omni reduz a latência de interação</string>
+    <string name="conv_enable">Ativar</string>
+    <string name="conv_take_photo">Tirar foto</string>
+    <string name="conv_camera_unavailable">Não é possível abrir a câmera</string>
+    <string name="conv_camera_permission_guide">Para usar a câmera, é necessária a permissão de câmera. Verifique a permissão do LivaChat nas configurações do sistema e tente novamente.</string>
+    <string name="conv_select_peer_language">Idioma do interlocutor</string>
+    <string name="conv_select_speaker_language">Idioma do orador</string>
+    <string name="conv_server_config_required">É preciso configurar o servidor primeiro</string>
+    <string name="conv_server_config_hint">Insira primeiro o endereço do servidor e a chave de autenticação nas configurações.</string>
+    <string name="conv_mode_translate">Modo tradução</string>
+    <string name="conv_mode_transcribe">Modo transcrição</string>
+    <string name="conv_mode_omni">Modo Omni</string>
+    <string name="conv_language_auto">Detecção automática</string>
+    <string name="conv_picker_confirm">OK</string>
+    <string name="conv_transcribe_source_title">Escolher a fonte de gravação</string>
+    <string name="conv_transcribe_source_original">Original</string>
+    <string name="conv_transcribe_source_original_desc">Som original do ambiente</string>
+    <string name="conv_transcribe_source_voice">Voz</string>
+    <string name="conv_transcribe_source_voice_desc">Otimizado para voz</string>
+    <string name="conv_mode_dialogue">Modo diálogo</string>
+    <string name="conv_mode_dialogue_desc">Traduzir conversas em tempo real</string>
+    <string name="conv_mode_lecture">Modo palestra</string>
+    <string name="conv_mode_lecture_desc">Traduzir discursos em tempo real</string>
+    <string name="conv_mode_transcribe_desc">Transcrever a voz em tempo real</string>
+    <string name="conv_omni_desc">Usar o modelo Omni</string>
+    <string name="conv_avatar_picker_title">Avatar</string>
+    <string name="conv_avatar_from_gallery">Escolher da galeria</string>
+    <string name="conv_avatar_reset">Restaurar avatar padrão</string>
+    <string name="conv_avatar_scale_normal">Normal</string>
+    <string name="conv_avatar_scale_shrink">Reduzido</string>
+    <string name="conv_avatar_drag_hint">Arraste para ajustar a posição</string>
+    <string name="conv_confirm">Confirmar</string>
+    <string name="conv_gallery_send">Enviar</string>
+    <string name="conv_image_action_text">Descreva o conteúdo da imagem</string>
+    <string name="conv_gallery_preview_image">Pré-visualização da foto</string>
+    <string name="conv_gallery_preview_failed">Não foi possível carregar a foto</string>
+    <string name="conv_system_default">Padrão do sistema</string>
+    <string name="conv_overlay_permission_required">Para a captura de tela, é necessária a permissão «Exibir sobre outros apps»</string>
+    <string name="conv_avatar_save_failed">Falha ao salvar o avatar: %1$s</string>
+    <string name="conv_camera_start_failed">Falha ao iniciar a câmera — verifique a permissão</string>
+    <string name="conv_screen_capture_unsupported">A interação com a tela não está disponível neste modo</string>
+    <string name="conv_msg_suffix_transcript">(transcrição)</string>
+    <string name="conv_msg_suffix_original">(original)</string>
+    <string name="conv_msg_suffix_translation">(tradução)</string>
+
+    <!-- Geral (Wave4) -->
+    <string name="common_view">Ver</string>
+
+    <!-- Configurações (Wave4) -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_section_service">Serviço</string>
+    <string name="settings_save">Salvar</string>
+    <string name="settings_section_video">Vídeo</string>
+    <string name="settings_default_front_camera">Câmera frontal padrão</string>
+    <string name="settings_default_front_camera_desc">Usar a câmera frontal por padrão ao iniciar o vídeo</string>
+    <string name="settings_auto_camera_on_join">Ativar a câmera automaticamente ao entrar em uma conversa</string>
+    <string name="settings_auto_camera_on_join_desc">Ativar o vídeo sempre que uma conversa começar</string>
+    <string name="settings_section_general">Geral</string>
+    <string name="settings_haptic">Vibração háptica</string>
+    <string name="settings_haptic_desc">Leve vibração ao mudar de estado</string>
+    <string name="settings_ai_proactive">Permitir cuidado proativo da IA</string>
+    <string name="settings_ai_proactive_desc">Deixe a IA responder proativamente a sons ou mudanças na imagem</string>
+    <string name="settings_section_about">Sobre</string>
+    <string name="settings_privacy_policy">Política de Privacidade</string>
+    <string name="settings_eula">Contrato de licença</string>
+    <string name="settings_support">Suporte</string>
+    <string name="settings_open_source_licenses">Licenças de código aberto</string>
+    <string name="licenses_title">Licenças de código aberto</string>
+    <string name="licenses_unavailable">As informações de licença não estão disponíveis.</string>
+    <string name="settings_server_updated">Configurações do servidor atualizadas</string>
+    <string name="settings_restart_to_apply">Aplica-se após reabrir o aplicativo.</string>
+    <string name="settings_exit">Sair</string>
+    <string name="settings_save_failed_message">Insira um endereço de servidor e uma chave de autenticação válidos.</string>
+    <string name="settings_server_label">Servidor</string>
+    <string name="settings_server_placeholder">ip:port ou domínio:port</string>
+    <string name="settings_auth_token">Chave de autenticação</string>
+    <string name="settings_auth_token_placeholder">Consulte o arquivo de configuração do servidor</string>
+    <string name="settings_tls_allow_self_signed">Permitir certificado autoassinado</string>
+    <string name="settings_tls_allow_self_signed_desc">Apenas para servidores locais confiáveis. Desativa a verificação do certificado.</string>
+    <string name="settings_hide_token">Ocultar a chave</string>
+    <string name="settings_show_token">Mostrar a chave</string>
+    <string name="settings_check_service">Verificar serviço</string>
+    <string name="settings_check_service_desc">Conectar ao servidor e verificar a chave</string>
+    <string name="settings_check_action">Verificar</string>
+    <string name="settings_status_available">Disponível</string>
+    <string name="settings_status_auth_failed">Falha na autenticação</string>
+    <string name="settings_status_unavailable">Indisponível</string>
+
+    <!-- Geral (Wave5) -->
+    <string name="common_delete">Excluir</string>
+
+    <!-- Histórico (Wave5) -->
+    <string name="history_title">Histórico de conversas</string>
+    <string name="history_clear">Limpar</string>
+    <string name="history_search_placeholder">Buscar nas conversas...</string>
+    <string name="history_empty_title">Ainda não há histórico de conversas</string>
+    <string name="history_empty_subtitle">Comece sua primeira conversa</string>
+    <string name="history_delete_title">Excluir conversa</string>
+    <string name="history_delete_message">Excluir esta conversa?</string>
+    <string name="history_clear_all_title">Limpar todas as conversas</string>
+    <string name="history_clear_all_message">Excluir todo o histórico de conversas?</string>
+    <string name="history_untitled">Conversa sem título</string>
+    <string name="history_detail_title">Detalhes da conversa</string>
+    <string name="history_detail_delete_message">Excluir toda esta conversa?</string>
+    <plurals name="history_item_meta">
+        <item quantity="one">%1$s, %2$s, %3$d mensagem</item>
+        <item quantity="other">%1$s, %2$s, %3$d mensagens</item>
+    </plurals>
+
+    <!-- Geral (Wave6) -->
+    <string name="common_clear">Limpar</string>
+    <string name="common_play">Reproduzir</string>
+    <string name="common_pause">Pausar</string>
+
+    <!-- MyLife (Wave6) -->
+    <string name="mylife_loading">Carregando…</string>
+    <string name="mylife_analyzing">Analisando…</string>
+    <string name="mylife_analysis_pending">Aparecerá quando a análise terminar</string>
+    <string name="mylife_load_failed">Falha ao carregar</string>
+    <string name="mylife_search_failed">Falha na busca</string>
+    <string name="mylife_agent_task">Tarefa do agente</string>
+    <string name="mylife_refresh">Atualizar</string>
+    <string name="mylife_analyzing_content">Analisando o conteúdo…</string>
+    <string name="mylife_hotslot_empty">Nada para mostrar neste período</string>
+    <string name="mylife_max_selection">Você pode selecionar até 50 fotos</string>
+    <string name="mylife_delete_timeout">Tempo de exclusão esgotado, tente novamente mais tarde</string>
+    <string name="mylife_delete_failed">Falha ao excluir</string>
+    <string name="mylife_no_records_in_scope">Nenhum registro para %1$s</string>
+    <string name="mylife_no_records_yet">Ainda não há registros — comece uma conversa</string>
+    <string name="mylife_load_failed_retry">Falha ao carregar — toque para tentar novamente</string>
+    <string name="mylife_loading_earlier">Carregando registros anteriores…</string>
+    <string name="mylife_load_earlier">Carregar anteriores</string>
+    <string name="mylife_reached_start">Este é o começo</string>
+    <string name="mylife_search_min_chars">Digite pelo menos 2 caracteres</string>
+    <string name="mylife_searching">Buscando…</string>
+    <string name="mylife_search_no_results">Nenhum resultado encontrado</string>
+    <string name="mylife_search_placeholder">Buscar…</string>
+    <string name="mylife_edit">Editar</string>
+    <string name="mylife_edit_exit">Concluído</string>
+    <string name="mylife_gallery_empty_title">Nenhuma foto neste período</string>
+    <string name="mylife_deleting">Excluindo…</string>
+    <string name="mylife_delete_photos">Excluir fotos</string>
+    <string name="mylife_select_photo">Selecionar foto</string>
+    <string name="mylife_audio_empty_title">Nenhum áudio neste dia</string>
+    <string name="mylife_audio_time_desc">Eventos nos 10 minutos ao redor de %1$s</string>
+    <string name="mylife_overview_month">%2$s de %1$d</string>
+    <string name="mylife_scope_filter">Apenas %1$s ✕</string>
+    <string name="mylife_granularity_day">Dia</string>
+    <string name="mylife_granularity_week">Semana</string>
+    <string name="mylife_granularity_month">Mês</string>
+    <string name="mylife_granularity_year">Ano</string>
+    <plurals name="mylife_audio_entry_desc">
+        <item quantity="one">Gravação de voz, %1$d segmento</item>
+        <item quantity="other">Gravações de voz, %1$d segmentos</item>
+    </plurals>
+    <plurals name="mylife_frames_count">
+        <item quantity="one">%1$d foto</item>
+        <item quantity="other">%1$d fotos</item>
+    </plurals>
+    <plurals name="mylife_analyzing_frames">
+        <item quantity="one">Analisando… · %1$d foto</item>
+        <item quantity="other">Analisando… · %1$d fotos</item>
+    </plurals>
+    <string name="mylife_delete_count">Excluir (%1$d)</string>
+    <plurals name="mylife_delete_confirm">
+        <item quantity="one">Excluir a foto selecionada (%1$d)?</item>
+        <item quantity="other">Excluir as fotos selecionadas (%1$d)?</item>
+    </plurals>
+    <plurals name="mylife_segments_count">
+        <item quantity="one">%1$d segmento</item>
+        <item quantity="other">%1$d segmentos</item>
+    </plurals>
+    <string name="mylife_more_items">+%1$d</string>
+    <plurals name="mylife_search_total">
+        <item quantity="one">%1$d resultado</item>
+        <item quantity="other">%1$d resultados</item>
+    </plurals>
+    <plurals name="mylife_photos_deleted">
+        <item quantity="one">%1$d foto excluída</item>
+        <item quantity="other">%1$d fotos excluídas</item>
+    </plurals>
+    <string name="mylife_photos_deleted_partial">%1$d excluídas, %2$d com erro</string>
+    <string name="mylife_week_label">S%1$d</string>
+
+    <!-- Notificações (Wave7) -->
+    <string name="notif_mic_channel">Microfone</string>
+    <string name="notif_mic_title">Microfone em uso</string>
+    <string name="notif_mic_text">A voz é enviada à IA para a conversa</string>
+    <string name="notif_screen_channel">Interação com a tela</string>
+    <string name="notif_screen_title">Captura de tela pronta</string>
+    <string name="notif_screen_text">Toque na bolha na borda da tela para enviar uma captura de tela à IA</string>
+
+    <!-- Bolha de captura de tela e erros (Wave7) -->
+    <string name="cap_bubble_sent">Captura enviada</string>
+    <string name="cap_bubble_foreground">Mude para outro app e toque</string>
+    <string name="cap_bubble_locked">Desbloqueie para usar</string>
+    <string name="cap_bubble_failed">Falha na captura, tente novamente</string>
+    <string name="capture_start_failed">Falha ao iniciar a interação com a tela: %1$s</string>
+    <string name="capture_overlay_failed">Falha ao iniciar a bolha — captura de tela indisponível</string>
+    <string name="capture_stopped">A interação com a tela parou inesperadamente</string>
+
+    <!-- Reprodução de áudio (Wave7) -->
+    <string name="player_play_failed">Falha na reprodução</string>
+
+    <!-- Rótulos de dispositivos (Wave7) -->
+    <string name="device_wired_headset">Fone com fio</string>
+    <string name="device_bt_sco">Fone Bluetooth</string>
+    <string name="device_ble_headset">Fone Bluetooth LE</string>
+    <string name="device_usb_device">Dispositivo de áudio USB</string>
+    <string name="device_usb_headset">Fone USB</string>
+    <string name="device_speaker">Alto-falante</string>
+    <string name="device_earpiece">Auricular</string>
+    <string name="device_wired_headphones">Fone com fio (sem microfone)</string>
+    <string name="device_bt_a2dp">Áudio Bluetooth</string>
+    <string name="device_ble_speaker">Alto-falante Bluetooth LE</string>
+    <string name="device_hearing_aid">Aparelho auditivo</string>
+    <string name="device_output_fallback">Dispositivo de saída de áudio</string>
+    <string name="device_builtin_mic">Microfone integrado</string>
+    <string name="device_input_fallback">Dispositivo de entrada de áudio</string>
+    <string name="device_tag_bt_voice">Voz Bluetooth</string>
+    <string name="device_tag_bt_music">Áudio Bluetooth</string>
+    <string name="device_label_join">%1$s (%2$s)</string>
+
+    <!-- MyLife API: erros de protocolo (Wave8) -->
+    <string name="mylife_api_empty_response">Resposta vazia</string>
+    <string name="mylife_api_json_parse_failed">Falha ao analisar o JSON: %1$s</string>
+</resources>

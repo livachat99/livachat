@@ -1,0 +1,6 @@
+[
+  {"query": "报错", "expected": ["019fabe0-3b0f-7947-8000-1e567def787d:video:019fabe5-b00e-7b8d-8000-8fc29ccdab9a"]},
+  {"query": "响应慢", "expected": ["019fabe0-3b0f-7947-8000-1e567def787d:summary:019fabe0-3b0f-7947-8000-1e567def787d"]},
+  {"query": "这么慢", "expected": ["019fabe0-3b0f-7947-8000-1e567def787d:chat:m1"]},
+  {"query": "打开应用", "expected": ["019fabe0-3b0f-7947-8000-1e567def787d:audio:seg1"]}
+]

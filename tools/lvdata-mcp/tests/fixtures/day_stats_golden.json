@@ -1,0 +1,265 @@
+{
+ "days": {
+  "2026-08-17": {
+   "counts": {
+    "agent_job": 1,
+    "audio": 1,
+    "chat": 5,
+    "transcribe": 1,
+    "translate": 1,
+    "video": 1,
+    "window": 1
+   },
+   "hot_slots": [
+    {
+     "count": 1,
+     "end_ms": 1786896000000,
+     "start_ms": 1786896000000
+    },
+    {
+     "count": 7,
+     "end_ms": 1786950000000,
+     "start_ms": 1786924800000
+    },
+    {
+     "count": 1,
+     "end_ms": 1786982399999,
+     "start_ms": 1786982399999
+    }
+   ],
+   "images": [
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:006",
+     "frame_id": "019fabe5-b00e-7b8d-8000-8fc29ccdab01",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-8fc29ccdab01.jpg",
+     "ts_ms": 1786942800000,
+     "window_id": "wA1"
+    }
+   ]
+  },
+  "2026-08-18": {
+   "counts": {
+    "chat": 6,
+    "video": 10
+   },
+   "hot_slots": [
+    {
+     "count": 14,
+     "end_ms": 1787020200000,
+     "start_ms": 1787014800000
+    },
+    {
+     "count": 1,
+     "end_ms": 1787025600000,
+     "start_ms": 1787025600000
+    },
+    {
+     "count": 1,
+     "end_ms": 1787031000000,
+     "start_ms": 1787031000000
+    }
+   ],
+   "images": [
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:017",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000010",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000010.jpg",
+     "ts_ms": 1787014800000,
+     "window_id": "w1"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:024",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000040",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000040.jpg",
+     "ts_ms": 1787014800000,
+     "window_id": "w3"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:018",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000011",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000011.jpg",
+     "ts_ms": 1787015100000,
+     "window_id": "w1"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:019",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000012",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000012.jpg",
+     "ts_ms": 1787015400000,
+     "window_id": "w1"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:020",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000020",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000020.jpg",
+     "ts_ms": 1787016000000,
+     "window_id": "w2"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:021",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000021",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000021.jpg",
+     "ts_ms": 1787016300000,
+     "window_id": "w2"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:022",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000030",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000030.jpg",
+     "ts_ms": 1787017200000,
+     "window_id": null
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:023",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000031",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000031.jpg",
+     "ts_ms": 1787017500000,
+     "window_id": null
+    }
+   ]
+  },
+  "2026-08-19": {
+   "counts": {
+    "chat": 2,
+    "video": 1
+   },
+   "hot_slots": [
+    {
+     "count": 3,
+     "end_ms": 1787108400000,
+     "start_ms": 1787104800000
+    }
+   ],
+   "images": [
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787e:video:029",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000060",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000002/019fabe0-3b0f-7947-8000-1e567def787e/video/019fabe5-b00e-7b8d-8000-000000000060.jpg",
+     "ts_ms": 1787108400000,
+     "window_id": "w1"
+    }
+   ]
+  },
+  "2026-08-20": {
+   "counts": {
+    "video": 18
+   },
+   "hot_slots": [
+    {
+     "count": 18,
+     "end_ms": 1787192220000,
+     "start_ms": 1787191200000
+    }
+   ],
+   "images": [
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:030",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000100",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000100.jpg",
+     "ts_ms": 1787191200000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:031",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000101",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000101.jpg",
+     "ts_ms": 1787191260000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:032",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000102",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000102.jpg",
+     "ts_ms": 1787191320000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:033",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000103",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000103.jpg",
+     "ts_ms": 1787191380000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:034",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000104",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000104.jpg",
+     "ts_ms": 1787191440000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:035",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000105",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000105.jpg",
+     "ts_ms": 1787191500000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:036",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000106",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000106.jpg",
+     "ts_ms": 1787191560000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:037",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000107",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000107.jpg",
+     "ts_ms": 1787191620000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:038",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000108",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000108.jpg",
+     "ts_ms": 1787191680000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:039",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000109",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000109.jpg",
+     "ts_ms": 1787191740000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:040",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000110",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000110.jpg",
+     "ts_ms": 1787191800000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:041",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000111",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000111.jpg",
+     "ts_ms": 1787191860000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:042",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000112",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000112.jpg",
+     "ts_ms": 1787191920000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:043",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000113",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000113.jpg",
+     "ts_ms": 1787191980000,
+     "window_id": "w9"
+    },
+    {
+     "event_ref": "019fabe0-3b0f-7947-8000-1e567def787d:video:044",
+     "frame_id": "019fabe5-b00e-7b8d-8000-000000000114",
+     "media_url": "/api/mylife/media/b53985c7-0000-4000-8000-000000000001/019fabe0-3b0f-7947-8000-1e567def787d/video/019fabe5-b00e-7b8d-8000-000000000114.jpg",
+     "ts_ms": 1787192040000,
+     "window_id": "w9"
+    }
+   ]
+  }
+ },
+ "devices": null,
+ "timezone": "Asia/Shanghai"
+}
