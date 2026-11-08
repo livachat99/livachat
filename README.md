@@ -31,6 +31,7 @@ LivaChat is an open-source, real-time multimodal AI companion platform. It inclu
 - **Agent integration** — connect Hermes or OpenClaw agents and drive long-running tasks by voice or chat: news analysis, daily finance reports, research, and more.
 - **A time machine for your data** — daily conversations and audio/video recordings are analyzed by AI and turned into valuable, browsable memories.
 - **Fully open source** — server and app source code are both available.
+- **16 supported languages** — English, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, German, French, Italian, Spanish, Portuguese, Hindi, Indonesian, Thai, Vietnamese, and Arabic. The app UI and all AI analysis output follow the selected language.
 
 ## Server installation
 
