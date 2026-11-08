@@ -19,7 +19,7 @@
 #   th      --> Thai
 #   vi      --> Vietnamese
 #   ar      --> Arabic
-language: zh-Hans
+language: en
 
 server:
   host: "127.0.0.1"
