@@ -66,7 +66,19 @@ class DashScopeEmbeddingProvider:
             resp = await self._client.embeddings.create(
                 model=self.model, input=batch,
                 dimensions=self.dim if self.model == "text-embedding-v4" else None)
-            out.extend(d.embedding for d in resp.data)
+            # 短响应/乱序响应会导致 zip 静默丢项、vec_state 误标已同步。
+            if len(resp.data) != len(batch):
+                raise ValueError(
+                    "embedding response count mismatch: "
+                    f"expected {len(batch)}, got {len(resp.data)}")
+            raw_indices = [getattr(d, "index", None) for d in resp.data]
+            if any(not isinstance(idx, int) for idx in raw_indices) or \
+                    sorted(raw_indices) != list(range(len(batch))):
+                raise ValueError(
+                    "embedding response indices invalid: "
+                    f"expected 0..{len(batch) - 1}, got {raw_indices}")
+            out.extend(d.embedding for d in
+                       sorted(resp.data, key=lambda d: d.index))
         return out
 
 
@@ -119,6 +131,23 @@ _UPSERT_STATE_SQL = (
     "ON CONFLICT(event_ref) DO UPDATE SET updated_at = excluded.updated_at"
 )
 
+# SQLite 单条语句的 host parameter 上限（本机实测 32766）；孤儿可能远超该值，
+# 按批删除避免 "too many SQL variables" 导致清理永久失败（review4 issue 1）。
+DELETE_BATCH_SIZE = 500
+
+
+def _batches(refs: list[str], size: int = DELETE_BATCH_SIZE):
+    for i in range(0, len(refs), size):
+        yield refs[i:i + size]
+
+
+def _delete_refs(conn: sqlite3.Connection, table: str,
+                 refs: list[str]) -> None:
+    """按 event_ref 分批删除；table 只接受模块内字面量。"""
+    for batch in _batches(refs):
+        ph = ",".join("?" * len(batch))
+        conn.execute(f"DELETE FROM {table} WHERE event_ref IN ({ph})", batch)
+
 
 def _iter_session_chunks(conn: sqlite3.Connection, store: DataStore,
                          session_id: str):
@@ -152,9 +181,11 @@ class VecIndex:
         self._cache_hits = 0
         self._cache_misses = 0
 
-    def conn(self) -> sqlite3.Connection:
+    def conn(self, *, create_schema: bool = True) -> sqlite3.Connection:
+        """打开向量库；本地清理用 create_schema=False，绝不猜测维度建表。"""
         conn = _connect(self.db_path)
-        _ensure_schema(conn, self.provider.dim)
+        if create_schema:
+            _ensure_schema(conn, self.provider.dim)
         return conn
 
     # ── 查询向量缓存（§13）──────────────────────────────────────────────────
@@ -216,6 +247,10 @@ class VecIndex:
         chunks = self._chunks_for_session(session_id)
         state = self._session_state(session_id)
         vecs = await self.provider.embed([c[6] for c in chunks]) if chunks else []
+        if len(vecs) != len(chunks):
+            raise ValueError(
+                f"embedding count mismatch for session {session_id}: "
+                f"expected {len(chunks)}, got {len(vecs)}")
         with self.conn() as conn:
             conn.execute(
                 "DELETE FROM vec_chunks WHERE session_id = ?", (session_id,))
@@ -224,7 +259,7 @@ class VecIndex:
                 (json.dumps(v), chunk_id, event_ref, sid, device, etype,
                  0 if ts_ms is None else ts_ms, text)
                 for v, (chunk_id, event_ref, sid, device, etype, ts_ms, text)
-                in zip(vecs, chunks)
+                in zip(vecs, chunks, strict=True)
             ]
             if rows:
                 conn.executemany(
@@ -258,11 +293,8 @@ class VecIndex:
             stale = [ref for ref, v in events.items() if state.get(ref) != v[0]]
             orphans = [ref for ref in state if ref not in events]
             if orphans:
-                ph = ",".join("?" * len(orphans))
-                conn.execute(f"DELETE FROM vec_chunks WHERE event_ref IN ({ph})",
-                             orphans)
-                conn.execute(f"DELETE FROM vec_state WHERE event_ref IN ({ph})",
-                             orphans)
+                _delete_refs(conn, "vec_chunks", orphans)
+                _delete_refs(conn, "vec_state", orphans)
             embedded = 0
             for i in range(0, len(stale), batch_size):
                 batch = stale[i:i + batch_size]
@@ -270,11 +302,15 @@ class VecIndex:
                          if (events[ref][3] or "").strip()]
                 vecs = await self.provider.embed([it[1][3] for it in items]) \
                     if items else []
+                if len(vecs) != len(items):
+                    raise ValueError(
+                        "embedding count mismatch in sync_changed: "
+                        f"expected {len(items)}, got {len(vecs)}")
                 ph = ",".join("?" * len(batch))
                 conn.execute(f"DELETE FROM vec_chunks WHERE event_ref IN ({ph})",
                              batch)
                 for (ref, (_upd, etype, ts_ms, text, sid, device)), v in \
-                        zip(items, vecs):
+                        zip(items, vecs, strict=True):
                     conn.execute(
                         "INSERT INTO vec_chunks (embedding, chunk_id, event_ref, "
                         "session_id, device_uuid, type, ts_ms, text) "
@@ -287,22 +323,36 @@ class VecIndex:
             conn.commit()
         return embedded
 
-    def remove_refs(self, refs: list[str]) -> int:
+    @staticmethod
+    def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
+        return conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+            (name,)).fetchone() is not None
+
+    def remove_refs(self, refs: list[str], *,
+                    create_schema: bool = True) -> int:
         """按 event_ref 删除向量行（chunks + state），返回删除的 chunk 数。
 
         删除接口专用（docs/bff_service_remove.md §3.2）：语句与孤儿清扫同款
         （`sync_changed`/`sweep_orphans`）；向量库不存在 → 0（不建库）。
+        本地清理传 `create_schema=False`：表不存在时直接跳过，不猜测维度。
         调用方（`remove.EventRemover`）负责吞异常语义（D10）。
         """
         if not refs or not Path(self.db_path).exists():
             return 0
-        ph = ",".join("?" * len(refs))
-        with self.conn() as conn:
-            n = conn.execute(
-                f"SELECT COUNT(*) FROM vec_chunks WHERE event_ref IN ({ph})",
-                refs).fetchone()[0]
-            conn.execute(f"DELETE FROM vec_chunks WHERE event_ref IN ({ph})", refs)
-            conn.execute(f"DELETE FROM vec_state WHERE event_ref IN ({ph})", refs)
+        with self.conn(create_schema=create_schema) as conn:
+            n = 0
+            if self._table_exists(conn, "vec_chunks"):
+                for batch in _batches(refs):
+                    ph = ",".join("?" * len(batch))
+                    n += conn.execute(
+                        f"SELECT COUNT(*) FROM vec_chunks "
+                        f"WHERE event_ref IN ({ph})", batch).fetchone()[0]
+                    conn.execute(
+                        f"DELETE FROM vec_chunks WHERE event_ref IN ({ph})",
+                        batch)
+            if self._table_exists(conn, "vec_state"):
+                _delete_refs(conn, "vec_state", refs)
             conn.commit()
         return int(n)
 
@@ -316,34 +366,37 @@ class VecIndex:
         self.sweep_orphans()
         return total
 
-    def sweep_orphans(self) -> int:
+    def sweep_orphans(self, *, create_schema: bool = True) -> int:
         """清理孤儿 chunk：events 已不存在的 event_ref，返回清扫数。
 
         增量重建只覆盖有事件的会话；事件被清理（如静音判定收紧）后该会话
         不再进重建集合（无 dirty 信号），残留 chunk 永不失效——全量重建
         路径（embed rebuild_all / reindex --vectors）顺带清扫（§5.9）。
+        本地清理传 `create_schema=False`：表不存在时返回 0，不建 schema。
         """
+        if not create_schema and not Path(self.db_path).exists():
+            # 本地清理不得为一次空 sweep 创建零字节向量库（review4 收尾项）。
+            return 0
         with self.store.connect() as conn:
             valid = {r["event_ref"]
                      for r in conn.execute("SELECT event_ref FROM events")}
-        with self.conn() as conn:
-            rows = conn.execute("SELECT event_ref FROM vec_chunks").fetchall()
-            stale = [r["event_ref"] for r in rows if r["event_ref"] not in valid]
-            if stale:
-                placeholders = ",".join("?" * len(stale))
-                conn.execute(
-                    f"DELETE FROM vec_chunks WHERE event_ref IN ({placeholders})",
-                    stale)
-            state_rows = conn.execute("SELECT event_ref FROM vec_state").fetchall()
-            stale_state = [r["event_ref"] for r in state_rows
-                           if r["event_ref"] not in valid]
-            if stale_state:
-                placeholders = ",".join("?" * len(stale_state))
-                conn.execute(
-                    f"DELETE FROM vec_state WHERE event_ref IN ({placeholders})",
-                    stale_state)
+        with self.conn(create_schema=create_schema) as conn:
+            stale_refs: set[str] = set()
+            if self._table_exists(conn, "vec_chunks"):
+                rows = conn.execute("SELECT event_ref FROM vec_chunks").fetchall()
+                stale = [r["event_ref"] for r in rows
+                         if r["event_ref"] not in valid]
+                stale_refs.update(stale)
+                _delete_refs(conn, "vec_chunks", stale)
+            if self._table_exists(conn, "vec_state"):
+                state_rows = conn.execute(
+                    "SELECT event_ref FROM vec_state").fetchall()
+                stale_state = [r["event_ref"] for r in state_rows
+                               if r["event_ref"] not in valid]
+                stale_refs.update(stale_state)
+                _delete_refs(conn, "vec_state", stale_state)
             conn.commit()
-        return len(stale)
+        return len(stale_refs)
 
     def search(self, query_vec: list[float], session_id: str | None = None,
                etype: str | None = None, limit: int = 10,
@@ -355,13 +408,17 @@ class VecIndex:
         where: list[str] = []
         params: list[Any] = []
         if session_id:
-            where.append("session_id = ?"); params.append(session_id)
+            where.append("session_id = ?")
+            params.append(session_id)
         if etype:
-            where.append("type = ?"); params.append(etype)
+            where.append("type = ?")
+            params.append(etype)
         if ts_min is not None:
-            where.append("ts_ms >= ?"); params.append(ts_min)
+            where.append("ts_ms >= ?")
+            params.append(ts_min)
         if ts_max is not None:
-            where.append("ts_ms <= ?"); params.append(ts_max)
+            where.append("ts_ms <= ?")
+            params.append(ts_max)
         sql = ("SELECT event_ref, session_id, type, ts_ms, text, distance "
                "FROM vec_chunks")
         if where:

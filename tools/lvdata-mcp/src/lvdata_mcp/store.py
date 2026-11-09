@@ -19,9 +19,9 @@ from . import VERSION
 from .config import LvdataMcpConfig
 from . import index as index_mod
 from .consts import EVENT_PRIORITY, EVENT_TYPES, PRIORITY_FALLBACK, PRIORITY_SQL
-from .timeutil import (date_window_ms, day_bounds_ms, ms_to_local,
-                       ms_to_local_date, ms_to_local_or_none, normalize_date,
-                       resolve_timezone, try_resolve_timezone)
+from .timeutil import (date_window_ms, day_bounds_ms, ms_to_local_or_none,
+                       normalize_date, resolve_timezone, safe_local_date,
+                       try_resolve_timezone)
 
 
 _ENERGY_KEYS = ("energy", "energy_v", "frame_ms", "db_min", "db_max")
@@ -87,8 +87,12 @@ class DataStore:
                 f"Database not initialized: {self.db_path}",
                 hint="Run lvdata_inventory.py or wait for the watcher to create tables",
             )
-        uri = f"file:{self.db_path}?mode=ro" if readonly else str(self.db_path)
-        conn = sqlite3.connect(uri, uri=readonly, timeout=5)
+        if readonly:
+            # as_uri() percent-encodes ?/#/%: 手拼 file: 会截断特殊字符路径
+            uri = self.db_path.absolute().as_uri() + "?mode=ro"
+            conn = sqlite3.connect(uri, uri=True, timeout=5)
+        else:
+            conn = sqlite3.connect(str(self.db_path), timeout=5)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA busy_timeout = 5000")
         return conn
@@ -160,9 +164,11 @@ class DataStore:
         where = [f"type IN ({placeholders})"]
         params: list[Any] = list(type_set)
         if start_ms is not None:
-            where.append("ts_ms >= ?"); params.append(start_ms)
+            where.append("ts_ms >= ?")
+            params.append(start_ms)
         if end_ms is not None:
-            where.append("ts_ms <= ?"); params.append(end_ms)
+            where.append("ts_ms <= ?")
+            params.append(end_ms)
         page_where, page_params = list(where), list(params)
         if cursor:
             cts, ctype, ceid = self._parse_cursor(cursor)
@@ -188,7 +194,7 @@ class DataStore:
         # 升序取数 → dict 插入序即日升序；日内顺序天然升序（无需反转）
         by_day: dict[str, list[dict]] = {}
         for r in page:
-            by_day.setdefault(ms_to_local_date(r["ts_ms"], tz), []).append(
+            by_day.setdefault(safe_local_date(r["ts_ms"], tz), []).append(
                 self._event_brief(r, tz))
         return {
             "timezone": tz_out,
@@ -315,7 +321,7 @@ class DataStore:
         # rows 降序 → dict 插入序即日倒序；日内降序追加后再 reverse 成正序
         by_day: dict[str, list[dict]] = {}
         for r in rows:
-            by_day.setdefault(ms_to_local_date(r["ts_ms"], tz), []).append(
+            by_day.setdefault(safe_local_date(r["ts_ms"], tz), []).append(
                 self._event_brief(r, tz))
         return {
             "timezone": tz_out,

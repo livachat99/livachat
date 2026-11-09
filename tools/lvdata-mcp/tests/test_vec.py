@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import sqlite3
+from types import SimpleNamespace
 
 import pytest
 
 from lvdata_mcp.config import LvdataMcpConfig
 from lvdata_mcp.store import DataStore
-from lvdata_mcp.vec import VecIndex, rrf_merge
+from lvdata_mcp.vec import (DashScopeEmbeddingProvider, VecIndex,
+                            rrf_merge)
 
-from conftest import (DEVICE, SID, TS, CountingEmbeddingProvider,
+from conftest import (SID, TS, CountingEmbeddingProvider,
                       FakeEmbeddingProvider, make_sample)
 
 
@@ -53,6 +57,71 @@ def test_sweep_orphans(tmp_path):
     assert f"{SID}:chat:m1" not in refs
     assert f"{SID}:chat:m2" in refs  # 其余 chunk 不受影响
     assert vec.sweep_orphans() == 0  # 幂等
+
+
+def _vec_dim2(root) -> VecIndex:
+    cfg = LvdataMcpConfig(
+        data={"root_dir": str(root)},
+        watcher={"timezone": "Asia/Shanghai"},
+        providers={"embedding": {"model": "fake", "dim": 2}})
+    return VecIndex(cfg, DataStore(cfg), FakeEmbeddingProvider(dim=2))
+
+
+def _sqlite_var_limit() -> int:
+    conn = sqlite3.connect(":memory:")
+    try:
+        return conn.getlimit(sqlite3.SQLITE_LIMIT_VARIABLE_NUMBER)
+    finally:
+        conn.close()
+
+
+def _insert_orphans(vec: VecIndex, n: int) -> None:
+    with vec.conn() as conn:
+        conn.executemany(
+            "INSERT INTO vec_state (event_ref, updated_at) VALUES (?, 'x')",
+            [(f"orphan:{i}",) for i in range(n)])
+        conn.executemany(
+            "INSERT INTO vec_chunks (embedding, chunk_id, event_ref, session_id, "
+            "device_uuid, type, ts_ms, text) VALUES (?,?,?,?,?,?,?,?)",
+            [(json.dumps([0.0, 0.0]), f"orphan:{i}", f"orphan:{i}", "s",
+              "d", "chat", 1, "t") for i in range(n)])
+        conn.commit()
+
+
+def test_sweep_orphans_over_sqlite_variable_limit(tmp_path):
+    """孤儿数超过 SQLite 变量上限：分批删除，重跑收敛（review4 issue 1）。"""
+    root = tmp_path / "lvdata"
+    root.mkdir()
+    make_sample(root)
+    vec = _vec_dim2(root)
+    n = _sqlite_var_limit() + 1
+    _insert_orphans(vec, n)
+
+    assert vec.sweep_orphans() == n
+    with vec.conn() as conn:
+        assert conn.execute(
+            "SELECT COUNT(*) FROM vec_chunks").fetchone()[0] == 0
+        assert conn.execute(
+            "SELECT COUNT(*) FROM vec_state").fetchone()[0] == 0
+    assert vec.sweep_orphans() == 0
+
+
+def test_sync_changed_orphans_over_sqlite_variable_limit(tmp_path):
+    """sync_changed 的孤儿删除同样必须分批（review4 issue 1）。"""
+    root = tmp_path / "lvdata"
+    root.mkdir()
+    make_sample(root)
+    vec = _vec_dim2(root)
+    n = _sqlite_var_limit() + 1
+    _insert_orphans(vec, n)
+
+    asyncio.run(vec.sync_changed())
+    with vec.conn() as conn:
+        orphan_refs = {r[0] for r in conn.execute(
+            "SELECT event_ref FROM vec_state WHERE event_ref LIKE 'orphan:%'")}
+        chunks = {r[0] for r in conn.execute(
+            "SELECT event_ref FROM vec_chunks WHERE event_ref LIKE 'orphan:%'")}
+    assert orphan_refs == set() and chunks == set()
 
 
 def test_vec_chunk_id_is_event_ref(tmp_path):
@@ -109,6 +178,112 @@ def test_sync_changed_cleans_orphans(tmp_path):
     assert f"{SID}:chat:m1" not in chunk_refs
     assert f"{SID}:chat:m1" not in state_refs
     assert f"{SID}:chat:m2" in chunk_refs  # 其余不受影响
+
+
+class _ShortEmbeddingProvider(FakeEmbeddingProvider):
+    def __init__(self):
+        super().__init__()
+        self.short = True
+
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        vecs = await super().embed(texts)
+        return vecs[:-1] if self.short and vecs else vecs
+
+
+def _vec_counts(vec: VecIndex) -> tuple[int, int]:
+    with vec.conn() as conn:
+        return (conn.execute("SELECT COUNT(*) FROM vec_chunks").fetchone()[0],
+                conn.execute("SELECT COUNT(*) FROM vec_state").fetchone()[0])
+
+
+def test_short_embedding_does_not_advance_state(tmp_path):
+    """provider 少返回向量：不得 DELETE 旧 chunk / 推进 vec_state（review6 issue 1）。"""
+    root = tmp_path / "lvdata"
+    root.mkdir()
+    make_sample(root)
+    provider = _ShortEmbeddingProvider()
+    cfg = LvdataMcpConfig(
+        data={"root_dir": str(root)},
+        watcher={"timezone": "Asia/Shanghai"},
+        providers={"embedding": {"model": "fake", "dim": 128}})
+    vec = VecIndex(cfg, DataStore(cfg), provider)
+
+    with pytest.raises(ValueError):
+        asyncio.run(vec.sync_changed())
+    assert _vec_counts(vec) == (0, 0)
+
+    provider.short = False
+    assert asyncio.run(vec.sync_changed()) == 5
+    assert _vec_counts(vec) == (5, 5)
+
+
+def test_short_embedding_rebuild_session_rolls_back(tmp_path):
+    root = tmp_path / "lvdata"
+    root.mkdir()
+    make_sample(root)
+    provider = _ShortEmbeddingProvider()
+    cfg = LvdataMcpConfig(
+        data={"root_dir": str(root)},
+        watcher={"timezone": "Asia/Shanghai"},
+        providers={"embedding": {"model": "fake", "dim": 128}})
+    vec = VecIndex(cfg, DataStore(cfg), provider)
+
+    with pytest.raises(ValueError):
+        asyncio.run(vec.rebuild_session(SID))
+    assert _vec_counts(vec) == (0, 0)
+
+    provider.short = False
+    assert asyncio.run(vec.rebuild_session(SID)) == 5
+    assert _vec_counts(vec) == (5, 5)
+
+
+def test_dashscope_embed_validates_count_and_index():
+    class _Client:
+        def __init__(self, data):
+            self.data = data
+            self.embeddings = self
+
+        async def create(self, **kwargs):
+            return SimpleNamespace(data=self.data)
+
+    provider = object.__new__(DashScopeEmbeddingProvider)
+    provider.model = "fake"
+    provider.dim = 2
+
+    provider._client = _Client([SimpleNamespace(index=0, embedding=[1.0, 0.0])])
+    with pytest.raises(ValueError, match="count mismatch"):
+        asyncio.run(provider.embed(["a", "b"]))
+
+    provider._client = _Client([
+        SimpleNamespace(index=0, embedding=[1.0, 0.0]),
+        SimpleNamespace(index=0, embedding=[0.0, 1.0])])
+    with pytest.raises(ValueError, match="indices invalid"):
+        asyncio.run(provider.embed(["a", "b"]))
+
+    provider._client = _Client([
+        SimpleNamespace(index=1, embedding=[0.0, 1.0]),
+        SimpleNamespace(index=0, embedding=[1.0, 0.0])])
+    assert asyncio.run(provider.embed(["a", "b"])) == [[1.0, 0.0], [0.0, 1.0]]
+
+
+def test_remove_refs_over_sqlite_variable_limit(tmp_path):
+    """remove_refs 自身也必须分批，不能依赖 reset 的 500 批切分（review6 收尾项）。"""
+    root = tmp_path / "lvdata"
+    root.mkdir()
+    make_sample(root)
+    vec = _vec_dim2(root)
+    n = _sqlite_var_limit() + 1
+    refs = [f"orphan:{i}" for i in range(n)]
+    with vec.conn() as conn:
+        conn.executemany(
+            "INSERT INTO vec_state (event_ref, updated_at) VALUES (?, 'x')",
+            [(ref,) for ref in refs])
+        conn.commit()
+
+    assert vec.remove_refs(refs, create_schema=False) == 0   # vec_chunks 为空
+    with vec.conn() as conn:
+        assert conn.execute(
+            "SELECT COUNT(*) FROM vec_state").fetchone()[0] == 0
 
 
 def test_rebuild_session_marks_state(tmp_path):

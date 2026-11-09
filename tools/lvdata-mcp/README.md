@@ -56,6 +56,32 @@ curl -s http://127.0.0.1:8090/readyz         # 首轮 poll 完成前返回 503�
 索引 → 日摘要，无需手动步骤。
 `reindex` 仅在异常重建时使用（数据源 = events 表）。
 
+### 重置某日分析产物（reset）
+
+按日期重置 recording session 的分析产物：删除已 parse 但无事件的 audio/video 源
+文件，purge 已知事件（未知 type 保留），清理/重建 FTS/向量/日摘要，由下一次
+poll 重新分析。默认要求 server 已停止（`reset -> start` 的推荐顺序）：
+
+```bash
+systemctl stop lvdata-mcp                          # 或停掉手动启动的 serve
+lvdata-mcp reset --date 2026-09-28 --dry-run       # 先看计划（零写入）
+lvdata-mcp reset --date 2026-09-28 --yes           # 实际执行
+systemctl start lvdata-mcp
+```
+
+- `--date` 支持 `YYYY` / `YYYY-MM` / `YYYY-MM-DD`（本地日期 = `watcher.timezone`）。
+- `--json` 输出机器可读计划/结果；失败时统一输出 `{"error":{"code","message"}}`。
+  `--dry-run`/未确认路径只读，不建表/不迁移。
+- 实际执行前做三态 `/healthz` 探测：running 或 unknown 都拒绝；只有明确
+  connection refused 放行。`--allow-running-server` 才允许覆盖并输出 warning
+  （接受 day_summary/day_stats 可能 stale 的风险）。
+- 部分完成（`failed_unlinks` / `vectors_pending` / `sessions_failed`）退出码为 1。
+- 汇总区分物理删除与 DB 行删除：`files_unlinked`/`bytes_unlinked` 是本轮实际
+  unlink（含随后被 defer 的 session），`files_deleted`/`bytes_deleted` 是已提交
+  的 files 行；向量 sweep 删除数见 `vectors_swept`。
+- 不删除 chat/meta 源文件，不调用 LLM；无备份。完整语义与风险见
+  [`docs/data/lvdata_mcp_cli_reset.md`](../../docs/data/lvdata_mcp_cli_reset.md)。
+
 ### 配置
 
 配置主体为 `lvdata_mcp.yaml`（§4.1 加载链）：
@@ -101,8 +127,10 @@ curl -s http://127.0.0.1:8090/readyz         # 首轮 poll 完成前返回 503�
 
 agent 连上后（MCP `initialize`）还会收到一段英文 `instructions`（服务身份与用法摘要，逐字留档于
 `docs/data/lvdata_mcp_tools.md` §14.2——**改动需评审**，它是每个 agent 的常驻上下文）；`serverInfo`
-的版本号即本服务版本（与 `/api/status` 的 `service.version` 同源）。MCP/REST 文案统一英文，
-不随 `language` 配置变化。
+的版本号即本服务版本（与 `/api/status` 的 `service.version` 同源）。`lvdata-mcp`
+控制台命令（serve/reindex/eval/stage/reset）、MCP 与 REST 的界面文案统一英文，
+不随 `language` 配置变化（`language` 只影响分析数据内容；开发脚本
+`rebuild_dev.py` / `scripts/*` 不在此范围）。
 
 ## Tools（§12 v2 集合）
 
@@ -162,7 +190,8 @@ Caddy/nginx 终结 TLS。
 
 ```
 src/lvdata_mcp/
-  main.py        入口（serve / reindex / eval 子命令，--config）
+  main.py        入口（serve / reindex / eval / stage / reset 子命令，--config）
+  reset.py       按日期重置分析产物（删除无事件媒体、purge/重建派生面）
   config.py      lvdata_mcp.yaml 加载 + pydantic schema（§4）
   ddl.py         v2 建表 + §7 幂等改名迁移 + 时间戳归一化
   recording_watch.py  recording_files 同步（cs 单链路；ATTACH 只读 + keyset + 单事务；

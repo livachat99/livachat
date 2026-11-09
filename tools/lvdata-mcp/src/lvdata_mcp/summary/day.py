@@ -33,7 +33,6 @@ import random
 import sqlite3
 import threading
 from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
 
 import structlog
 
@@ -41,7 +40,8 @@ from ..config import LvdataMcpConfig
 from ..consts import EVENT_PRIORITY
 from ..language import output_language_rule
 from ..providers import ApiError, LlmClient, parse_json
-from ..timeutil import day_bounds_ms, ms_to_local_date, now_iso, resolve_timezone
+from ..timeutil import (LocalDateOutOfRange, day_bounds_ms, ms_to_local_hhmm,
+                        now_iso, resolve_timezone, safe_local_date)
 from .timezones import active_timezones
 
 log = structlog.get_logger("lvdata_mcp.day_summary")
@@ -97,7 +97,7 @@ def _event_label(etype: str, payload: str | None) -> str:
     return TYPE_LABEL.get(etype, etype)
 
 
-def _render_blocks(rows: list[sqlite3.Row], tzinfo: ZoneInfo,
+def _render_blocks(rows: list[sqlite3.Row], tz: str,
                    max_chars: int) -> str:
     """事件块渲染（§12）：多设备按首现序分段（段头 `设备 <uuid8>：`，段间空行）；
     单设备无段头、无空行，与旧格式逐字一致。"""
@@ -108,8 +108,7 @@ def _render_blocks(rows: list[sqlite3.Row], tzinfo: ZoneInfo,
     for dev, grp in groups.items():      # dict 保序 = 首现序
         lines = []
         for r in grp:
-            hhmm = datetime.fromtimestamp(r["ts_ms"] / 1000,
-                                          tzinfo).strftime("%H:%M")
+            hhmm = ms_to_local_hhmm(r["ts_ms"], tz)
             text = (r["summary"] or "")[:max_chars]
             lines.append(
                 f"[{hhmm}] {_event_label(r['type'], r['payload'])}: {text}")
@@ -334,7 +333,10 @@ class DaySummary:
         """候选事件 → 逐日核对：无行 or events.updated_at > generated_at（§6.5）。"""
         dirty: set[str] = set()
         for c in candidates:
-            d = ms_to_local_date(c["ts_ms"], tz)
+            try:
+                d = safe_local_date(c["ts_ms"], tz)
+            except LocalDateOutOfRange:
+                continue
             row = conn.execute(
                 "SELECT generated_at FROM day_summary "
                 "WHERE timezone = ? AND local_date = ?", (tz, d)).fetchone()
@@ -477,14 +479,13 @@ class DaySummary:
                                  r["event_id"]))
         # 渲染 LLM 输入（§6.5 步骤 3 / §11 / §12：每事件 [HH:MM] label: summary，
         # 截断；多设备按先出现序分段，单设备不分段）
-        tzinfo = resolve_timezone(tz)
         counts = {"chat_messages": 0, "audio_segments": 0,
                   "video_frames": 0, "video_windows": 0, "agent_jobs": 0}
         for r in rows:
             key = TYPE_MAP.get(r["type"])
             if key is not None:
                 counts[key] += 1
-        block = _render_blocks(rows, tzinfo,
+        block = _render_blocks(rows, tz,
                                self.cfg.watcher.max_chars_per_event)
 
         parsed, usage, error = await self._summarize(block, tz, d)

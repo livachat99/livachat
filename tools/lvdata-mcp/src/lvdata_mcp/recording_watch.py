@@ -125,8 +125,8 @@ class RecordingWatch:
                         path=self.cs_db_path)
             return False
         try:
-            escaped = self.cs_db_path.replace("'", "''")
-            conn.execute(f"ATTACH DATABASE 'file:{escaped}?mode=ro' AS cs")
+            uri = Path(self.cs_db_path).absolute().as_uri()
+            conn.execute(f"ATTACH DATABASE '{uri}?mode=ro' AS cs")
             return True
         except sqlite3.OperationalError:
             log.warning("failed to attach chat server db (read-only WAL)",
@@ -234,7 +234,7 @@ class RecordingWatch:
         try:
             meta = json.loads(Path(file_path).read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as e:
-            log.warning("session.json 读取失败，本轮跳过",
+            log.warning("failed to read session.json; skipped this round",
                         session_id=rsession_id, error=str(e)[:200])
             return
         self._upsert_session(conn, meta, rsession_id, device_uuid,
@@ -302,8 +302,8 @@ class RecordingWatch:
         """sync lag（未处理文件 src_updated_at 距 now）+ chat 滞留行数。"""
         out: dict = {"sync_lag_s": None, "chat_backlog": 0}
         try:
-            with sqlite3.connect(f"file:{self.db_path}?mode=ro", uri=True,
-                                 timeout=5) as conn:
+            uri = Path(self.db_path).absolute().as_uri() + "?mode=ro"
+            with sqlite3.connect(uri, uri=True, timeout=5) as conn:
                 row = conn.execute(
                     "SELECT MAX(src_updated_at) AS m FROM files WHERE "
                     "(file_type IN ('audio','video') AND "

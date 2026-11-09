@@ -90,7 +90,7 @@ class Pipeline:
     async def run_stage(self, stage: str, target: str | None = None,
                         force: bool = False) -> dict:
         if stage not in STAGES:
-            return {"status": "failed", "error": f"未知 stage: {stage}"}
+            return {"status": "failed", "error": f"Unknown stage: {stage}"}
         run_id = self._record_start(stage, target)
         try:
             result = await self._dispatch(stage, target, force)
@@ -148,7 +148,7 @@ class Pipeline:
             # 完整（rebuild 一轮到位）；幂等，重复 discover 无副作用
             await asyncio.to_thread(self.day_summary.discover)
             return await self.day_summary.generate(target, force)
-        return {"status": "failed", "error": f"未知 stage: {stage}"}
+        return {"status": "failed", "error": f"Unknown stage: {stage}"}
 
     def _reindex(self, target: str | None, force: bool = False) -> int:
         """FTS 重建：target=None → 增量（仅滞后会话，index.lag_sessions 取件）；

@@ -107,4 +107,4 @@ providers:
     # 3.8 has thinking on by default (xhigh), explicitly disabled by day.py (enable_thinking=False)—when
     # on, thinking exhausts the output budget and JSON is truncated (measured 09-18/09-20 responses
     # unclosed); when off it's complete and ~10× faster (~40s→~3s)
-    model: qwen3.7-flash
+    model: qwen3.8-flash

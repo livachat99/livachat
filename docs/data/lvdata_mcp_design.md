@@ -280,6 +280,8 @@ lvdata-mcp [--config PATH] [serve]              # 默认子命令
 lvdata-mcp --config PATH reindex [--vectors]    # 全量重建 FTS；--vectors 同时重建向量
 lvdata-mcp --config PATH eval --golden FILE [--topk N]
 lvdata-mcp --config PATH stage {inventory|day_stats} [--force]
+lvdata-mcp --config PATH reset --date {YYYY|YYYY-MM|YYYY-MM-DD}
+          [--dry-run] [--json] [--yes] [--allow-running-server]
 ```
 
 - `reindex`：数据源 = `events`；FTS 全量重建后写全局水位 `''` 并清会话水位；
@@ -288,6 +290,10 @@ lvdata-mcp --config PATH stage {inventory|day_stats} [--force]
 - `stage`：只允许**零 LLM 用量**的本地 stage：`inventory`（recording_files 全量重同步）
   与 `day_stats`（全量重算日卡派生字段）。分析类全量入口刻意不提供，走 REST
   `POST /api/analysis/trigger` 做增量/force 控制。
+- `reset`：按日期重置 recording session 的分析产物（删除 `ok` 且无事件的
+  audio/video 源文件、purge 已知事件、重建 FTS/向量、重置日摘要与 files 状态）。
+  默认要求 server 未运行（`/healthz` 探测），`--dry-run`/`--json` 先看计划；
+  完整语义见 `docs/data/lvdata_mcp_cli_reset.md`。
 
 ---
 

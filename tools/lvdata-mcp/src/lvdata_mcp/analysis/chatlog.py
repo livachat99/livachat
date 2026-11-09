@@ -228,7 +228,7 @@ class ChatlogProcessor:
                 msg = json.loads(raw)
             except json.JSONDecodeError:
                 bad += 1
-                log.warning("chatlog 行 JSON 无效，跳过", file=path.name,
+                log.warning("invalid JSON line in chatlog; skipped", file=path.name,
                             session_id=row["rsession_id"])
                 continue
             ev = line_to_event(row["file_type"], row["rsession_id"], msg)

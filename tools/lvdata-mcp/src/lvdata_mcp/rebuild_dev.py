@@ -65,7 +65,8 @@ def _db_counts(base_dir: Path) -> dict:
     inv = base_dir / "lvdata_inventory.db"
     out: dict = {"inventory_exists": inv.is_file()}
     if inv.is_file():
-        with sqlite3.connect(f"file:{inv}?mode=ro", uri=True) as conn:
+        with sqlite3.connect(inv.absolute().as_uri() + "?mode=ro",
+                             uri=True) as conn:
             for name, sql in (
                 ("events", "SELECT COUNT(*) FROM events"),
                 ("files_pending", "SELECT COUNT(*) FROM files WHERE analysis_status='pending'"),
@@ -82,7 +83,8 @@ def _db_counts(base_dir: Path) -> dict:
     if rag.is_file():
         try:
             import sqlite_vec
-            with sqlite3.connect(f"file:{rag}?mode=ro", uri=True) as conn:
+            with sqlite3.connect(rag.absolute().as_uri() + "?mode=ro",
+                                 uri=True) as conn:
                 conn.enable_load_extension(True)
                 sqlite_vec.load(conn)
                 out["chunks"] = conn.execute(

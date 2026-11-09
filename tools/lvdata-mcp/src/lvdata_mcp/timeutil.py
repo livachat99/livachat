@@ -1,8 +1,20 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+# Python datetime 的 UTC 毫秒边界（闭区间）：0001-01-01T00:00:00.000Z ..
+# 9999-12-31T23:59:59.999Z。最大日的本地日尾在正/负偏移时区可能越过该范围。
+_MIN_EPOCH_MS = -62135596800000
+_MAX_EPOCH_MS = 253402300799999
+# 边界窗口搜索余量：现代 IANA 最大偏移 ±14h，历史 LMT 实测可达 ~15.2h。
+_BOUNDARY_MARGIN_MS = 24 * 3600 * 1000
+_UPPER_LIMIT_MS = _MAX_EPOCH_MS + _BOUNDARY_MARGIN_MS
+
+
+class LocalDateOutOfRange(ValueError):
+    """epoch ms 合法，但其本地日期超出 0001-01-01 .. 9999-12-31。"""
 
 
 def now_iso() -> str:
@@ -77,12 +89,19 @@ def day_bounds_ms(date_str: str, tz_name: str) -> tuple[int, int]:
 
     与 list_sessions 的 session_date（录制本地日期）语义对齐；无效日期抛
     ValueError，调用方转 invalid_param。
+
+    `9999-12-31` 无法构造次日零点，改用日首 + 24h 名义边界。该边界允许越过
+    Python datetime 上限（负偏移时区的本地日末事件对应 UTC year 10000）；
+    SQLite 的整数比较不受此限制，查询窗口因此不会被截短。
     """
     start = datetime.strptime(date_str, "%Y-%m-%d")
-    end = start + timedelta(days=1)
     tz = resolve_timezone(tz_name)
     start_ms = int(start.replace(tzinfo=tz).timestamp() * 1000)
-    end_ms = int(end.replace(tzinfo=tz).timestamp() * 1000) - 1
+    if start.date() == date.max:
+        end_ms = start_ms + 86_400_000 - 1
+    else:
+        end = start + timedelta(days=1)
+        end_ms = int(end.replace(tzinfo=tz).timestamp() * 1000) - 1
     return start_ms, end_ms
 
 
@@ -114,6 +133,38 @@ def day_bounds(tz: str, start_ms: int, end_ms: int) -> tuple[str, str]:
     return start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")
 
 
+def _local_datetime(ms: int, tz_name: str) -> datetime:
+    """epoch ms → 本地 datetime（最小/最大日边界安全）。
+
+    正常时刻走 `fromtimestamp`（DST 规则精确）。本地最小/最大日的前后若干小时
+    可能对应 UTC year 0/10000，无法由 datetime 直接表示；此时用“本地日首 +
+    整数毫秒差”构造。合法 epoch 但本地日期仍超出 0001..9999 →
+    `LocalDateOutOfRange`；更远的损坏时间戳 → ValueError。
+    """
+    tz = resolve_timezone(tz_name)
+    if _MIN_EPOCH_MS <= ms <= _MAX_EPOCH_MS:
+        try:
+            return datetime.fromtimestamp(ms / 1000, tz)
+        except (OverflowError, OSError, ValueError):
+            pass
+    # 只有最小/最大本地日可能越过 Python datetime 的 UTC 表示范围。
+    if (_MIN_EPOCH_MS - _BOUNDARY_MARGIN_MS
+            <= ms <= _UPPER_LIMIT_MS):
+        for day_str, year, month, day in (
+                ("9999-12-31", 9999, 12, 31),
+                ("0001-01-01", 1, 1, 1)):
+            start, end = day_bounds_ms(day_str, tz_name)
+            if start <= ms <= end:
+                try:
+                    return datetime(year, month, day, tzinfo=tz) + timedelta(
+                        milliseconds=ms - start)
+                except (OverflowError, ValueError):
+                    break
+        raise LocalDateOutOfRange(
+            f"local date out of supported range: {ms} ({tz_name})")
+    raise ValueError(f"timestamp out of supported range: {ms}")
+
+
 def ms_to_local(ms: int, tz_name: str = "Asia/Shanghai") -> str:
     """epoch ms → **带偏移的 ISO 8601**（§17），如 `2026-09-28T18:01:30+08:00`。
 
@@ -121,8 +172,7 @@ def ms_to_local(ms: int, tz_name: str = "Asia/Shanghai") -> str:
     见 §17.2-b：`timezone` 字段仍是真实生效 zone 名）。代价：跨偏移时**字符串字典序
     ≠ 时间序**——调用方需自行排序时须解析后比较。
     """
-    tz = resolve_timezone(tz_name)
-    return datetime.fromtimestamp(ms / 1000, tz).isoformat(timespec="seconds")
+    return _local_datetime(ms, tz_name).isoformat(timespec="seconds")
 
 
 def ms_to_local_or_none(ms: int | None, tz_name: str) -> str | None:
@@ -131,6 +181,15 @@ def ms_to_local_or_none(ms: int | None, tz_name: str) -> str | None:
 
 
 def ms_to_local_date(ms: int, tz_name: str) -> str:
-    """epoch ms → 本地日期 YYYY-MM-DD（§6.5 local_date()）。"""
-    tz = resolve_timezone(tz_name)
-    return datetime.fromtimestamp(ms / 1000, tz).strftime("%Y-%m-%d")
+    """epoch ms → 本地日期 YYYY-MM-DD（§6.5 local_date()；边界安全）。"""
+    return _local_datetime(ms, tz_name).strftime("%Y-%m-%d")
+
+
+def safe_local_date(ms: int, tz_name: str) -> str:
+    """边界安全的本地日期归组（`ms_to_local_date` 的语义化别名）。"""
+    return ms_to_local_date(ms, tz_name)
+
+
+def ms_to_local_hhmm(ms: int, tz_name: str) -> str:
+    """epoch ms → 本地 HH:MM（日摘要事件块渲染；边界安全）。"""
+    return _local_datetime(ms, tz_name).strftime("%H:%M")

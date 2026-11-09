@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -20,6 +20,33 @@ SID = "019fabe0-3b0f-7947-8000-1e567def787d"
 # 2026-08-01 (Asia/Shanghai)
 DAY = "2026-08-01"
 DAY_START_MS = day_bounds_ms(DAY, "Asia/Shanghai")[0]
+
+# 固定上海本地中午，避免“事件减 2h”类测试在 00:0x 执行时跨到前一天。
+FIXED_NOW = datetime(2026, 8, 1, 4, 0, tzinfo=timezone.utc)
+FIXED_ISO = FIXED_NOW.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+LATE_ISO = (FIXED_NOW + timedelta(seconds=1)).isoformat(
+    timespec="milliseconds").replace("+00:00", "Z")
+
+
+class _FixedDateTime(datetime):
+    @classmethod
+    def now(cls, tz=None):
+        if tz is None:
+            return FIXED_NOW.replace(tzinfo=None)
+        return FIXED_NOW.astimezone(tz)
+
+
+def _freeze_day_clock(monkeypatch):
+    from lvdata_mcp.summary import day as day_mod
+    monkeypatch.setattr(day_mod, "datetime", _FixedDateTime)
+    monkeypatch.setattr(day_mod, "now_iso", lambda: FIXED_ISO)
+
+
+def _set_events_updated_at(root: Path, value: str) -> None:
+    conn = sqlite3.connect(root / "lvdata_inventory.db")
+    conn.execute("UPDATE events SET updated_at = ?", (value,))
+    conn.commit()
+    conn.close()
 
 
 class FakeSummary:
@@ -154,14 +181,16 @@ def test_discover_debounce_blocks_recent_day(tmp_path):
     assert ds._pending == []
 
 
-def test_discover_debounce_rediscovered_after_quiet(tmp_path):
+def test_discover_debounce_rediscovered_after_quiet(tmp_path, monkeypatch):
     """debounce 跳过不丢 day：占位行落盘 + 游标恒推进，静默期满后仍被
     重新发现（§6.5：占位行由 _check_pending_retry 兜底，不依赖候选重扫）。"""
     from lvdata_mcp.timeutil import ms_to_local_date
+    _freeze_day_clock(monkeypatch)
     root = tmp_path / "lvdata"
     root.mkdir()
-    now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    now_ms = int(FIXED_NOW.timestamp() * 1000)
     _seed(root, start_ms=now_ms)
+    _set_events_updated_at(root, FIXED_ISO)
     today = ms_to_local_date(now_ms, "Asia/Shanghai")
     ds = _ds(root, FakeSummary(), quiet_s=3600)  # 1h 静默窗口
     assert ds.discover() is False
@@ -183,17 +212,19 @@ def test_discover_debounce_rediscovered_after_quiet(tmp_path):
     assert ("Asia/Shanghai", today) in ds._pending
 
 
-def test_discover_deferred_ok_day_with_new_events(tmp_path):
+def test_discover_deferred_ok_day_with_new_events(tmp_path, monkeypatch):
     """已 ok 日 + debounce 中新事件：游标恒推进后靠 day_deferred 表再发现（§6.5）。
 
     回归：原实现 pinned 不推进游标（N+1 重扫）；若简单恒推进则 ok 行场景
     无占位行兜底（INSERT OR IGNORE 不覆盖 ok 行），新事件永久丢失。
     """
     from lvdata_mcp.timeutil import ms_to_local_date
+    _freeze_day_clock(monkeypatch)
     root = tmp_path / "lvdata"
     root.mkdir()
-    now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    now_ms = int(FIXED_NOW.timestamp() * 1000)
     _seed(root, start_ms=now_ms - 60_000)  # 首轮事件 1 分钟前（避免未来 ts）
+    _set_events_updated_at(root, FIXED_ISO)
     today = ms_to_local_date(now_ms, "Asia/Shanghai")
     # 首轮：quiet_s=0 直接生成 ok
     ds = _ds(root, FakeSummary(), quiet_s=0)
@@ -204,8 +235,9 @@ def test_discover_deferred_ok_day_with_new_events(tmp_path):
     # 新事件落在今天（updated_at 刷新），debounce 1h 未过 → 不入队、deferred 落表
     conn.execute(
         "INSERT INTO events (event_ref, device_uuid, rsession_id, type, "
-        "ts_ms, source, summary, payload) VALUES (?,?,?,?,?,?,?,?)",
-        (f"{SID}:chat:late", DEV, SID, "chat", now_ms - 30_000,
+        "ts_ms, updated_at, source, summary, payload) "
+        "VALUES (?,?,?,?,?,?,?,?,?)",
+        (f"{SID}:chat:late", DEV, SID, "chat", now_ms - 30_000, LATE_ISO,
          "chat_messages", "迟到的消息", "{}"))
     conn.commit()
     ds2 = _ds(root, FakeSummary(), quiet_s=3600)
@@ -228,15 +260,17 @@ def test_discover_deferred_ok_day_with_new_events(tmp_path):
     conn.close()
 
 
-def test_deferred_survives_restart(tmp_path):
+def test_deferred_survives_restart(tmp_path, monkeypatch):
     """崩溃安全（原则 8）：ok 日 + debounce 中更新的 defer 落表，重启后
     新实例仍能再发现——纯内存 defer 会在崩溃后永久丢失该日更新（游标已
     越过事件、ok 行不在 _check_pending_retry 范围）。"""
     from lvdata_mcp.timeutil import ms_to_local_date
+    _freeze_day_clock(monkeypatch)
     root = tmp_path / "lvdata"
     root.mkdir()
-    now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    now_ms = int(FIXED_NOW.timestamp() * 1000)
     _seed(root, start_ms=now_ms - 60_000)
+    _set_events_updated_at(root, FIXED_ISO)
     today = ms_to_local_date(now_ms, "Asia/Shanghai")
     # 首轮生成 ok
     ds = _ds(root, FakeSummary(), quiet_s=0)
@@ -247,8 +281,9 @@ def test_deferred_survives_restart(tmp_path):
     conn.row_factory = sqlite3.Row
     conn.execute(
         "INSERT INTO events (event_ref, device_uuid, rsession_id, type, "
-        "ts_ms, source, summary, payload) VALUES (?,?,?,?,?,?,?,?)",
-        (f"{SID}:chat:late", DEV, SID, "chat", now_ms - 30_000,
+        "ts_ms, updated_at, source, summary, payload) "
+        "VALUES (?,?,?,?,?,?,?,?,?)",
+        (f"{SID}:chat:late", DEV, SID, "chat", now_ms - 30_000, LATE_ISO,
          "chat_messages", "迟到的消息", "{}"))
     conn.commit()
     ds2 = _ds(root, FakeSummary(), quiet_s=3600)
@@ -999,7 +1034,7 @@ def test_generate_llm_input_truncates_events(tmp_path):
     ds._pending = [("Asia/Shanghai", DAY)]
     asyncio_run(ds.generate())
     block = fake.blocks[0]
-    line = next(l for l in block.splitlines() if "chat:" in l)
+    line = next(item for item in block.splitlines() if "chat:" in item)
     assert len(line.split(": ", 1)[1]) == 10
     assert "超长的事件摘要" not in line
 

@@ -19,7 +19,7 @@ import structlog
 
 from .config import LvdataMcpConfig
 from .summary.day_stats import DayStats
-from .timeutil import ms_to_local_date, now_iso
+from .timeutil import LocalDateOutOfRange, now_iso, safe_local_date
 from .vec import VecIndex
 
 log = structlog.get_logger("lvdata_mcp.remove")
@@ -157,7 +157,13 @@ class EventRemover:
             "SELECT DISTINCT timezone FROM day_summary")]
         out: list[dict] = []
         for tz in tzs:
-            days = sorted({ms_to_local_date(ts, tz) for ts in ts_list})
+            days_set: set[str] = set()
+            for ts in ts_list:
+                try:
+                    days_set.add(safe_local_date(ts, tz))
+                except LocalDateOutOfRange:
+                    continue
+            days = sorted(days_set)
             for d in self.day_stats.recompute_days(conn, tz, days, t0):
                 out.append({"timezone": tz, "local_date": d})
         return out
@@ -166,7 +172,7 @@ class EventRemover:
 
     def _remove_vectors(self, refs: list[str]) -> bool:
         if self.vec_index is None:
-            log.warning("vector removal skipped: embedding 未配置")
+            log.warning("vector removal skipped: embedding not configured")
             return False
         try:
             self.vec_index.remove_refs(refs)

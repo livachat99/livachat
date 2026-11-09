@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import logging
 import logging.handlers
 import sqlite3
@@ -30,40 +31,107 @@ from .store import DataStore
 from .timeutil import now_iso
 
 
+class _CliParser(argparse.ArgumentParser):
+    """reset --json 的参数错误也输出统一 JSON error（review3 issue 5）。"""
+
+    json_errors = False
+
+    def error(self, message: str) -> None:
+        if self.json_errors:
+            print(json.dumps(
+                {"error": {"code": "invalid_args", "message": message}},
+                ensure_ascii=False, indent=2))
+            self.exit(2)
+        super().error(message)
+
+
+def _command_from_argv(raw: list[str]) -> str | None:
+    """结构性预解析真实子命令：跳过全局 --config 的值与选项。
+
+    不能用 `"reset" in raw`：`--config reset` 这类参数值会误判命令，
+    从而给非 reset 命令套用 JSON 错误格式（review4 issue 4）。
+    """
+    skip_value = False
+    for token in raw:
+        if skip_value:
+            skip_value = False
+            continue
+        if token == "--config":
+            skip_value = True
+            continue
+        if token.startswith("-"):
+            continue
+        return token
+    return None
+
+
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(prog="lvdata-mcp", description="LvData MCP Service v2")
+    raw = list(argv) if argv is not None else sys.argv[1:]
+    command = _command_from_argv(raw)
+    json_errors = command == "reset" and "--json" in raw
+    p = _CliParser(prog="lvdata-mcp", description="LvData MCP Service v2",
+                   allow_abbrev=False)
+    p.json_errors = json_errors
     p.add_argument("--config", type=Path, default=None,
-                   help="lvdata_mcp.yaml 路径（缺省按 LVDATA_MCP_CONFIG → "
-                        "configs/<env>/lvdata_mcp.yaml → CWD 解析）")
+                   help="path to lvdata_mcp.yaml (default: LVDATA_MCP_CONFIG -> "
+                        "configs/<env>/lvdata_mcp.yaml -> CWD)")
     sub = p.add_subparsers(dest="command")
 
-    sub.add_parser("serve", help="启动 MCP server（默认）")
+    sub.add_parser("serve", allow_abbrev=False,
+                   help="start the MCP server (default command)")
 
-    reindex = sub.add_parser("reindex", help="全量重建 FTS 索引（数据源 = events）")
+    reindex = sub.add_parser("reindex", allow_abbrev=False,
+                             help="rebuild the full FTS index from events")
     reindex.add_argument("--vectors", action="store_true",
-                         help="同时重建向量索引（需配置 embedding provider）")
+                         help="also rebuild the vector index "
+                              "(requires an embedding provider)")
 
-    eval_ = sub.add_parser("eval", help="golden queries 回归评估（FTS/vector/hybrid recall@10）")
+    eval_ = sub.add_parser(
+        "eval", allow_abbrev=False,
+        help="golden-query regression evaluation "
+             "(FTS/vector/hybrid recall@10)")
     eval_.add_argument("--golden", required=True, type=Path,
                        help="JSON: [{\"query\": ..., \"expected\": [event_ref, ...]}]")
     eval_.add_argument("--topk", type=int, default=10)
 
     stage = sub.add_parser(
-        "stage", help="CLI 全量触发单个 stage（inventory / day_stats）——"
-                      "仅限本地零 LLM 用量的 stage；分析类全量用 REST "
-                      "POST /api/analysis/trigger 增量控制")
+        "stage", allow_abbrev=False,
+        help="run one stage over all local data (inventory / day_stats); "
+             "only stages with zero LLM usage; use REST "
+             "POST /api/analysis/trigger for analysis stages")
     stage.add_argument("stage_name", choices=["inventory", "day_stats"],
-                       help="全量执行的 stage")
+                       help="stage to run")
     stage.add_argument("--force", action="store_true",
-                       help="绕过水位全量执行（幂等；不触发分析链，不重置 fail_count）")
+                       help="bypass watermarks and run over all data (idempotent; "
+                            "does not trigger analysis or reset fail_count)")
 
+    reset = sub.add_parser(
+        "reset", allow_abbrev=False,
+        help="reset analysis artifacts by date "
+             "(the server must be stopped by default)")
+    reset.add_argument("--date", required=True,
+                       help="YYYY / YYYY-MM / YYYY-MM-DD "
+                            "(local date, strictly validated)")
+    reset.add_argument("--dry-run", action="store_true",
+                       help="print the plan only; no writes")
+    reset.add_argument("--json", action="store_true", dest="json_output",
+                       help="output a machine-readable plan/result")
+    reset.add_argument("--yes", action="store_true",
+                       help="actually perform deletions/resets")
+    reset.add_argument("--allow-running-server", action="store_true",
+                       help="execute even if the server is running "
+                            "(accepts stale derived-data risk)")
+
+    for parser in sub.choices.values():
+        parser.json_errors = json_errors
     args = p.parse_args(argv)
     if args.command is None:
         args.command = "serve"
     return args
 
 
-def _setup_logging(level: str, file: LogFileConfig | None = None) -> None:
+def _setup_logging(level: str, file: LogFileConfig | None = None,
+                   stream=None) -> None:
     """structlog 收敛到 stdlib 渲染链（docs/server_logging.md §7/§8）；file 非空且 enabled →
     **仅**进程内 RotatingFileHandler（serve 运行态只写文件；目录不可用 fail-fast）；
     未激活（CLI / 测试）→ stdout 兜底（§8 D1）。"""
@@ -102,8 +170,9 @@ def _setup_logging(level: str, file: LogFileConfig | None = None) -> None:
         handler.setFormatter(formatter)
         handlers: list[logging.Handler] = [handler]
     else:
-        # file 未激活（CLI / 测试）→ stdout 兜底（§8 D1），CLI 输出行为零变更
-        handler = logging.StreamHandler(sys.stdout)
+        # file 未激活（CLI / 测试）→ stdout 兜底（§8 D1），CLI 输出行为零变更；
+        # reset --json 传入 stderr，避免日志污染机器可读 stdout
+        handler = logging.StreamHandler(stream or sys.stdout)
         handler.setFormatter(formatter)
         handlers = [handler]
     root = logging.getLogger()
@@ -259,8 +328,8 @@ def run_stage(cfg: LvdataMcpConfig, stage_name: str, force: bool) -> None:
              elapsed_s=round(time.perf_counter() - t0, 1))
     print(f"inventory done: files={stats['files']} sessions={stats['sessions']} "
           f"chat_files={stats['chat_files']}")
-    print("文件行已同步；chat 事件与索引由 watcher 处理链产出"
-          "（reindex 需 `lvdata-mcp reindex [--vectors]`）")
+    print("file rows are synced; chat events and indexes are produced by the "
+          "watcher pipeline (use `lvdata-mcp reindex [--vectors]` to rebuild)")
 
 
 def run_eval(cfg: LvdataMcpConfig, golden_path: Path, topk: int) -> None:
@@ -319,15 +388,38 @@ def run_eval(cfg: LvdataMcpConfig, golden_path: Path, topk: int) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     args = _parse_args(argv)
-    cfg = load_config(args.config)
-    # 文件日志仅 serve（docs/server_logging.md §7）：CLI（reindex/eval/stage）行为零变更
-    _setup_logging(cfg.server.log_level, file=cfg.server.log_file if args.command == "serve" else None)
+    is_reset = args.command == "reset"
+    try:
+        cfg = load_config(args.config, validate_providers=not is_reset)
+    except Exception as exc:
+        if is_reset:
+            if args.json_output:
+                print(json.dumps(
+                    {"error": {"code": "config_error", "message": str(exc)}},
+                    ensure_ascii=False, indent=2))
+            else:
+                print(f"reset: config error: {exc}", file=sys.stderr)
+            sys.exit(1)
+        raise
+    # 文件日志仅 serve（docs/server_logging.md §7）：CLI（reindex/eval/stage）行为零变更；
+    # reset --json 的日志走 stderr，保证 stdout 是纯 JSON
+    _setup_logging(
+        cfg.server.log_level,
+        file=cfg.server.log_file if args.command == "serve" else None,
+        stream=sys.stderr if (is_reset and args.json_output) else None)
     log = structlog.get_logger("lvdata_mcp.main")
-    log.info("lvdata-mcp v2 启动", **effective_summary(cfg))
+    log.info("lvdata-mcp v2 starting", **effective_summary(cfg))
     if args.command == "serve":
         _ensure_schema(cfg)
-        log.info("schema 就绪")
+        log.info("schema ready")
         run_serve(cfg)
+    elif args.command == "reset":
+        from .reset import run_reset
+
+        # plan/dry-run/未确认路径不得写库；schema 迁移由 run_reset 在实际执行前完成
+        sys.exit(run_reset(cfg, date_spec=args.date, dry_run=args.dry_run,
+                           yes=args.yes, as_json=args.json_output,
+                           allow_running_server=args.allow_running_server))
     elif args.command == "reindex":
         run_reindex(cfg, with_vectors=args.vectors)
     elif args.command == "stage":

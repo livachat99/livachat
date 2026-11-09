@@ -235,11 +235,13 @@ class LvdataMcpConfig(BaseModel):
 # ── yaml 加载 ──────────────────────────────────────────────────────────────
 
 
-def _resolve_env_vars(value: str) -> str:
+def _resolve_env_vars(value: str, *, allow_missing: bool = False) -> str:
     def replacer(match: re.Match[str]) -> str:
         name = match.group(1)
         val = os.environ.get(name)
         if val is None:
+            if allow_missing:
+                return ""
             raise ValueError(
                 f"Environment variable '{name}' is not set "
                 "(lvdata_mcp.yaml placeholder)")
@@ -248,14 +250,42 @@ def _resolve_env_vars(value: str) -> str:
     return _ENV_VAR_RE.sub(replacer, value)
 
 
-def _resolve_placeholders(obj: Any) -> Any:
+def _resolve_placeholders(obj: Any, *, allow_missing: bool = False) -> Any:
     if isinstance(obj, dict):
-        return {k: _resolve_placeholders(v) for k, v in obj.items()}
+        return {k: _resolve_placeholders(v, allow_missing=allow_missing)
+                for k, v in obj.items()}
     if isinstance(obj, list):
-        return [_resolve_placeholders(v) for v in obj]
+        return [_resolve_placeholders(v, allow_missing=allow_missing) for v in obj]
     if isinstance(obj, str):
-        return _resolve_env_vars(obj)
+        return _resolve_env_vars(obj, allow_missing=allow_missing)
     return obj
+
+
+def _resolve_config_placeholders(raw: dict[str, Any], *,
+                                 validate_providers: bool) -> dict[str, Any]:
+    """reset 场景允许 providers 的占位符缺失（空串），其余配置仍严格解析。
+
+    运维需要在密钥不可用时执行 reset；data/server/watcher 的占位符缺失仍 fail-fast
+    （防止把空 root_dir 等危险配置带进破坏性操作）。
+    """
+    if validate_providers:
+        return _resolve_placeholders(raw)
+    providers = raw.get("providers")
+    rest = {k: v for k, v in raw.items() if k != "providers"}
+    resolved = _resolve_placeholders(rest)
+    if isinstance(providers, dict):
+        resolved_providers = _resolve_placeholders(providers,
+                                                   allow_missing=True)
+        if isinstance(resolved_providers, dict):
+            # 数值字段不能用空串兜底（Pydantic int/float 校验失败）；缺省即删除，
+            # 让 ProviderConfig 使用默认值（review 第二轮 issue 6）。
+            for block in resolved_providers.values():
+                if isinstance(block, dict):
+                    for key in ("dim", "min_vec_score"):
+                        if block.get(key) == "":
+                            block.pop(key, None)
+        resolved["providers"] = resolved_providers
+    return resolved
 
 
 def _set_nested(d: dict[str, Any], path: list[str], value: str) -> None:
@@ -364,8 +394,13 @@ def find_config_path(explicit: Path | None = None, env: str | None = None) -> Pa
     return None
 
 
-def load_config(explicit: Path | None = None, env: str | None = None) -> LvdataMcpConfig:
+def load_config(explicit: Path | None = None, env: str | None = None, *,
+                validate_providers: bool = True) -> LvdataMcpConfig:
     """加载并校验配置；缺失/校验失败/占位符未设置一律抛错（fail-fast，§13）。
+
+    ``validate_providers=False``（reset CLI）：不要求 audio/vision/summary 的
+    api_key，且 providers 段允许缺失的 ``${ENV}`` 占位符解析为空串；其余配置段
+    仍严格解析。
 
     先加载仓库根 ``.env``（setdefault：shell 注入优先），见
     docs/ali_bailian_provider.md §9。
@@ -377,13 +412,16 @@ def load_config(explicit: Path | None = None, env: str | None = None) -> LvdataM
             "lvdata_mcp.yaml not found: checked --config / LVDATA_MCP_CONFIG / "
             "configs/<env>/lvdata_mcp.yaml / CWD")
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    raw = _resolve_placeholders(raw)
+    raw = _resolve_config_placeholders(raw,
+                                       validate_providers=validate_providers)
     raw = _apply_env_overrides(raw)
     cfg = LvdataMcpConfig(**raw)
     cfg.validate_security()
     # §4.3/§13：provider api_key 缺失 → 启动 fail-fast（对齐 v1 build_provider
-    # 行为；embedding 整块为空 = 关闭向量检索，例外）
-    cfg.providers.validate_required()
+    # 行为；embedding 整块为空 = 关闭向量检索，例外）。reset 不做 LLM 调用，
+    # 允许跳过（运维恢复路径）。
+    if validate_providers:
+        cfg.providers.validate_required()
     return cfg
 
 

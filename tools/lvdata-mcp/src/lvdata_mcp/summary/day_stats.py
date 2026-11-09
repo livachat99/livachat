@@ -31,7 +31,8 @@ from ..consts import (
     PRIORITY_SQL,
     SPLIT_GAP_MS,
 )
-from ..timeutil import day_bounds_ms, ms_to_local_date, now_iso, resolve_timezone
+from ..timeutil import (LocalDateOutOfRange, day_bounds_ms, now_iso,
+                        resolve_timezone, safe_local_date)
 from .day import _is_duplicated_audio
 from .timezones import active_timezones
 
@@ -199,8 +200,13 @@ class DayStats:
         cursor = "" if force else self._cursor(conn, tz)
         candidates = conn.execute(
             "SELECT ts_ms FROM events WHERE updated_at > ?", (cursor,)).fetchall()
-        days = sorted({ms_to_local_date(c["ts_ms"], tz) for c in candidates},
-                      reverse=True)
+        days_set: set[str] = set()
+        for c in candidates:
+            try:
+                days_set.add(safe_local_date(c["ts_ms"], tz))
+            except LocalDateOutOfRange:
+                continue
+        days = sorted(days_set, reverse=True)
         n = 0
         for d in days:
             n += self._run_day(conn, tz, d, t0)
