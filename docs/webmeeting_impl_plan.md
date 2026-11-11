@@ -13,8 +13,8 @@
 | 阶段 | 内容 | 状态 | 验收 |
 |------|------|------|------|
 | P0 | 脚手架、config + 构建闸门、token/identity、Home、PreJoin、App 状态机、Room + VideoConference、ErrorView、单元测试 | ✅ 完成 | `npm run check`、`npm test`、`npm run build:demo` 通过；两人已通过 demo server 入会；构建闸门生效 |
-| P1 | SettingsMenu（camera/mic/speaker）、背景效果、KeyboardShortcuts、DebugMode、RecordingIndicator、LowCPU、Empty hint、iOS 屏幕共享隐藏 | ✅ 主体完成 | 会中操作与 meet 对齐；Chrome 桌面已冒烟；Safari/iPhone 与设备相关项待手测 |
-| P2 | E2EE、录制启停、i18n、分享链接、服务端 token provider、邀请/preview/ended、PWA；背景效果增强（模型质量/性能/可替换性，见设计文档 §3.8.6） | ⏳ 未开始 | 与生产契约对齐 |
+| P1 | SettingsMenu（camera/mic/speaker）、背景效果、KeyboardShortcuts、DebugMode、RecordingIndicator、LowCPU、Empty hint、iOS 26 及以前屏幕共享隐藏 | ✅ 主体完成 | 会中操作与 meet 对齐；Chrome 桌面已冒烟；Safari/iPhone 与设备相关项待手测 |
+| P2 | E2EE、录制启停、i18n、分享链接、服务端 token provider、邀请/preview/ended、PWA；背景效果增强（见设计文档 §3.8.6）；**iOS/iPadOS 27+ Safari 网页屏幕共享启用**（见 §4.5） | ⏳ 未开始 | 与生产契约对齐 |
 
 ---
 
@@ -93,7 +93,8 @@
 - [x] `KeyboardShortcuts`：`Ctrl/Cmd+D/E`；忽略输入框/repeat；`Shift+D` 只由 DebugMode 注册
 - [x] `DebugMode`：Shift+D、输入框忽略、room/track/bitrate、无 Datadog
 - [x] `RecordingIndicator`：`useIsRecording` toast + 红框
-- [x] iOS 屏幕共享：根节点 `is-ios` class；CSS 只隐藏控制栏按钮（`.is-ios .lk-control-bar [data-lk-source='screen_share']`），不隐藏远端 ParticipantTile；iPhone 实机确认可显示他人共享
+- [x] iOS 屏幕共享（旧系统）：根节点 `is-ios` class；CSS 只隐藏控制栏按钮（`.is-ios .lk-control-bar [data-lk-source='screen_share']`），不隐藏远端 ParticipantTile；iPhone 实机确认可显示他人共享
+- [ ] iOS/iPadOS 27+ 屏幕共享启用：Safari 27 已支持 `getDisplayMedia`，当前 `is-ios` CSS 会误隐藏按钮；移除 UA 隐藏、依赖 LiveKit 能力检测并实机验证（P2，见 §4.5）
 - [x] Leave 确认：捕获阶段拦截 `.lk-disconnect-button`，弹窗确认；Cancel/Esc/遮罩取消不离开
 - [x] 空房提示：30s 内 `room.numParticipants <= 1`
 - [x] 浏览器矩阵：Chrome（桌面）已完成摄像头/麦克风/聊天/重连的完整 E2E；Firefox、Safari macOS、iOS Safari、Android Chrome 待手测
@@ -130,7 +131,7 @@
 - [x] 错误 key/server -> 错误页 + Retry/Back（用不可达 WSS 实测）
 - [x] 重连：`room.simulateScenario('signal-reconnect')` 与 `'full-reconnect'` 后 state 回到 connected，本地 camera/mic 与远端订阅保持
 - [x] 只有自己 30s -> 空房提示
-- [ ] 手机 Safari/Chrome：布局、安全区、权限、音频播放；iOS 无屏幕共享按钮
+- [ ] 手机 Safari/Chrome：布局、安全区、权限、音频播放；iOS 26 及以前无屏幕共享按钮，iOS 27+ 的共享启用与实机验证见 §4.5
 - [x] 构建闸门行为
 
 ### 4.3 媒体 E2E 记录（2026-11-11）
@@ -164,6 +165,28 @@
 | 误点控制栏 Leave 立即退会 | 捕获阶段拦截 `.lk-disconnect-button`，弹 `LeaveConfirmDialog`；Cancel / Esc / 点遮罩取消，确认后才 `room.disconnect(true)` | Chrome E2E：弹窗出现且仍在会中；Cancel/Esc 保持会议；确认后回 Home、video 元素归零 |
 | `track.prioritizePerformance()` 返回 Promise 但未处理 rejection | `void ... .catch(...)` | 类型检查通过 |
 
+### 4.5 后续增强：iOS/iPadOS 27+ 网页屏幕共享（未实施）
+
+**背景**：Safari 27（iOS/iPadOS 27，2026-09-14 发布）开始支持 `navigator.mediaDevices.getDisplayMedia()`。证据：
+
+- [MDN BCD issue #30654](https://github.com/mdn/browser-compat-data/issues/30654)：真实 iPhone iOS 27.0 Safari 调用成功，系统 picker 返回含 video track 的 `MediaStream`；
+- [MDN BCD PR #30732](https://github.com/mdn/browser-compat-data/pull/30732)：`safari_ios` 支持版本标为 27，collector 测试通过；
+- [caniuse](https://caniuse.com/mdn-api_mediadevices_getdisplaymedia)：Safari on iOS 27.0/27.1/27.2 支持；
+- [Apple ScreenCaptureKit](https://developer.apple.com/documentation/ScreenCaptureKit)：iOS/iPadOS 27.0 起提供 `SCContentSharingPicker`；
+- [Safari 27 Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes)：修复了 `getDisplayMedia()` 屏幕共享初始画质问题。
+
+**当前状态**：`globals.css` 用 `.is-ios .lk-control-bar [data-lk-source='screen_share']` 在所有 iPhone/iPad 隐藏共享按钮，会误伤 iOS 27+。LiveKit `ControlBar` 已通过 `supportsScreenSharing()` 检查 `navigator.mediaDevices.getDisplayMedia`，旧 iOS 本就不会渲染按钮。
+
+**启用步骤**：
+
+1. 删除 `is-ios` 屏幕共享隐藏 CSS；如果 `isIOSLike()` / `is-ios` 无其他用途，一并删除。
+2. iPhone/iPad 27 实机验证：系统 picker 弹出、返回 `MediaStream`、`audio:true` 行为、LiveKit 发布与其他端订阅、画质、Safari 进入后台后是否停止。
+3. 确认 `SCContentSharingPicker` 在 iOS 上只提供整屏/单 app 等 surface 限制，补充 UI 文案。
+4. 更新浏览器矩阵与本文档；iPadOS 27 单独验证（现有公开实机测试是 iPhone）。
+5. 保留 iOS 26 及以前的隐藏行为，由能力检测自动处理。
+
+**验收**：iOS 27+ 显示共享按钮并能发布；iOS 26 及以前不显示；其他端可订阅；限制与音频行为有记录。
+
 ---
 
 ## 5. 实施顺序与提交策略
@@ -188,7 +211,7 @@
 | 2026-11-11 | 计划 | 完成 | 本文 |
 | 2026-11-11 | P0 | 完成 | 23 单测 + demo server 双人入会 + 构建闸门 |
 | 2026-11-11 | P1 | 主体完成 | Settings/背景/快捷键/Debug/Recording/LowCPU/空房提示/iOS 隐藏；Chrome 桌面媒体 E2E（camera/mic/背景/聊天/重连）通过；屏幕共享/设备切换/Safari/iOS 待手测 |
-| 2026-11-11 | P2 | 未开始 | 按需 |
+| 2026-11-11 | P2 | 未开始 | 按需；iOS/iPadOS 27+ 网页屏幕共享增强见 §4.5 |
 
 ### 本地测试配置
 

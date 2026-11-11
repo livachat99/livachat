@@ -984,7 +984,7 @@ const roomOptions: RoomOptions = {
 - 不实现 `hq`/`region` 查询参数；codec 只走 config。如未来需要 hq，再加 config。
 - 不启用 E2EE，因此 `red` 保持 true；meet 在 E2EE 时会关掉 vp9/av1 与 red。
 - `singlePeerConnection: true` 是 `RoomOptions` 的默认值（不可用时 LiveKit 自动回退双 PC）；显式写出只是为了和 meet 对齐，不是必需项。
-- 屏幕共享由 `VideoConference` 控制栏触发，grant 的 `canPublish` 已覆盖；iOS/iPadOS Safari 不支持 `getDisplayMedia`，需要按能力隐藏按钮（§3.8.11）。
+- 屏幕共享由 `VideoConference` 控制栏触发，grant 的 `canPublish` 已覆盖；iOS/iPadOS 26 及以前 Safari 不支持 `getDisplayMedia`，需要按能力隐藏按钮；iOS/iPadOS 27+ 已支持，当前 `is-ios` CSS 仍会隐藏按钮，启用列入 P2（§3.8.11）。
 
 #### 3.8.3 连接、设备启用与清理
 
@@ -1329,7 +1329,7 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 | 房间被删除/结束 | `ROOM_DELETED` -> 回 Home + “The meeting has ended.”；**不要** Retry（重试会重新创建空房） |
 | token 过期/无效 | 连接失败 -> 错误页，提供 Retry（重新签发）与 Back |
 | 摄像头/麦克风失败 | toast；会议继续（可看/听）；`NotReadableError` 自动延迟重试一次；可在 SettingsMenu 重试 |
-| iOS/iPadOS 屏幕共享 | Safari 不支持 `getDisplayMedia`：按能力隐藏控制栏的屏幕共享按钮，不要留给用户点了报错 |
+| iOS/iPadOS 屏幕共享 | iOS/iPadOS **26 及以前** Safari 不支持 `getDisplayMedia`，应隐藏控制栏的共享按钮；**iOS/iPadOS 27+（Safari 27，2026-09-14 发布）已支持**。当前实现仍按 `is-ios` UA 隐藏，属于 P2 增强：移除 UA 判断、改为能力检测（LiveKit `supportsScreenSharing()` 已检查 `navigator.mediaDevices.getDisplayMedia`），并实机验证 |
 | 扬声器选择 | `setSinkId` 在 Safari/iOS 支持不全：`MediaDeviceMenu kind="audiooutput"` 可能无效，浏览器矩阵里标注 |
 | 只有自己 | 入会后 30s 若 `room.numParticipants <= 1`，提示 “No one else has joined yet — check the meeting number.” |
 | 浏览器不支持 | 启动时检查 `navigator.mediaDevices`；显示浏览器建议 |
@@ -1340,6 +1340,23 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 - **ErrorView 脱敏**：只显示简短错误摘要（如 `Could not connect` + 状态码/原因），不要渲染完整 token/JWT、`apiSecret` 或带敏感查询参数的 URL；详细堆栈只进 console（内网测试）。
 - **ErrorView Retry**：Retry 期间 disable 按钮（loading），避免并发签发/连接；Back 直接回 Home。
 - **toast 归属**：`Disconnected` 的原因文案由 App 的 `onLeave(message?)` 统一 toast；MeetingRoom 不重复 toast，避免双提示。
+
+> **iOS/iPadOS 27+ 网页屏幕共享（2026-11-11 调研，P2 增强项）**
+>
+> 结论：Safari 27（iOS/iPadOS 27，2026-09-14 发布）开始支持 `navigator.mediaDevices.getDisplayMedia()`，网页端屏幕共享不再是桌面专属能力。证据：
+> - [MDN BCD issue #30654](https://github.com/mdn/browser-compat-data/issues/30654)：真实 iPhone、iOS 27.0 Safari 调用 `getDisplayMedia({video:true})`，系统 picker 返回包含 video track 的 `MediaStream`；
+> - [MDN BCD PR #30732](https://github.com/mdn/browser-compat-data/pull/30732)：`safari_ios` 支持版本标为 27，Open Web Docs collector 在 Safari iOS 27.0 通过；
+> - [caniuse](https://caniuse.com/mdn-api_mediadevices_getdisplaymedia)：Safari on iOS 27.0/27.1/27.2 均标为支持；
+> - [Apple ScreenCaptureKit](https://developer.apple.com/documentation/ScreenCaptureKit)：iOS/iPadOS 27.0 起提供 `SCContentSharingPicker` 系统共享选择器；
+> - [Safari 27 Release Notes](https://developer.apple.com/documentation/safari-release-notes/safari-27-release-notes)：修复了 `getDisplayMedia()` 屏幕共享初始画质极低、最长 30 秒才清晰的问题。
+>
+> 注意：网上仍有“iOS Safari 不支持屏幕共享”的旧文章，验证时间多早于 iOS 27 正式发布，不能作为 27+ 的结论。现有公开**实机测试是 iPhone iOS 27.0**，iPadOS 27 有 OS 级 ScreenCaptureKit 和 BCD 数据支持，但仍建议单独用 iPad 27 验证。
+>
+> 当前 `apps/web/meeting` 仍通过 `.is-ios .lk-control-bar [data-lk-source='screen_share']` 在所有 iPhone/iPad 隐藏共享按钮，因此会误伤 iOS 27+。**P2 启用工作**：
+> 1. 移除 `is-ios` UA 隐藏 CSS（如无其他用途，同时删除 `isIOSLike()` / `is-ios` class）；LiveKit `ControlBar` 已用 `supportsScreenSharing()` 检查 `navigator.mediaDevices.getDisplayMedia`，能力不支持的旧 iOS 会自动不渲染按钮。
+> 2. iPhone/iPad 27 实机验证：系统 picker 弹出、返回 MediaStream、`audio:true` 是支持还是被忽略、LiveKit 发布/其他端订阅、画质、Safari 后台后是否停止。
+> 3. 评估 iOS 共享端只允许整屏/单 app（`SCContentSharingPicker` 约束），在 UI 文案/帮助里说明。
+> 4. 补浏览器矩阵记录；iPadOS 27 单独验证。
 
 ### 3.9 UI/UX、响应式与可访问性
 
@@ -1372,8 +1389,8 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
   | iOS Safari | ✅ | ❌ | ❌ | 无 `getDisplayMedia`/`setSinkId`；音频播放需手势 |
   | Android Chrome | ✅ | 部分 | ✅ | 系统浏览器 |
 
-- iOS/iPadOS Safari 不支持 `getDisplayMedia`：会中不要显示可点击的屏幕共享按钮；`setSinkId` 支持也不完整，`MediaDeviceMenu kind="audiooutput"` 可能无效。
-- `VideoConference` **不暴露 `controls` prop**；隐藏 iOS 的屏幕共享按钮要在根节点加 class 后用 CSS 隐藏 `.lk-control-bar [data-lk-source='screen_share']`，或改用自定义 `ControlBar`（`controls` prop）。不要假设能通过 `VideoConference` prop 控制单个按钮。
+- iOS/iPadOS **26 及以前** Safari 不支持 `getDisplayMedia`：会中不要显示可点击的屏幕共享按钮。**iOS/iPadOS 27+ 已支持**（见 §3.8.11 末尾的 P2 增强说明）：届时移除 `is-ios` CSS/UA 判断，依赖 LiveKit `supportsScreenSharing()` 的能力检测；`setSinkId` 支持仍不完整，`MediaDeviceMenu kind="audiooutput"` 可能无效。
+- `VideoConference` **不暴露 `controls` prop**；当前用 `.is-ios .lk-control-bar [data-lk-source='screen_share']` 隐藏旧 iOS 的屏幕共享按钮。该规则在启用 iOS 27+ 共享时应删除（`VideoConference` 内部 `ControlBar` 已按 `supportsScreenSharing()` 隐藏/显示），或改用自定义 `ControlBar`（`controls` prop）。不要假设能通过 `VideoConference` prop 控制单个按钮。
 - 如果配置 `videoCodec: 'vp9' | 'av1'`，必须在 Safari 上确认协商结果；不要假设所有目标浏览器都支持 SVC codec（默认 vp8 正是为了避开这个问题）。
 - WebView：本 app 面向系统浏览器；LivaChat 现有 WebView 没有媒体采集权限桥接（见 `docs/personal_meeting_design.md` §3.7），不作为入会容器。
 - 安全上下文要求：
@@ -1880,7 +1897,7 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
 - 同一 identity 被顶掉（两个 tab 使用同一 token 或手工造 token）-> 收到 “You joined from another tab or device.”，不是 “You left the meeting”。
 - 断网/恢复 -> 看到 `Reconnecting`/`Reconnected`；不可恢复时进错误页可 Retry。
 - 只有自己入会 30s -> 出现空房提示。
-- 手机 Safari/Chrome：布局、安全区、权限弹窗、音频播放；iOS Safari 不显示屏幕共享按钮。
+- 手机 Safari/Chrome：布局、安全区、权限弹窗、音频播放；iOS 26 及以前不显示屏幕共享按钮；iOS 27+ 的共享能力属于 P2，启用后需单独验收。
 - 构建闸门：`public/config.json` 含 client secret 时 `npm run build` 失败，`npm run build:demo` 成功。
 
 ### 3.16 分阶段实施
@@ -1888,8 +1905,8 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
 | 阶段 | 范围 | 验收 |
 |------|------|------|
 | P0（骨架） | 构建 spike（MediaPipe + jose + livekit-client）、脚手架、config loader + 构建闸门、token、identity、Home、PreJoin、Room 连接、VideoConference、Leave、DisconnectReason 映射、README | `npm run check` / `npm run build:demo` 通过；闸门在无 `ALLOW_CLIENT_TOKEN=1` 时失败；两人能入会互通；断线/被顶掉有正确文案 |
-| P1（会中 parity） | SettingsMenu（camera/mic/speaker）、背景效果（`switchTo`）、KeyboardShortcuts、DebugMode、RecordingIndicator、LowCPUOptimizer、错误/权限 UX、Safari/iPhone 矩阵 | 与 meet 的会中操作对齐；§3.15.4 手测通过；iOS 屏幕共享按钮已隐藏 |
-| P2（可选） | E2EE、录制启停、i18n、分享链接/hash 路由、服务端 token provider、邀请/preview/ended 状态、PWA | 按需；生产化时与 `personal_meeting_design.md` §7 对齐 |
+| P1（会中 parity） | SettingsMenu（camera/mic/speaker）、背景效果（`switchTo`）、KeyboardShortcuts、DebugMode、RecordingIndicator、LowCPUOptimizer、错误/权限 UX、Safari/iPhone 矩阵 | 与 meet 的会中操作对齐；§3.15.4 手测通过；iOS 26 及以前不显示屏幕共享按钮 |
+| P2（可选） | E2EE、录制启停、i18n、分享链接/hash 路由、服务端 token provider、邀请/preview/ended 状态、PWA；**iOS/iPadOS 27+ Safari 网页屏幕共享启用**（移除 is-ios CSS/UA 判断、依赖能力检测、iPhone/iPad 27 实机验证） | 按需；生产化时与 `personal_meeting_design.md` §7 对齐 |
 | Docs | 本文、`README.md`、Makefile、`.gitignore`、`REPO.md` / `docs/mono-repo.md` 目录更新 | 文档与代码一致；§3.14 的单一实现关系已写入两份文档 |
 
 估算：P0 ~2–3 人日（含构建 spike、两人互通、Safari/iPhone 手测）；P1 ~1.5–2 人日；P2 另计。仅为量级参考，不是承诺。之前 1–1.5 人日的估法偏乐观，主要是移动端/设备竞态/背景效果的验证成本。
@@ -1928,13 +1945,13 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
 | 10 | 默认视频编码 | **vp8 + simulcast** | vp9/av1 需显式配置，走 SVC、无 simulcast；Safari 需实测 |
 | 11 | Key 归属 | 已确认 `meet.git/.env.local` 是**专用 demo key**（meet demo 同用），本 app 直接复用 | demo 专用；不用于生产；轮换会同时影响 meet demo，需协调 |
 
-**后续再议**：公网部署/服务端 token、E2EE、录制、Krisp、i18n、分享链接、邀请/preview/ended 状态。若未来要做公网，先把 §3.13.4 的 `HttpTokenProvider` 落地，再改 `tokenMode=server`。
+**后续再议**：公网部署/服务端 token、E2EE、录制、Krisp、i18n、分享链接、邀请/preview/ended 状态、**iOS/iPadOS 27+ 网页屏幕共享启用**（见 §3.8.11）。若未来要做公网，先把 §3.13.4 的 `HttpTokenProvider` 落地，再改 `tokenMode=server`。
 
 **已验证 / 剩余验证**：
 
 - **已验证**：demo server（livekit-server `v1.13.11`；host/port 只写本地 `public/config.json`）——本地 meet.git 在 Chrome、Safari 均可正常入会，WSS/TLS 与基本媒体路径已通。
 - **剩余**：本 app 自己的构建/建连、设备切换、屏幕共享、背景效果、错误/重连等 §3.15.4 矩阵；UDP/TURN 未单独隔离验证（meet.git 入会已覆盖基本媒体路径，需要时可看 LiveKit 日志/抓包）。
-- Safari/iOS 的 vp9 协商与 `getDisplayMedia` 行为仍要在 P1 手测里给出结论；桌面 Chrome/Safari 已随 meet.git 验证过基础入会，但不等于本 app 的屏幕共享/背景效果已验证。
+- Safari/iOS 的 vp9 协商与 `getDisplayMedia` 行为仍要在 P1 手测里给出结论；桌面 Chrome/Safari 已随 meet.git 验证过基础入会，但不等于本 app 的屏幕共享/背景效果已验证。iOS/iPadOS 27+ 已支持网页屏幕共享，但当前 app 仍按 `is-ios` 隐藏按钮，启用与实机验证列入 P2（见 §3.8.11）。
 
 ### 3.18 评审意见处理（2026-11-11）
 
@@ -2304,3 +2321,4 @@ export default function App() {
 - 2026-11-11（实现评审修复）：背景 processor 改为用户选择效果后才懒加载，避免入会即下载 MediaPipe WASM/模型；缓存 `supportsBackgroundProcessors()`；full reconnect 后通过 `LocalTrackPublished` 幂等重挂；修复 `body overflow:hidden` 下 Home/PreJoin/Error 页面在短视口不可滚动；处理 `prioritizePerformance()` 的 rejected promise。
 - 2026-11-11（iOS 屏幕共享显示修复）：`.is-ios [data-lk-source='screen_share']` 会同时匹配 LiveKit 远端 ParticipantTile/VideoTrack，导致 iPhone 端把别人共享的画面整块隐藏；选择器收窄为 `.is-ios .lk-control-bar [data-lk-source='screen_share']`，只隐藏本机屏幕共享按钮。
 - 2026-11-11（Leave 确认）：控制栏 Leave 点击改为捕获阶段拦截并弹确认框，Cancel/Esc/遮罩关闭不离开；确认后才 `room.disconnect()`。避免误触立即退会。
+- 2026-11-11（P2 调研）：确认 Safari 27 / iOS 27 / iPadOS 27 起支持网页 `getDisplayMedia`；当前 `is-ios` CSS 会在 27+ 误隐藏共享按钮。列入 P2 增强：移除 UA 隐藏、依赖 LiveKit 能力检测，并做 iPhone/iPad 27 实机验证（详细证据与步骤见 §3.8.11）。
