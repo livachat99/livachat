@@ -29,8 +29,12 @@ input {
   box-sizing: border-box;
 }
 
-/* iOS/iPadOS Safari has no getDisplayMedia; hide the screen-share control. */
-.is-ios [data-lk-source='screen_share'] {
+/* iOS/iPadOS Safari has no getDisplayMedia; hide only the screen-share
+   control. Do NOT use a bare attribute selector here: LiveKit's remote
+   ParticipantTile and VideoTrack elements also carry
+   data-lk-source="screen_share", so an unscoped rule hides the incoming
+   screen share itself on iOS. */
+.is-ios .lk-control-bar [data-lk-source='screen_share'] {
   display: none !important;
 }
 

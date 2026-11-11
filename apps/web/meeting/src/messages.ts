@@ -16,6 +16,10 @@ export const messages = {
   back: 'Back',
   retry: 'Retry',
   leave: 'Leave',
+  cancel: 'Cancel',
+  leaveConfirmTitle: 'Leave the meeting?',
+  leaveConfirmMessage:
+    'Your camera and microphone will stop and you will return to the home screen.',
   devWarning:
     'Demo mode: LiveKit credentials are embedded in this client. Do not deploy publicly.',
   noOneElse:

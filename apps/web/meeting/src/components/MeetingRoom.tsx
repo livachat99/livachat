@@ -6,6 +6,7 @@ import {
   type LocalUserChoices,
 } from '@livekit/components-react'
 import {
+  ConnectionState,
   DisconnectReason,
   Room,
   RoomEvent,
@@ -23,6 +24,7 @@ import type { JoinParams } from '../types'
 import { errorMessage, isIOSLike } from '../utils'
 import { DebugMode } from './DebugMode'
 import { KeyboardShortcuts } from './KeyboardShortcuts'
+import { LeaveConfirmDialog } from './LeaveConfirmDialog'
 import { RecordingIndicator } from './RecordingIndicator'
 import { SettingsMenu } from './SettingsMenu'
 
@@ -90,6 +92,7 @@ export function MeetingRoom({
 
   const onLeaveRef = React.useRef(onLeave)
   const onErrorRef = React.useRef(onError)
+  const hasConnectedRef = React.useRef(false)
   React.useEffect(() => {
     onLeaveRef.current = onLeave
     onErrorRef.current = onError
@@ -98,9 +101,11 @@ export function MeetingRoom({
   React.useEffect(() => {
     let cancelled = false
     let hasConnected = false
+    hasConnectedRef.current = false
 
     const handleConnected = () => {
       hasConnected = true
+      hasConnectedRef.current = true
     }
 
     const handleDisconnected = (reason?: DisconnectReason) => {
@@ -196,6 +201,7 @@ export function MeetingRoom({
   const ios = React.useMemo(() => isIOSLike(), [])
   const [participantCount, setParticipantCount] = React.useState(0)
   const [showEmptyHint, setShowEmptyHint] = React.useState(false)
+  const [leaveConfirmOpen, setLeaveConfirmOpen] = React.useState(false)
 
   React.useEffect(() => {
     let timer: number | undefined
@@ -231,6 +237,44 @@ export function MeetingRoom({
     }
   }, [room])
 
+  const closeLeaveConfirm = React.useCallback(() => {
+    setLeaveConfirmOpen(false)
+  }, [])
+
+  const confirmLeave = React.useCallback(() => {
+    setLeaveConfirmOpen(false)
+    // Calling room.disconnect() before the initial connect completes does not
+    // produce a handled Disconnected event (hasConnectedRef is still false),
+    // which would leave the user stuck on the meeting screen.
+    if (
+      !hasConnectedRef.current ||
+      room.state === ConnectionState.Disconnected
+    ) {
+      onLeaveRef.current()
+      return
+    }
+    room.disconnect(true)
+  }, [room])
+
+  // The prefab ControlBar owns the Leave button, and its onClick calls
+  // room.disconnect() directly. Intercept that click in the capture phase so
+  // an accidental tap asks for confirmation instead of leaving immediately.
+  const handleLeaveClickCapture = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const target = event.target
+      if (
+        !(target instanceof Element) ||
+        !target.closest('.lk-disconnect-button')
+      ) {
+        return
+      }
+      event.preventDefault()
+      event.stopPropagation()
+      setLeaveConfirmOpen(true)
+    },
+    [],
+  )
+
   const Settings = React.useMemo(
     () =>
       function SettingsForMeeting() {
@@ -240,7 +284,10 @@ export function MeetingRoom({
   )
 
   return (
-    <div className={`lk-room-container${ios ? ' is-ios' : ''}`}>
+    <div
+      className={`lk-room-container${ios ? ' is-ios' : ''}`}
+      onClickCapture={handleLeaveClickCapture}
+    >
       <RoomContext.Provider value={room}>
         <KeyboardShortcuts />
         <VideoConference
@@ -253,6 +300,11 @@ export function MeetingRoom({
         <RecordingIndicator />
         <ConnectionStateToast />
       </RoomContext.Provider>
+      <LeaveConfirmDialog
+        open={leaveConfirmOpen}
+        onCancel={closeLeaveConfirm}
+        onConfirm={confirmLeave}
+      />
       {showEmptyHint && participantCount <= 1 ? (
         <div className="empty-room-hint">{messages.noOneElse}</div>
       ) : null}

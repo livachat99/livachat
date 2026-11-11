@@ -1322,7 +1322,7 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 
 | 场景 | 行为 |
 |------|------|
-| 主动 Leave（控制栏） | `room.disconnect()` -> `Disconnected(CLIENT_INITIATED)` -> 回 Home，toast “You left the meeting” |
+| 主动 Leave（控制栏） | 点击先弹确认对话框；`Cancel` / `Esc` / 点遮罩关闭且留在会议；确认后 `room.disconnect()` -> `Disconnected(CLIENT_INITIATED)` -> 回 Home，toast “You left the meeting” |
 | 网络断线 | `ConnectionStateToast` 显示 `Reconnecting`；恢复后显示 `Reconnected`；不可恢复时 `Disconnected` -> 错误页 + Retry |
 | 重复 identity（同一 token 被重复使用） | `DUPLICATE_IDENTITY` -> 回 Home + “You joined from another tab or device.” |
 | 被主持人移除 | `PARTICIPANT_REMOVED` -> 回 Home + “You were removed from the meeting.” |
@@ -2302,3 +2302,5 @@ export default function App() {
 - 2026-11-11：`apps/web/meeting` P0/P1 实施完成（骨架、token/identity、Home/PreJoin/Meeting、Settings/背景效果、快捷键、Debug、空房提示、iOS 屏幕共享隐藏）；23 个单测通过；Chrome 桌面完成 camera/mic、静音/摄像头切换、背景效果、聊天、signal/full reconnect、刷新/错误页的完整 E2E；屏幕共享/设备切换/Safari/iOS 待手测。详见 [`docs/webmeeting_impl_plan.md`](webmeeting_impl_plan.md)。
 - 2026-11-11：补充 §3.8.6「实现机制与厂商」：背景虚化由发送端 `BackgroundProcessor`（WebGL2 + MediaPipe `ImageSegmenter` + `selfie_segmenter.tflite`）完成；模型由 Google 提供，非 LiveKit 专有；记录质量/性能/可替换性/合规等边界与未来加强方向。
 - 2026-11-11（实现评审修复）：背景 processor 改为用户选择效果后才懒加载，避免入会即下载 MediaPipe WASM/模型；缓存 `supportsBackgroundProcessors()`；full reconnect 后通过 `LocalTrackPublished` 幂等重挂；修复 `body overflow:hidden` 下 Home/PreJoin/Error 页面在短视口不可滚动；处理 `prioritizePerformance()` 的 rejected promise。
+- 2026-11-11（iOS 屏幕共享显示修复）：`.is-ios [data-lk-source='screen_share']` 会同时匹配 LiveKit 远端 ParticipantTile/VideoTrack，导致 iPhone 端把别人共享的画面整块隐藏；选择器收窄为 `.is-ios .lk-control-bar [data-lk-source='screen_share']`，只隐藏本机屏幕共享按钮。
+- 2026-11-11（Leave 确认）：控制栏 Leave 点击改为捕获阶段拦截并弹确认框，Cancel/Esc/遮罩关闭不离开；确认后才 `room.disconnect()`。避免误触立即退会。

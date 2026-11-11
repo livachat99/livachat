@@ -93,7 +93,8 @@
 - [x] `KeyboardShortcuts`：`Ctrl/Cmd+D/E`；忽略输入框/repeat；`Shift+D` 只由 DebugMode 注册
 - [x] `DebugMode`：Shift+D、输入框忽略、room/track/bitrate、无 Datadog
 - [x] `RecordingIndicator`：`useIsRecording` toast + 红框
-- [x] iOS 屏幕共享：根节点 `is-ios` class + CSS 隐藏 `[data-lk-source='screen_share']`
+- [x] iOS 屏幕共享：根节点 `is-ios` class；CSS 只隐藏控制栏按钮（`.is-ios .lk-control-bar [data-lk-source='screen_share']`），不隐藏远端 ParticipantTile；iPhone 实机确认可显示他人共享
+- [x] Leave 确认：捕获阶段拦截 `.lk-disconnect-button`，弹窗确认；Cancel/Esc/遮罩取消不离开
 - [x] 空房提示：30s 内 `room.numParticipants <= 1`
 - [x] 浏览器矩阵：Chrome（桌面）已完成摄像头/麦克风/聊天/重连的完整 E2E；Firefox、Safari macOS、iOS Safari、Android Chrome 待手测
 - [x] 背景效果实际帧处理：Blur / Desk 均进入 `background-blur` / `virtual-background`，本地与远端视频保持 live
@@ -159,6 +160,8 @@
 | 每次渲染调用 `supportsBackgroundProcessors()`，重复创建 WebGL2 context | 模块级缓存结果 | 类型检查/构建通过 |
 | full reconnect / 摄像头重发布后 processor 可能丢失 | 监听 `LocalTrackPublished`，用 revision 触发幂等重挂（`getProcessor()` 比对，避免重复 init） | 代码审查；待真实 full reconnect + 背景效果联合手测 |
 | `body { overflow:hidden }` 下 `.page` 使用 `min-height`，短视口无法滚动、内容被裁切 | `.page` 改为 `height:100vh/100dvh` + `overflow-y:auto` | 375×320 下 Home/PreJoin 可滚动，Join 按钮可达 |
+| iOS 端看不到他人屏幕共享：`.is-ios [data-lk-source='screen_share']` 同时匹配了 LiveKit 的 ParticipantTile/VideoTrack，整块远端屏幕共享 tile 被隐藏 | 选择器收窄为 `.is-ios .lk-control-bar [data-lk-source='screen_share']`，只隐藏控制栏的共享按钮 | 已按 LiveKit `useParticipantTile`/`useTrackToggle` 源码核对；iPhone 实机确认他人共享可显示 |
+| 误点控制栏 Leave 立即退会 | 捕获阶段拦截 `.lk-disconnect-button`，弹 `LeaveConfirmDialog`；Cancel / Esc / 点遮罩取消，确认后才 `room.disconnect(true)` | Chrome E2E：弹窗出现且仍在会中；Cancel/Esc 保持会议；确认后回 Home、video 元素归零 |
 | `track.prioritizePerformance()` 返回 Promise 但未处理 rejection | `void ... .catch(...)` | 类型检查通过 |
 
 ---
