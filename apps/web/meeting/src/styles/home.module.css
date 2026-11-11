@@ -1,0 +1,105 @@
+.page {
+  /* body/#root are height:100% and body is overflow:hidden (the in-meeting
+     layout), so the page itself must be the scroll container. A `min-height`
+     would let the element grow past the viewport and get clipped instead of
+     scrolling on short mobile viewports. */
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+.card {
+  width: min(100%, 440px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  background: rgba(17, 17, 17, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.header {
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  margin: 0.4rem 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.input {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+}
+
+.input:focus {
+  outline: 2px solid var(--lk-accent-bg, #7db4f5);
+  outline-offset: 1px;
+}
+
+.roomRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.roomRow .input {
+  flex: 1;
+}
+
+.randomButton {
+  min-width: 2.8rem;
+  padding-inline: 0.6rem;
+}
+
+.submit {
+  width: 100%;
+  padding-block: 0.75rem;
+}
+
+.error {
+  margin: 0;
+  color: #ff8b8b;
+  font-size: 0.85rem;
+}
+
+.devWarning {
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(255, 140, 90, 0.35);
+  border-radius: 0.4rem;
+  background: rgba(255, 100, 60, 0.08);
+  color: #ffb08c;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}

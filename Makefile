@@ -127,3 +127,29 @@ mylife-check:
 
 mylife-test:
 	cd $(MYLIFE_DIR) && npm test
+
+# --- meeting web app (apps/web/meeting) ---
+
+MEETING_DIR := apps/web/meeting
+
+.PHONY: meeting-install meeting-dev meeting-build meeting-build-demo meeting-check meeting-test
+
+meeting-install:
+	cd $(MEETING_DIR) && npm install
+
+meeting-dev:
+	cd $(MEETING_DIR) && npm run dev
+
+# 默认构建：public/config.json 存在 client secret 时会失败（防止误把 secret 打进 dist）
+meeting-build:
+	cd $(MEETING_DIR) && npm run build
+
+# demo/验证：显式允许内置 key pair
+meeting-build-demo:
+	cd $(MEETING_DIR) && ALLOW_CLIENT_TOKEN=1 npm run build
+
+meeting-check:
+	cd $(MEETING_DIR) && npm run check
+
+meeting-test:
+	cd $(MEETING_DIR) && npm test

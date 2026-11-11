@@ -16,6 +16,7 @@ services/.env
 node_modules/
 dist/
 *.tsbuildinfo
+apps/web/meeting/public/config.json
 
 # Playwright MCP 测试产物
 .playwright-mcp/

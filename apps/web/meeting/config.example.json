@@ -1,0 +1,14 @@
+{
+  "appTitle": "LivaChat Meeting",
+  "livekitUrl": "wss://<livekit-host>:<port>",
+  "tokenMode": "client",
+  "apiKey": "<LIVEKIT_API_KEY>",
+  "apiSecret": "<LIVEKIT_API_SECRET>",
+  "tokenTtlSeconds": 600,
+  "videoCodec": "vp8",
+  "showPreJoin": true,
+  "enableSettingsMenu": true,
+  "enableBackgroundEffects": true,
+  "mediapipeAssetBase": "",
+  "showDebugPanel": false
+}

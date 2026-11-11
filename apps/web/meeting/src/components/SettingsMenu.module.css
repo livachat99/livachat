@@ -1,0 +1,35 @@
+.tabs {
+  position: relative;
+  display: flex;
+  align-content: space-between;
+}
+
+.tabs > .tab {
+  padding: 0.5rem;
+  border-radius: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid;
+  border-color: var(--lk-bg5);
+}
+
+.tabs > .tab[aria-pressed='true'] {
+  border-color: var(--lk-accent-bg);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-block: 1rem;
+}
+
+.content h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.closeRow {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
