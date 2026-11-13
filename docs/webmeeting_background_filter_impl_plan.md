@@ -2,7 +2,7 @@
 
 > **依据**：[`docs/webmeeting_background_filter.md`](webmeeting_background_filter.md)
 > **目标**：资源预加载（不 attach processor）；`backgroundEffectsPreload` 默认 `auto`；不使用 Blob URL；摄像头关闭时禁用 filter；完整预热本期不做。
-> **状态**：P0/P1/P2 完成；P3 Chrome 桌面主要 E2E 完成（含缩略图/config 图片）；慢网失败回退、低端模拟、移动端手测待补
+> **状态**：P0/P1/P2 完成；P3 Chrome 桌面主要 E2E 完成（含缩略图/config 图片）；Android Chrome 158 在 Adreno 740 上 filter 实测通过，在 Mali-G76 上按能力门控禁用；慢网失败回退、低端模拟、其他移动端手测待补
 > **原则**：先配置/资源加载器，再 UI 集成，最后 E2E；每一步可构建、可测试、可回滚。
 
 ---
@@ -98,10 +98,10 @@
 - [ ] 资源失败：单测覆盖 partial/essential；浏览器 toast/fallback 未单独 E2E
 - [ ] 低端/节流模拟：纯函数测试覆盖，浏览器未单独模拟
 
-### 手测（待补）
+### 手测
 
 - [ ] iPhone/iPad Safari
-- [ ] Android Chrome
+- [x] Android Chrome（Chrome 158.0.8127.36；Adreno 740 上 Blur/图片背景通过；Mali-G76 因缺少 float linear 被门控）
 - [ ] 弱网/省流量
 - [ ] 长时间会议内存
 
@@ -145,7 +145,41 @@
 | Nature v2 替换 | 新的 1280×720 PNG 直接转 WebP q82；缩略图与主图加载正常，virtual background 与人物分割正常 |
 | Lake 新增 | 设置页第 5 个 filter；请求 `lake-thumb.webp`；点击后加载 1280×720 `lake.webp`，virtual background 与人物分割正常；卡片无文字，`aria-label`/`title=Lake` |
 | Flower 新增 | 设置页第 6 个 filter；请求 `flower-thumb.webp`；点击后加载 1280×720 `flower.webp`，virtual background 与人物分割正常；卡片无文字，`aria-label`/`title=Flower` |
-| 控制台 | 0 errors；仅 MediaPipe OpenGL error-checking warning |
+| 自托管 + Huawei Browser | 本地 WASM/model 加载正常；能力探测发现 Huawei Browser 缺少 float linear 支持；Background effects 按钮正常显示，点击后显示 unsupported 提示，不创建 processor |
+| 控制台 | 0 errors；Huawei 测试不再触发 GPU abort 或 CPU fallback |
+
+### Android Chrome E2E（2026-11-13）
+
+环境：Huawei Android 12 设备（Mali-G76）、Chrome for Android 158.0.8127.36（arm64-v8a，versionCode 812703604）、Vite dev `http://localhost:5174/meeting/`、`adb reverse`、自托管 MediaPipe。
+
+| 项目 | 结果 |
+|------|------|
+| 安装 | 从 APKMirror 下载 arm64-v8a standalone APK（292,694,724 bytes，SHA-256 `46a95440...`）；与设备原有 Chrome 证书一致，`adb install -r` 成功 |
+| 入会/摄像头 | `http://localhost` 安全上下文；LiveKit 连接成功，camera 采集与本地预览正常 |
+| WebGL2 能力 | `EXT_color_buffer_float`、`EXT_color_buffer_half_float` 可用；`OES_texture_float_linear`、`OES_texture_half_float_linear` 均缺失；renderer `ANGLE (ARM, Mali-G76, OpenGL ES 3.2)` |
+| 点击前 | Background effects 控件正常显示；无 unsupported 提示；无 MediaPipe WASM/model 请求 |
+| 点击 Blur | 显示 `Background effects are not supported on this device.`；无 loading、无 processor、无 MediaPipe 资源请求 |
+| 自托管资源 | `/meeting/vendor/mediapipe/...` 均可访问（model 249,537 bytes；WASM 9,423,986 bytes）；因能力门控未触发下载 |
+| 控制台 | 无 GPU abort、无未捕获异常 |
+
+结论：升级到最新 Chrome 不能绕过该限制；Mali-G76 驱动不暴露 float linear，能力门控按设计拒绝 filter。要在此类设备启用背景效果，需要改用不依赖 float-linear 的 GPU 路径，或接受用户已拒绝的 CPU delegate。
+
+### Android Chrome + Adreno E2E（2026-11-13）
+
+环境：Xiaomi Android 16 设备（Adreno 740）、Chrome for Android 158.0.8127.36、Vite dev `http://localhost:5174/meeting/`、`adb reverse`、自托管 MediaPipe。
+
+| 项目 | 结果 |
+|------|------|
+| 安装 | MIUI 的 `adb install` 被 `INSTALL_FAILED_USER_RESTRICTED` 拦截；将 APK 推送到手机 `Download/` 后手动安装成功 |
+| WebGL2 能力 | `EXT_color_buffer_float`、`EXT_color_buffer_half_float`、`OES_texture_float_linear`、`EXT_float_blend` 可用；renderer `ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)`；能力门控通过 |
+| 预加载 | 点击前已加载自托管 `vision_wasm_internal.js`、`vision_wasm_internal.wasm` 和 `selfie_segmenter.tflite`；点击时无额外模型下载 |
+| Blur | 点击后出现 `Loading filter model...`，预加载命中下约 0.5 s 内消失；背景虚化生效，人物边缘正常 |
+| Lake | 点击后切换到 `lake.webp`；背景替换和人物分割正常 |
+| None | 恢复原始摄像头画面 |
+| 布局 | 手机竖屏 Settings 面板宽度等于 392px viewport，占满全屏 |
+| 控制台 | 无 GPU abort、无未捕获异常；仅有自动播放 `AudioContext` 提示，与 filter 无关 |
+
+结论：满足 float/half-float color-buffer + 对应 linear filtering 的 Android Chrome 可以正常使用 Background Processor；Adreno 740 通过，Mali-G76 被门控拒绝，符合按 GPU 能力判断的设计。
 
 ### 已知非阻塞问题
 
@@ -163,7 +197,7 @@
 | 2026-11-13 | P0 | 完成 | `backgroundEffectsPreload` + tasks-vision 直接依赖；25 单测 |
 | 2026-11-13 | P1 | 完成 | `backgroundAssets.ts` + 7 个新测试；共 32 单测 |
 | 2026-11-13 | P2 | 完成 | `useBackgroundPreload` + CameraSettings loading/camera-off UI + setProcessor in-flight 去重；类型检查/build 通过 |
-| 2026-11-13 | P3 | 部分完成 | Chrome 桌面主要 E2E 通过；慢网/低端/移动端待补 |
+| 2026-11-13 | P3 | 部分完成 | Chrome 桌面主要 E2E 通过；Android Chrome 158 在 Adreno 740 上 Blur/Lake/None 实测通过，Mali-G76 因缺少 float linear 被门控；慢网/低端/其他移动端待补 |
 | 2026-11-13 | 背景 filter UI | 完成 | 96×54 缩略图卡片；Blur 文案居中、图片卡片无文字；config `backgroundImages` 支持本地/remote |
 | 2026-11-13 | 背景图片 E2E | 完成（主要路径） | 真实摄像头 + demo LiveKit；本地/remote config 图片、缩略图回退、Blur、camera-off、None 均通过；测试资源已清理 |
 | 2026-11-13 | Desk 替换 | 完成 | Desk 改为 1280×720 WebP 照片 + 独立缩略图；真实入会验证 virtual background 正常 |
@@ -171,3 +205,6 @@
 | 2026-11-13 | Nature v2 替换 | 完成 | 新 1280×720 图直接转 WebP q82 + 独立缩略图；真实入会验证 virtual background 正常 |
 | 2026-11-13 | Lake 新增 | 完成 | 4:3 源图 cover 裁到 16:9，输出 1280×720 WebP + 独立缩略图；真实入会验证 virtual background 正常 |
 | 2026-11-13 | Flower 新增 | 完成 | 4:3 源图 cover 裁到 16:9，输出 1280×720 WebP + 独立缩略图；真实入会验证 virtual background 正常 |
+| 2026-11-13 | 自托管 MediaPipe | 完成 | 加入本地 WASM/model；Huawei Browser 因缺少 float linear 在点击时提示 unsupported、不创建 processor，避免 CPU fallback |
+| 2026-11-13 | Android Chrome 158 | 完成（设备限制） | 安装 Chrome 158.0.8127.36；入会/摄像头正常；Mali-G76 缺少 float linear，点击 filter 显示 unsupported，不创建 processor |
+| 2026-11-13 | Android Chrome + Adreno 740 | 完成（主要路径） | 自托管 WASM/model 预加载；Blur、Lake、None 实测通过；Settings 竖屏全宽；Mali-G76 仍按能力门控拒绝 |

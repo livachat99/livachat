@@ -52,3 +52,17 @@ input {
   font-size: 0.85rem;
   pointer-events: none;
 }
+
+/* LiveKit's settings modal has a 50vw min-width, which leaves a narrow
+   column on phones in portrait. Use the full viewport width instead. */
+@media (orientation: portrait) and (max-width: 640px) {
+  .lk-settings-menu-modal {
+    right: 0;
+    left: 0;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    border-radius: 0;
+    transform: translateY(-50%);
+  }
+}

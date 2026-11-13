@@ -1,6 +1,6 @@
 # Web Meeting 背景 Filter 预加载设计
 
-> **状态**：已实施（2026-11-13）；P0/P1/P2 完成，P3 Chrome 桌面主要 E2E 通过；慢网/移动端手测待补。
+> **状态**：已实施（2026-11-13）；P0/P1/P2 完成，P3 Chrome 桌面主要 E2E 通过；Android Chrome 158 在 Adreno 740 上 filter 实测通过，Mali-G76 按能力门控禁用；慢网/其他移动端手测待补。
 > **日期**：2026-11-13
 > **范围**：`apps/web/meeting` 会中 Settings 的 Blur / 虚拟背景功能
 > **相关文档**：[`webmeeting_design.md`](webmeeting_design.md) §3.8.6、[`webmeeting_impl_plan.md`](webmeeting_impl_plan.md)、[`webmeeting_background_filter_impl_plan.md`](webmeeting_background_filter_impl_plan.md)
@@ -191,6 +191,8 @@ const wasmBase = mediapipeAssetBase
 const fileset = await FilesetResolver.forVisionTasks(wasmBase)
 ```
 
+> 默认使用 `cdn.jsdelivr.net`。部分网络会重置该 host（实测华为浏览器会报 `ERR_CONNECTION_RESET`，导致背景效果初始化失败）；此时改用自托管。
+
 `fileset` 会给出当前浏览器应使用的：
 
 ```ts
@@ -270,6 +272,8 @@ const results = await Promise.allSettled([
   只配置 `script-src`/`worker-src` 不够。自托管时 `connect-src 'self'`。
 - 不使用 Blob URL，因此不需要在 CSP 中增加 `blob:`。
 - 自托管时必须给 WASM/loader/model 配置长缓存。
+- 自托管部署时把 WASM + model 放到 `apps/web/meeting/public/vendor/mediapipe/`；`config.example.json` 默认走 CDN，本地 `public/config.json` 可覆写为 `/meeting/vendor/mediapipe/`。
+- **能力门控**：启动 filter 前同时要求 WebGL2 的 float/half-float color-buffer 和对应线性过滤扩展。float32 路径要求 `EXT_color_buffer_float` + `OES_texture_float_linear` + `EXT_float_blend`；half-float 回退要求 `EXT_color_buffer_half_float` + `OES_texture_half_float_linear`。Huawei Browser 虽然暴露 color-buffer，但缺少 float linear，MediaPipe GPU postprocess 会 abort；这类设备仍显示 background effects 控件，但点击后只显示 unsupported 提示，不创建 processor，也不使用性能不可接受的 CPU delegate。升级到 Chrome for Android 158 后实测限制相同（Mali-G76 驱动仍不暴露 float/half-float linear），因此该门控按 GPU 能力而非浏览器版本判断。同一 Chrome 版本在 Adreno 740 上暴露 `OES_texture_float_linear` 和 `EXT_float_blend`，Blur/图片背景/None 均实测通过。
 
 ### 5.4 设备与网络能力门控
 
@@ -279,7 +283,7 @@ const results = await Promise.allSettled([
 |------|------|
 | `enableBackgroundEffects=false` | 不预加载 |
 | `enableSettingsMenu=false` | 不预加载（没有可用的背景 UI） |
-| `supportsBackgroundProcessors()=false` | 不预加载，背景功能也不显示 |
+| `supportsBackgroundProcessors()=false` | 不预加载；背景控件仍显示，点击时提示 unsupported |
 | `navigator.connection.saveData=true` | 不预加载 |
 | `effectiveType` 为 `slow-2g` / `2g` / `3g` | 不预加载 |
 | `hardwareConcurrency < 4` | 不预加载，节省低端机流量 |
@@ -585,3 +589,4 @@ const {
 - 2026-11-13：实测冷启动约 8.1 s、热缓存约 0.3 s；方案 v2 改为只做资源预加载、不 attach processor。
 - 2026-11-13：决策确认：`backgroundEffectsPreload` 默认 `auto`；不采用模型 Blob URL；摄像头关闭时禁用 filter；完整预热本期不做；补充显式 WASM base、fetch body 消费、CSP、超时回退和“不 attach”验收项。
 - 2026-11-13：实施完成（P0/P1/P2）；Chrome 桌面主要 E2E 通过；慢网/移动端手测待补。见 [`webmeeting_background_filter_impl_plan.md`](webmeeting_background_filter_impl_plan.md)。
+- 2026-11-13：Android Chrome 158.0.8127.36 实测：Mali-G76 缺少 float/half-float linear，点击 filter 显示 unsupported；Adreno 740 支持 float linear，自托管资源预加载后 Blur、Lake、None 均正常；确认门控应按 GPU 能力而非浏览器版本判断。

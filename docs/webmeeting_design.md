@@ -1247,12 +1247,12 @@ useEffect(() => {
 **与 meet 的差异（重要）**：
 
 - 旧写法用 `getProcessor()?.name` 反推模式；新 API 的默认 name 是 `'background-processor'`，但 wrapper 直接暴露 **`mode`**（`'disabled' | 'background-blur' | 'virtual-background' | 'legacy'`）。要读模式就读 `.mode`（把 `getProcessor()` 的结果 cast 成 `BackgroundProcessorWrapper`），不要用 name 反推，也不要为此维护一份容易漂移的 React state（state 只用于 UI 选中态，不参与 processor 生命周期）。
-- `BackgroundProcessor` 在浏览器不支持时**直接 throw**；用 `supportsBackgroundProcessors()` 门控 UI，调用处 try/catch 并 toast。
+- `BackgroundProcessor` 在浏览器不支持时**直接 throw**；用 `supportsBackgroundProcessors()` + WebGL float/linear 能力门控 processor 和预加载；背景控件仍显示，点击时再提示 unsupported；调用处 try/catch 并 toast。
 - `mode: 'disabled'` 是合法构造参数；`switchTo({ mode: 'disabled' })` 保持 processor 挂载但不处理帧，比 `stopProcessor()` 更适合反复切换。
 - **顺序问题**：只依赖 `backgroundType/imagePath` 的 effect 在 processor 尚未创建时会直接 return；如果用户先选 Blur 再开摄像头，camera effect 新建的 processor 会保持 `disabled`。因此 camera effect 在 `setProcessor` 后必须立即 `switchTo(当前 mode)`。
 - 摄像头关闭再打开会重建 track，processor 会丢失；在 `cameraTrack` 变化的 effect 里重新 `setProcessor(getProcessor())` 并应用当前 mode。
 - 只在 `cameraTrack?.track` 存在且 `isLocalTrack(cameraTrack.track)` 时调用 `setProcessor`；否则等下一次 `cameraTrack` 变化再应用，避免在未发布的 track 上抛错。
-- MediaPipe 默认从 `cdn.jsdelivr.net` 拉 wasm、从 `storage.googleapis.com` 拉 `selfie_segmenter.tflite`。用 `config.mediapipeAssetBase` 切换资源来源：
+- MediaPipe 默认从 `cdn.jsdelivr.net` 拉 wasm、从 `storage.googleapis.com` 拉 `selfie_segmenter.tflite`。部分网络会重置 `cdn.jsdelivr.net`（实测华为浏览器），此时用 `config.mediapipeAssetBase` 自托管：
   - 空串/缺省：走默认 CDN（demo 方便，但需要放宽 CSP，见 §3.12.4）；
   - 非空：传给 `BackgroundProcessor` 的 `assetPaths = { tasksVisionFileSet: `${base}wasm`, modelAssetPath: `${base}selfie_segmenter.tflite` }`。
   - **生产/内网部署**按 `personal_meeting_design.md` §7.1 自托管：把 `@mediapipe/tasks-vision/wasm` 复制到 `public/vendor/mediapipe/wasm/`；模型 `selfie_segmenter.tflite` **不包含在 npm 包里**，需要从默认 URL 下载一次并放到 `public/vendor/mediapipe/`；config 设 `mediapipeAssetBase: "/meeting/vendor/mediapipe/"`，CSP 只需 `'self'`。
@@ -1317,7 +1317,7 @@ useEffect(() => {
 - **性能**：逐帧 GPU 分割 + WebGL 合成，低端机或 1080p+ 采集可能掉帧；当前 `useLowCPUOptimizer` 只降视频质量，未与背景处理器联动。加强路径：按设备能力动态降分辨率/帧率、利用 `onFrameProcessed` 的统计做自适应、CPU 受限时自动 `stopProcessor()`。
 - **可替换性**：`BackgroundProcessor` 的 `segmenterOptions` 仍绑定 MediaPipe `ImageSegmenter`；换非 MediaPipe 模型需要自定义 `VideoTransformer`（或换库），不是改一个路径就行。
 - **资源与合规**：默认从 jsDelivr / Google storage 加载（demo）；生产按上文自托管 wasm + 模型，并把模型文件纳入发布物和许可清单。
-- **浏览器**：依赖 `OffscreenCanvas` / `VideoFrame` / `createImageBitmap` / WebGL2；iOS Safari 版本差异需按 §3.10 矩阵验证。
+- **浏览器**：依赖 `OffscreenCanvas` / `VideoFrame` / `createImageBitmap` / WebGL2；iOS Safari 版本差异需按 §3.10 矩阵验证。背景效果还要求 WebGL2 float/half-float color-buffer 及对应线性过滤扩展（float32 路径还要求 `EXT_float_blend`；half-float 回退要求 `EXT_color_buffer_half_float`）；不满足时（实测 Huawei Browser 及 Chrome for Android 158 的 Mali-G76 驱动均缺少 float linear）仍显示 filter 控件，点击后提示 unsupported，不创建 processor，避免 GPU abort 或性能不可接受的 CPU fallback。Adreno 740 同时具备这些扩展，Chrome for Android 158 上 Blur/图片背景/None 实测通过。
 - **架构边界**：当前是纯客户端方案；若未来需要"服务端虚化/录制侧虚化"或统一由服务端下发背景，需要 Egress 或服务端视频处理链，超出 `BackgroundProcessor` 范围。
 
 #### 3.8.7 键盘快捷键（修正 meet 的冲突）
@@ -1793,7 +1793,7 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
   > 上面的 CSP 按**生产自托管 MediaPipe**收紧；demo 若使用默认 CDN，需要在 `script-src`/`worker-src` 加 `https://cdn.jsdelivr.net`、在 `connect-src` 加 `https://storage.googleapis.com`，否则背景效果会被拦截（见下条与 §3.8.6）。
 - `connect-src` 至少包含 LiveKit 的 WSS origin（**含端口**；非默认端口不能省略，否则 CSP 不匹配）。demo 环境把示例里的 `wss://<livekit-host>:<port>` 换成 config 中的实际 WSS URL（只写本地 `public/config.json`，不写入本文）。上面的方括号 `[...]` 表示**可选源**，不是 CSP 字面语法；部署时按实际启用的功能展开或删除。
 - 如果 `backgroundImages` 使用 remote 图片，把对应 origin 加入 `img-src`；本地 `public/backgrounds/` 图片由 `'self'` 覆盖。remote 图片还必须允许 CORS，否则虚拟背景会回退为黑背景。
-- 如果使用背景效果且不自托管 MediaPipe（`mediapipeAssetBase` 为空），默认会从 `cdn.jsdelivr.net` 加载 wasm loader JS（需要 `script-src` + `worker-src` + `connect-src`），并从 `storage.googleapis.com` 拉 `selfie_segmenter.tflite`（需要 `connect-src`）。MediaPipe 内部会用 `createElement('script')`/`importScripts` 加载资源，只放行 `connect-src` 不够。生产/内网部署按 §3.8.6 设 `mediapipeAssetBase: "/meeting/vendor/mediapipe/"` 自托管后，这些外部源都可以删掉，收紧到 `'self'`；demo 可先走 CDN 并放行上述源。Krisp 本期不做，因此不需要 `integrations.livekit.io`。不需要背景效果就删掉这些源。
+- 如果使用背景效果且不自托管 MediaPipe（`mediapipeAssetBase` 为空），默认会从 `cdn.jsdelivr.net` 加载 wasm loader JS（需要 `script-src` + `worker-src` + `connect-src`），并从 `storage.googleapis.com` 拉 `selfie_segmenter.tflite`（需要 `connect-src`）。MediaPipe 内部会用 `createElement('script')`/`importScripts` 加载资源，只放行 `connect-src` 不够。生产/内网部署按 §3.8.6 设 `mediapipeAssetBase: "/meeting/vendor/mediapipe/"` 自托管后，这些外部源都可以删掉，收紧到 `'self'`；`config.example.json` 默认走 CDN，本地 `public/config.json` 可覆写为自托管。Krisp 本期不做，因此不需要 `integrations.livekit.io`。不需要背景效果就删掉这些源。
 - `style-src 'unsafe-inline'` 是因为 LiveKit 组件使用内联 style；不要为此把 script 也放开。
 - `script-src 'wasm-unsafe-eval'` 用于 MediaPipe 的 WebAssembly；不用背景效果可去掉。Safari 对 `wasm-unsafe-eval` 的 CSP 支持不一致；如果 console 报 CSP 拦截，按 §3.10 矩阵处理（关闭背景效果或调整 CSP），不要假设所有浏览器都放行。
 - 不添加 `Access-Control-Allow-Origin: *`；MVP 不需要 CORS。

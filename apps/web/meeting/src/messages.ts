@@ -54,6 +54,8 @@ export const messages = {
   backgroundFlower: 'Flower',
   backgroundLoading: 'Loading filter model...',
   backgroundCameraRequired: 'Turn on camera to use background effects.',
+  backgroundUnsupported:
+    'Background effects are not supported on this device.',
   waitingForConfig: 'Loading meeting configuration...',
   meetingEnded: 'The meeting has ended.',
   joinFailed: 'Could not connect to the meeting.',

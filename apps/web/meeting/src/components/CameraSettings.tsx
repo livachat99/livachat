@@ -31,6 +31,7 @@ import LakeBackground from '../assets/backgrounds/lake.webp'
 import NatureThumbnail from '../assets/backgrounds/nature-thumb.webp'
 import NatureBackground from '../assets/backgrounds/nature.webp'
 import { resolveBackgroundAssetPaths } from '../backgroundAssets'
+import { supportsFloatColorBuffer } from '../backgroundSupport'
 import {
   toBackgroundImageOptions,
   type BackgroundImageOption,
@@ -52,8 +53,16 @@ type BackgroundType = 'none' | 'blur' | 'image'
 let backgroundEffectsSupported: boolean | undefined
 
 function canUseBackgroundEffects(): boolean {
-  if (backgroundEffectsSupported === undefined) {
-    backgroundEffectsSupported = supportsBackgroundProcessors()
+  if (backgroundEffectsSupported !== undefined) return backgroundEffectsSupported
+  if (!supportsBackgroundProcessors()) {
+    backgroundEffectsSupported = false
+    return backgroundEffectsSupported
+  }
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2')
+    backgroundEffectsSupported = !!gl && supportsFloatColorBuffer(gl)
+  } catch {
+    backgroundEffectsSupported = false
   }
   return backgroundEffectsSupported
 }
@@ -108,6 +117,7 @@ export function CameraSettings({
   const [trackRevision, setTrackRevision] = React.useState(0)
   const [loading, setLoading] = React.useState(false)
   const [processorReady, setProcessorReady] = React.useState(false)
+  const [unsupportedNotice, setUnsupportedNotice] = React.useState(false)
   const processorRef = React.useRef<BackgroundProcessorWrapper | null>(null)
   const attachInFlightRef = React.useRef<{
     track: LocalVideoTrack
@@ -293,6 +303,11 @@ export function CameraSettings({
 
   const selectBackground = (type: BackgroundType, path?: string) => {
     if (type !== 'none' && !isCameraEnabled) return
+    setUnsupportedNotice(false)
+    if (type !== 'none' && !canUseBackgroundEffects()) {
+      setUnsupportedNotice(true)
+      return
+    }
     setBackgroundType(type)
     setImagePath(type === 'image' && path ? path : null)
     if (type === 'none') {
@@ -327,9 +342,21 @@ export function CameraSettings({
         </div>
       </section>
 
-      {enableBackgroundEffects && canUseBackgroundEffects() ? (
+      {enableBackgroundEffects ? (
         <div style={{ marginTop: '10px' }}>
           <div style={{ marginBottom: '8px' }}>Background effects</div>
+          {unsupportedNotice ? (
+            <p
+              role="alert"
+              style={{
+                margin: '0 0 8px',
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontSize: '0.85rem',
+              }}
+            >
+              {messages.backgroundUnsupported}
+            </p>
+          ) : null}
           {loading ? (
             <p
               role="status"
