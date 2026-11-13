@@ -330,6 +330,23 @@ export function CameraSettings({
       {enableBackgroundEffects && canUseBackgroundEffects() ? (
         <div style={{ marginTop: '10px' }}>
           <div style={{ marginBottom: '8px' }}>Background effects</div>
+          {loading ? (
+            <p
+              role="status"
+              aria-live="polite"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                margin: '0 0 8px',
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontSize: '0.85rem',
+              }}
+            >
+              <span className="lk-spinner" aria-hidden="true" />
+              {messages.backgroundLoading}
+            </p>
+          ) : null}
           {!isCameraEnabled ? (
             <p
               style={{
@@ -379,23 +396,6 @@ export function CameraSettings({
               />
             ))}
           </div>
-          {loading ? (
-            <p
-              role="status"
-              aria-live="polite"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                margin: '8px 0 0',
-                color: 'rgba(255, 255, 255, 0.75)',
-                fontSize: '0.85rem',
-              }}
-            >
-              <span className="lk-spinner" aria-hidden="true" />
-              {messages.backgroundLoading}
-            </p>
-          ) : null}
         </div>
       ) : null}
     </div>

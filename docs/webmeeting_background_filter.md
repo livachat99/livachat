@@ -381,7 +381,7 @@ Turn on camera to use background effects.
 - None 保持文字按钮；Blur 使用 96×54 缩略图卡片，文字居中；Desk / Nature / Lake / Flower / config 图片只显示缩略图，不显示文字（label 仅用于 `aria-label`/`title`）；
 - Blur 卡片使用 `src/assets/backgrounds/blur.svg` 静态效果图；Desk/Nature/Lake/Flower 使用照片 WebP + 独立缩略图（`desk.webp`/`desk-thumb.webp`、`nature.webp`/`nature-thumb.webp`、`lake.webp`/`lake-thumb.webp`、`flower.webp`/`flower-thumb.webp`）；
 - 摄像头关闭时禁用所有非 None 卡片；
-- loading 使用 `role="status"` + `aria-live="polite"`；
+- loading 提示位于 `Background effects` 标题下方；使用 `role="status"` + `aria-live="polite"`；
 - 加载期间禁用所有非 None 卡片，避免重复选择；
 - **None 保持可点击**，用于取消；
 - 选中态按钮保持 pressed，提示用户当前选择；
