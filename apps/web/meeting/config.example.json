@@ -6,7 +6,7 @@
   "apiSecret": "<LIVEKIT_API_SECRET>",
   "tokenTtlSeconds": 600,
   "videoCodec": "vp8",
-  "showPreJoin": true,
+  "showPreJoin": false,
   "enableSettingsMenu": true,
   "enableBackgroundEffects": true,
   "mediapipeAssetBase": "",

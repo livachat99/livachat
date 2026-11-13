@@ -176,7 +176,7 @@ export function validateConfig(
       MAX_TTL_SECONDS,
     ),
     videoCodec: readVideoCodec(record),
-    showPreJoin: readBoolean(record, 'showPreJoin', true),
+    showPreJoin: readBoolean(record, 'showPreJoin', false),
     enableSettingsMenu: readBoolean(record, 'enableSettingsMenu', true),
     enableBackgroundEffects: readBoolean(record, 'enableBackgroundEffects', true),
     mediapipeAssetBase: readMediapipeAssetBase(record),

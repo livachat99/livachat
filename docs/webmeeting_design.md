@@ -1,7 +1,7 @@
 # Web Meeting App 调研与设计（React + Vite + LiveKit）
 
 > **状态**：设计已确认（2026-11-11），二次评审后修订；P0/P1 已实施（`apps/web/meeting`），P2 待定
-> **已确认范围**：`apps/web/meeting` 是唯一 Web 实现（demo/验证阶段允许浏览器内置 key pair；未来切服务端签发）；demo server 已确认（livekit-server `v1.13.11`；host/port 只写本地 `public/config.json`），key 是专用 demo key；WSS 已用本地 meet.git 在 Chrome/Safari 验证可正常入会；仅内网测试；Krisp 降噪本期不做；其余按本文推荐默认（保留 PreJoin、不做 E2EE/录制、英文 UI、base 固定 `/meeting/`（demo/生产一致）、运行期 `public/config.json`）。
+> **已确认范围**：`apps/web/meeting` 是唯一 Web 实现（demo/验证阶段允许浏览器内置 key pair；未来切服务端签发）；demo server 已确认（livekit-server `v1.13.11`；host/port 只写本地 `public/config.json`），key 是专用 demo key；WSS 已用本地 meet.git 在 Chrome/Safari 验证可正常入会；仅内网测试；Krisp 降噪本期不做；其余按本文推荐默认（默认跳过 PreJoin、不做 E2EE/录制、英文 UI、base 固定 `/meeting/`（demo/生产一致）、运行期 `public/config.json`）。
 > **日期**：2026-11-11
 > **需求来源**：用户口述 6 条（见 §1.1）
 > **调研对象**：`~/github/meet.git`，`main @ a1ae54a`（2026-11-11 直读源码与 `.env.local` 变量名；后者 key/secret 真实值不落入本文）
@@ -60,7 +60,7 @@
 | D1 | 新 app 用 **React 18.3.1 + Vite 8 + TypeScript**，不引入 Next.js | 需求明确不要 Next；`meet.git` 的会中代码与 Next 解耦，可整体迁移；Vite 脚手架对齐 `apps/web/mylife` |
 | D2 | **静态 SPA**，本期无后端；demo/验证阶段 LiveKit JWT 在浏览器用 `jose` 生成，**允许内置 key pair** | 需求方已确认：当前只做 demo/验证，允许客户端内置 key pair；`meet.git` 的 API route 需要 Next server，改成纯前端后无需部署 Node。未来切服务端签发（§3.13.4），本阶段不实现 |
 | D3 | 首页只负责 **meeting number（= LiveKit room name）+ 用户名** | 需求原文；不保留 meet 的 Demo/Custom 双 tab 与「server URL + token」表单 |
-| D4 | 保留 **PreJoin** 作为会前设备预览/选择步骤，用户名由首页带入 | 复用 meet 的会前 UX；`PreJoin` 是 meet 入会流程的一部分。可通过配置 `showPreJoin=false` 跳过 |
+| D4 | **默认跳过 PreJoin**，Home 直接进入 Meeting；需要会前设备预览/选择时设 `showPreJoin=true` | 2026-11-13 需求方改为默认关闭；`PreJoin` 组件保留为可选步骤，用户名仍由首页带入 |
 | D5 | 会中 UI/UX **基本复刻 meet**：`RoomContext + VideoConference`，外加 SettingsMenu、KeyboardShortcuts、DebugMode、RecordingIndicator、LowCPUOptimizer | 需求原文；这些代码与 Next 无关，迁移成本低 |
 | D6 | 运行期读取 **`public/config.json`**（gitignore），提交 app 根目录的 `config.example.json` | 需求允许 JSON 配置；运行期读取可换环境/轮换而不重新构建。硬编码作为备选 |
 | D7 | identity = **opaque 随机 ID**（`u_<random>`）；`name` claim = 用户显示名 | 只要求唯一性；显示名只放 `name` claim，避免姓名进服务端日志；不再复刻 meet 的 `name__postfix`，也不需要 sessionStorage |
@@ -535,7 +535,7 @@ export type MeetingConfigCommon = {
   livekitUrl: string             // wss://<livekit-host>:<port>（最终 URL，不再做 region 解析）
   tokenTtlSeconds: number        // 默认 600；范围 120..3600
   videoCodec: MeetingVideoCodec  // 默认 'vp8'；vp9/av1 走 SVC，vp8/h264 走 simulcast
-  showPreJoin: boolean           // 默认 true；false 则 Home 直接进会中
+  showPreJoin: boolean           // 默认 false；true 则 Home -> PreJoin -> Meeting
   enableSettingsMenu: boolean    // 默认 true
   enableBackgroundEffects: boolean // 默认 true；关闭则不显示背景效果
   mediapipeAssetBase?: string    // 空/缺省 = MediaPipe CDN；生产建议 `${BASE_URL}vendor/mediapipe/`
@@ -573,7 +573,7 @@ export type MeetingConfig = ClientTokenConfig | ServerTokenConfig
   "apiSecret": "<LIVEKIT_API_SECRET>",
   "tokenTtlSeconds": 600,
   "videoCodec": "vp8",
-  "showPreJoin": true,
+  "showPreJoin": false,
   "enableSettingsMenu": true,
   "enableBackgroundEffects": true,
   "mediapipeAssetBase": "",
@@ -881,7 +881,7 @@ function randomRoomId(): string {
 
 ### 3.7 PreJoin 设计
 
-- 首页提交后进入 `PreJoinStage`：
+- 当 `showPreJoin=true`（非默认）时，首页提交后进入 `PreJoinStage`：
   ```tsx
   <PreJoin
     defaults={{ username: participantName, videoEnabled: true, audioEnabled: true }}
@@ -904,7 +904,7 @@ function randomRoomId(): string {
   3. 成功 -> 进入 meeting 阶段
   4. 失败 -> toast + 留在 PreJoin，允许重试
 - `onError`（摄像头/麦克风权限失败）：toast 提示；用户仍可关掉设备后 Join（至少能看/听别人）。
-- 如果 `config.showPreJoin === false`：跳过该阶段，用 `{ username, videoEnabled: true, audioEnabled: true, videoDeviceId: '', audioDeviceId: '' }` 直接生成 token 并连接。此时设备选择只能在会中 SettingsMenu 做。
+- 默认 `config.showPreJoin === false`：跳过该阶段，用 `{ username, videoEnabled: true, audioEnabled: true, videoDeviceId: '', audioDeviceId: '' }` 直接生成 token 并连接。此时设备选择只能在会中 SettingsMenu 做。
 
 ### 3.8 会中设计
 
@@ -914,16 +914,16 @@ function randomRoomId(): string {
                  ┌──────────────────────────────┐
                  │            Home              │
                  │  roomName + participantName  │
-                 └──────────────┬───────────────┘
-                                │ submit
-                                ▼
-                 ┌──────────────────────────────┐
-                 │          PreJoin             │
-                 │  username prefilled          │
-                 │  camera/mic preview          │
-                 └──────────────┬───────────────┘
-                                │ submit -> mint token
-                                ▼
+                 └───────┬───────────────┬──────┘
+      showPreJoin=true   │               │  showPreJoin=false (默认)
+                         ▼               │
+                 ┌──────────────┐        │
+                 │   PreJoin    │        │
+                 │  camera/mic  │        │
+                 │   preview    │        │
+                 └──────┬───────┘        │
+                        │ submit -> mint token
+                        ▼                ▼
                  ┌──────────────────────────────┐
                  │          Meeting             │
                  │  Room + VideoConference      │
@@ -948,7 +948,7 @@ type Stage =
   | { kind: 'error'; message: string; retry: JoinParams }
 ```
 
-- `showPreJoin=false` 时，Home 的 `onJoin` 直接调用 provider 生成 details，并把默认 choices 放进 meeting 阶段，跳过 PreJoin。
+- 默认 `showPreJoin=false` 时，Home 的 `onJoin` 直接调用 provider 生成 details，并把默认 choices 放进 meeting 阶段，跳过 PreJoin。
 - 离开/断线 -> `setStage({ kind: 'home' })`，并 toast「You left the meeting」。
 - 连接失败 -> `MeetingRoom` 调 `onError(message, retry)`，进入 `error` 阶段；ErrorView 的 Retry 用 `retry.roomName/participantName` **重新签发 token**，成功后带原 `retry.choices` 回到 meeting；Back 回 Home。这样 token 过期/server 临时不可达都能重试。
 - 不引入路由；刷新页面 = 离开会议，回到 Home（token 不持久化）。
@@ -1934,7 +1934,7 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
 | # | 问题 | 决策 | 影响 |
 |---|------|------|------|
 | 1 | 部署范围 | **demo/验证**，不公网 | 允许客户端内置 key pair；dev 警告 + 构建闸门保留；未来公网前必须切服务端 token |
-| 2 | 是否保留 PreJoin | **保留**（`showPreJoin=true`） | 首页 -> PreJoin -> Meeting；如后续要一键入会再改为 false |
+| 2 | 是否保留 PreJoin | **默认关闭**（`showPreJoin=false`） | Home -> Meeting；需要预览/设备选择时设 `showPreJoin=true` 走 Home -> PreJoin -> Meeting |
 | 3 | E2EE / 录制 | **MVP 不做** | UI 不提供假按钮；RecordingIndicator 仍保留（显示外部录制状态） |
 | 4 | Krisp 降噪 | **本期不做** | 移除 `@livekit/krisp-noise-filter` 依赖、`enableKrispNoiseFilter` 配置、相关 UI 与 CSP 源 |
 | 5 | UI 语言 | **英文** | 文案/错误信息全部英文，集中到 `src/messages.ts`，后续可加 i18n |
@@ -2322,3 +2322,4 @@ export default function App() {
 - 2026-11-11（iOS 屏幕共享显示修复）：`.is-ios [data-lk-source='screen_share']` 会同时匹配 LiveKit 远端 ParticipantTile/VideoTrack，导致 iPhone 端把别人共享的画面整块隐藏；选择器收窄为 `.is-ios .lk-control-bar [data-lk-source='screen_share']`，只隐藏本机屏幕共享按钮。
 - 2026-11-11（Leave 确认）：控制栏 Leave 点击改为捕获阶段拦截并弹确认框，Cancel/Esc/遮罩关闭不离开；确认后才 `room.disconnect()`。避免误触立即退会。
 - 2026-11-11（P2 调研）：确认 Safari 27 / iOS 27 / iPadOS 27 起支持网页 `getDisplayMedia`；当前 `is-ios` CSS 会在 27+ 误隐藏共享按钮。列入 P2 增强：移除 UA 隐藏、依赖 LiveKit 能力检测，并做 iPhone/iPad 27 实机验证（详细证据与步骤见 §3.8.11）。
+- 2026-11-13：需求变更，`showPreJoin` 默认改为 **false**（Home 直接入会）；PreJoin 保留为可选步骤，配置 `showPreJoin=true` 时启用。`config.example.json`、单测和本文档同步。

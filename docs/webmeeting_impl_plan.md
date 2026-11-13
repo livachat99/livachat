@@ -212,6 +212,7 @@
 | 2026-11-11 | P0 | 完成 | 23 单测 + demo server 双人入会 + 构建闸门 |
 | 2026-11-11 | P1 | 主体完成 | Settings/背景/快捷键/Debug/Recording/LowCPU/空房提示/iOS 隐藏；Chrome 桌面媒体 E2E（camera/mic/背景/聊天/重连）通过；屏幕共享/设备切换/Safari/iOS 待手测 |
 | 2026-11-11 | P2 | 未开始 | 按需；iOS/iPadOS 27+ 网页屏幕共享增强见 §4.5 |
+| 2026-11-13 | 配置默认 | 完成 | `showPreJoin` 默认改为 false（Home 直接入会）；PreJoin 保留，设 `showPreJoin=true` 启用 |
 
 ### 本地测试配置
 

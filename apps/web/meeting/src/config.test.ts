@@ -32,12 +32,30 @@ describe('validateConfig', () => {
       tokenMode: 'client',
       tokenTtlSeconds: 600,
       videoCodec: 'vp8',
-      showPreJoin: true,
+      showPreJoin: false,
       enableSettingsMenu: true,
       enableBackgroundEffects: true,
       mediapipeAssetBase: '',
       showDebugPanel: false,
     })
+  })
+
+  it('accepts an explicit showPreJoin override and rejects non-booleans', () => {
+    const base = {
+      livekitUrl: clientConfig.livekitUrl,
+      apiKey: 'key',
+      apiSecret: 'secret',
+    }
+    expect(
+      validateConfig({ ...base, showPreJoin: true }, { isHttps: false })
+        .showPreJoin,
+    ).toBe(true)
+    expect(() =>
+      validateConfig(
+        { ...base, showPreJoin: 'yes' },
+        { isHttps: false },
+      ),
+    ).toThrow()
   })
 
   it('rejects a missing or invalid LiveKit URL', () => {

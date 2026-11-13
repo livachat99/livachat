@@ -1,3 +1,11 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
 .tabs {
   position: relative;
   display: flex;
@@ -26,10 +34,4 @@
 .content h3 {
   margin: 0 0 0.5rem;
   font-size: 0.95rem;
-}
-
-.closeRow {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
 }

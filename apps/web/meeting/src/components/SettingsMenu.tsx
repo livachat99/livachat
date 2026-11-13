@@ -26,18 +26,29 @@ export function SettingsMenu({ config, ...props }: SettingsMenuProps) {
       style={{ width: '100%', position: 'relative' }}
       {...props}
     >
-      <div className={styles.tabs}>
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            className={`${styles.tab} lk-button`}
-            onClick={() => setActiveTab(tab)}
-            aria-pressed={tab === activeTab}
-          >
-            {messages.settingsMedia}
-          </button>
-        ))}
+      <div className={styles.header}>
+        <div className={styles.tabs}>
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              className={`${styles.tab} lk-button`}
+              onClick={() => setActiveTab(tab)}
+              aria-pressed={tab === activeTab}
+            >
+              {messages.settingsMedia}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="lk-button"
+          onClick={() =>
+            layoutContext?.widget.dispatch?.({ msg: 'toggle_settings' })
+          }
+        >
+          {messages.settingsClose}
+        </button>
       </div>
 
       {activeTab === 'media' ? (
@@ -66,18 +77,6 @@ export function SettingsMenu({ config, ...props }: SettingsMenuProps) {
           </section>
         </div>
       ) : null}
-
-      <div className={styles.closeRow}>
-        <button
-          type="button"
-          className="lk-button"
-          onClick={() =>
-            layoutContext?.widget.dispatch?.({ msg: 'toggle_settings' })
-          }
-        >
-          {messages.settingsClose}
-        </button>
-      </div>
     </div>
   )
 }
