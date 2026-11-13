@@ -35,6 +35,8 @@ describe('validateConfig', () => {
       showPreJoin: false,
       enableSettingsMenu: true,
       enableBackgroundEffects: true,
+      backgroundEffectsPreload: 'auto',
+      backgroundImages: [],
       mediapipeAssetBase: '',
       showDebugPanel: false,
     })
@@ -53,6 +55,103 @@ describe('validateConfig', () => {
     expect(() =>
       validateConfig(
         { ...base, showPreJoin: 'yes' },
+        { isHttps: false },
+      ),
+    ).toThrow()
+  })
+
+  it('validates backgroundEffectsPreload', () => {
+    const base = {
+      livekitUrl: clientConfig.livekitUrl,
+      apiKey: 'key',
+      apiSecret: 'secret',
+    }
+    expect(
+      validateConfig(
+        { ...base, backgroundEffectsPreload: 'off' },
+        { isHttps: false },
+      ).backgroundEffectsPreload,
+    ).toBe('off')
+    expect(
+      validateConfig(
+        { ...base, backgroundEffectsPreload: 'auto' },
+        { isHttps: false },
+      ).backgroundEffectsPreload,
+    ).toBe('auto')
+    expect(() =>
+      validateConfig(
+        { ...base, backgroundEffectsPreload: 'yes' },
+        { isHttps: false },
+      ),
+    ).toThrow()
+  })
+
+  it('validates config-driven background images', () => {
+    const base = {
+      livekitUrl: clientConfig.livekitUrl,
+      apiKey: 'key',
+      apiSecret: 'secret',
+    }
+    const config = validateConfig(
+      {
+        ...base,
+        backgroundImages: [
+          {
+            label: ' Office ',
+            image: ' backgrounds/office.jpg ',
+            thumbnail: ' backgrounds/office-thumb.jpg ',
+          },
+          {
+            label: 'Library',
+            image: 'https://cdn.example.test/meeting/library.jpg',
+          },
+        ],
+      },
+      { isHttps: false },
+    )
+    expect(config.backgroundImages).toEqual([
+      {
+        label: 'Office',
+        image: 'backgrounds/office.jpg',
+        thumbnail: 'backgrounds/office-thumb.jpg',
+      },
+      {
+        label: 'Library',
+        image: 'https://cdn.example.test/meeting/library.jpg',
+      },
+    ])
+
+    expect(() =>
+      validateConfig({ ...base, backgroundImages: 'office.jpg' }, {
+        isHttps: false,
+      }),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        { ...base, backgroundImages: [{ label: 'Office' }] },
+        { isHttps: false },
+      ),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        {
+          ...base,
+          backgroundImages: [
+            { label: 'Bad', image: 'javascript:alert(1)' },
+          ],
+        },
+        { isHttps: false },
+      ),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        {
+          ...base,
+          backgroundImages: [
+            { label: 'One', image: 'backgrounds/one.jpg' },
+            { label: 'Two', image: 'backgrounds/one.jpg' },
+          ],
+        },
         { isHttps: false },
       ),
     ).toThrow()

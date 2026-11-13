@@ -1,12 +1,10 @@
-import {
-  MediaDeviceMenu,
-  useMaybeLayoutContext,
-} from '@livekit/components-react'
+import { useMaybeLayoutContext } from '@livekit/components-react'
 import * as React from 'react'
 import type { MeetingConfig } from '../config'
 import { messages } from '../messages'
 import { CameraSettings } from './CameraSettings'
 import { MicrophoneSettings } from './MicrophoneSettings'
+import { SpeakerSettings } from './SpeakerSettings'
 import styles from './SettingsMenu.module.css'
 
 export type SettingsMenuProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -57,6 +55,8 @@ export function SettingsMenu({ config, ...props }: SettingsMenuProps) {
             <h3>{messages.settingsCamera}</h3>
             <CameraSettings
               enableBackgroundEffects={config.enableBackgroundEffects}
+              backgroundEffectsPreload={config.backgroundEffectsPreload}
+              backgroundImages={config.backgroundImages}
               mediapipeAssetBase={config.mediapipeAssetBase}
             />
           </section>
@@ -68,12 +68,7 @@ export function SettingsMenu({ config, ...props }: SettingsMenuProps) {
 
           <section>
             <h3>{messages.settingsSpeaker}</h3>
-            <section className="lk-button-group">
-              <span className="lk-button">Audio output</span>
-              <div className="lk-button-group-menu">
-                <MediaDeviceMenu kind="audiooutput" />
-              </div>
-            </section>
+            <SpeakerSettings />
           </section>
         </div>
       ) : null}

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <radialGradient id="base" cx="42%" cy="38%" r="82%">
+      <stop offset="0" stop-color="#22304d"/>
+      <stop offset="0.55" stop-color="#101728"/>
+      <stop offset="1" stop-color="#06080f"/>
+    </radialGradient>
+    <radialGradient id="amber" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffd18a" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#f6b85f" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#f6b85f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="teal" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#5eead4" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="violet" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blue" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#60a5fa" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leak" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6c177" stop-opacity="0.16"/>
+      <stop offset="0.45" stop-color="#a78bfa" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#5eead4" stop-opacity="0.14"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="72%">
+      <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.5"/>
+    </radialGradient>
+    <filter id="haze" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="55"/>
+    </filter>
+    <filter id="bokeh" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#base)"/>
+  <rect width="1280" height="720" fill="url(#leak)"/>
+  <g filter="url(#haze)">
+    <ellipse cx="270" cy="300" rx="430" ry="310" fill="url(#teal)" opacity="0.6"/>
+    <ellipse cx="1030" cy="170" rx="380" ry="290" fill="url(#amber)" opacity="0.65"/>
+    <ellipse cx="910" cy="630" rx="430" ry="300" fill="url(#violet)" opacity="0.45"/>
+    <ellipse cx="540" cy="350" rx="280" ry="220" fill="url(#blue)" opacity="0.4"/>
+  </g>
+  <g filter="url(#bokeh)">
+    <circle cx="180" cy="180" r="45" fill="#ffd18a" opacity="0.32"/>
+    <circle cx="310" cy="470" r="28" fill="#5eead4" opacity="0.35"/>
+    <circle cx="760" cy="140" r="38" fill="#a78bfa" opacity="0.3"/>
+    <circle cx="1120" cy="420" r="52" fill="#60a5fa" opacity="0.25"/>
+    <circle cx="930" cy="560" r="24" fill="#ffd18a" opacity="0.38"/>
+    <circle cx="500" cy="220" r="18" fill="#ffffff" opacity="0.24"/>
+    <circle cx="1040" cy="600" r="18" fill="#5eead4" opacity="0.36"/>
+    <circle cx="640" cy="560" r="14" fill="#ffffff" opacity="0.18"/>
+  </g>
+  <rect width="1280" height="720" fill="url(#vignette)"/>
+</svg>

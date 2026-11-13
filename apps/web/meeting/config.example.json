@@ -9,6 +9,8 @@
   "showPreJoin": false,
   "enableSettingsMenu": true,
   "enableBackgroundEffects": true,
+  "backgroundEffectsPreload": "auto",
+  "backgroundImages": [],
   "mediapipeAssetBase": "",
   "showDebugPanel": false
 }

@@ -1,6 +1,13 @@
 import { messages } from './messages'
 
 export type MeetingVideoCodec = 'vp8' | 'h264' | 'vp9' | 'av1'
+export type BackgroundEffectsPreload = 'auto' | 'off'
+
+export type BackgroundImageConfig = {
+  label: string
+  image: string
+  thumbnail?: string
+}
 
 export type MeetingConfigCommon = {
   appTitle: string
@@ -10,6 +17,8 @@ export type MeetingConfigCommon = {
   showPreJoin: boolean
   enableSettingsMenu: boolean
   enableBackgroundEffects: boolean
+  backgroundEffectsPreload: BackgroundEffectsPreload
+  backgroundImages: BackgroundImageConfig[]
   mediapipeAssetBase: string
   showDebugPanel: boolean
 }
@@ -117,6 +126,87 @@ function readInteger(
   return value
 }
 
+function readBackgroundEffectsPreload(
+  raw: Record<string, unknown>,
+): BackgroundEffectsPreload {
+  const value = raw.backgroundEffectsPreload
+  if (value === undefined) return 'auto'
+  if (value !== 'auto' && value !== 'off') {
+    throw new Error(
+      'config.json: "backgroundEffectsPreload" must be "auto" or "off".',
+    )
+  }
+  return value
+}
+
+function validateBackgroundImageUrl(value: string, label: string): string {
+  if (
+    /^[a-z][a-z0-9+.-]*:/i.test(value) &&
+    !/^https?:\/\//i.test(value) &&
+    !/^data:image\//i.test(value)
+  ) {
+    throw new Error(
+      `config.json: "${label}" must be an http(s):// URL, data:image/... URL, or relative path.`,
+    )
+  }
+  return value
+}
+
+function readBackgroundImages(
+  raw: Record<string, unknown>,
+): BackgroundImageConfig[] {
+  const value = raw.backgroundImages
+  if (value === undefined || value === null) return []
+  if (!Array.isArray(value)) {
+    throw new Error('config.json: "backgroundImages" must be an array.')
+  }
+
+  const seen = new Set<string>()
+  return value.map((entry, index) => {
+    const prefix = `backgroundImages[${index}]`
+    if (entry === null || typeof entry !== 'object' || Array.isArray(entry)) {
+      throw new Error(`config.json: "${prefix}" must be an object.`)
+    }
+    const record = entry as Record<string, unknown>
+    const label = readRequiredString(record, 'label', `${prefix}.label`)
+    const image = validateBackgroundImageUrl(
+      readRequiredString(record, 'image', `${prefix}.image`),
+      `${prefix}.image`,
+    )
+
+    const thumbnailValue = record.thumbnail
+    if (
+      thumbnailValue !== undefined &&
+      thumbnailValue !== null &&
+      typeof thumbnailValue !== 'string'
+    ) {
+      throw new Error(`config.json: "${prefix}.thumbnail" must be a string.`)
+    }
+    const thumbnail =
+      typeof thumbnailValue === 'string' ? thumbnailValue.trim() : ''
+
+    if (seen.has(image)) {
+      throw new Error(
+        `config.json: "${prefix}.image" duplicates an earlier background image.`,
+      )
+    }
+    seen.add(image)
+
+    return {
+      label,
+      image,
+      ...(thumbnail
+        ? {
+            thumbnail: validateBackgroundImageUrl(
+              thumbnail,
+              `${prefix}.thumbnail`,
+            ),
+          }
+        : {}),
+    }
+  })
+}
+
 function readVideoCodec(
   raw: Record<string, unknown>,
 ): MeetingVideoCodec {
@@ -179,6 +269,8 @@ export function validateConfig(
     showPreJoin: readBoolean(record, 'showPreJoin', false),
     enableSettingsMenu: readBoolean(record, 'enableSettingsMenu', true),
     enableBackgroundEffects: readBoolean(record, 'enableBackgroundEffects', true),
+    backgroundEffectsPreload: readBackgroundEffectsPreload(record),
+    backgroundImages: readBackgroundImages(record),
     mediapipeAssetBase: readMediapipeAssetBase(record),
     showDebugPanel: readBoolean(record, 'showDebugPanel', opts.isDev ?? false),
   }

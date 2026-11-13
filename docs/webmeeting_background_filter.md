@@ -1,9 +1,9 @@
 # Web Meeting 背景 Filter 预加载设计
 
-> **状态**：决策已确认（2026-11-13），待实施。主方案为资源预加载，不 attach processor。
+> **状态**：已实施（2026-11-13）；P0/P1/P2 完成，P3 Chrome 桌面主要 E2E 通过；慢网/移动端手测待补。
 > **日期**：2026-11-13
 > **范围**：`apps/web/meeting` 会中 Settings 的 Blur / 虚拟背景功能
-> **相关文档**：[`webmeeting_design.md`](webmeeting_design.md) §3.8.6、[`webmeeting_impl_plan.md`](webmeeting_impl_plan.md)
+> **相关文档**：[`webmeeting_design.md`](webmeeting_design.md) §3.8.6、[`webmeeting_impl_plan.md`](webmeeting_impl_plan.md)、[`webmeeting_background_filter_impl_plan.md`](webmeeting_background_filter_impl_plan.md)
 
 ---
 
@@ -11,7 +11,7 @@
 
 当前实现是**纯懒加载**：
 
-1. 用户在 Settings 中点击 Blur / Desk / Nature；
+1. 用户在 Settings 中点击 Blur / Desk / Nature / Lake / Flower / config 追加图片；
 2. `CameraSettings` 的 `effectsActive` 变为 true；
 3. 创建 `BackgroundProcessor`；
 4. `LocalVideoTrack.setProcessor()` 触发 `processor.init()`；
@@ -46,7 +46,7 @@
 | 预加载时机 | 入会后异步进行，不要求摄像头已打开 |
 | `backgroundEffectsPreload` 默认值 | `auto` |
 | 模型 Blob URL | **不采用**；模型走普通 HTTP 缓存 |
-| 摄像头关闭时 | **禁用 Blur / Desk / Nature 按钮**，不允许点击 filter；可显示开启摄像头提示 |
+| 摄像头关闭时 | **禁用所有非 None filter 卡片**，不允许点击 filter；可显示开启摄像头提示 |
 | 完整预热（attach disabled processor） | **本期不做** |
 | 加载文案 | 英文 `Loading filter model...` |
 | 完整预热/服务端虚化 | 不在本期范围 |
@@ -292,7 +292,7 @@ const results = await Promise.allSettled([
 ### 5.5 摄像头开关与 filter 按钮
 
 - 摄像头关闭（`isCameraEnabled=false`）时：
-  - Blur / Desk / Nature 按钮 **disabled**；
+  - 所有非 None filter 卡片 **disabled**；
   - 显示提示：`Turn on camera to use background effects.`；
   - None 可以保持可点击；
   - 资源预加载照常进行。
@@ -369,7 +369,7 @@ type EffectPhase =
 在背景效果区域显示：
 
 ```text
-[None] [Blur] [Desk] [Nature]
+[None] [Blur thumbnail] [Desk thumbnail] [Nature thumbnail] [config thumbnails...]
 
 // 资源加载中且用户已选择：
 [spinner] Loading filter model...
@@ -378,11 +378,11 @@ type EffectPhase =
 Turn on camera to use background effects.
 ```
 
-建议：
-
-- 摄像头关闭时禁用 Blur / Desk / Nature；None 保持可点击；
+- None 保持文字按钮；Blur 使用 96×54 缩略图卡片，文字居中；Desk / Nature / Lake / Flower / config 图片只显示缩略图，不显示文字（label 仅用于 `aria-label`/`title`）；
+- Blur 卡片使用 `src/assets/backgrounds/blur.svg` 静态效果图；Desk/Nature/Lake/Flower 使用照片 WebP + 独立缩略图（`desk.webp`/`desk-thumb.webp`、`nature.webp`/`nature-thumb.webp`、`lake.webp`/`lake-thumb.webp`、`flower.webp`/`flower-thumb.webp`）；
+- 摄像头关闭时禁用所有非 None 卡片；
 - loading 使用 `role="status"` + `aria-live="polite"`；
-- 加载期间禁用 Blur / Desk / Nature，避免重复选择；
+- 加载期间禁用所有非 None 卡片，避免重复选择；
 - **None 保持可点击**，用于取消；
 - 选中态按钮保持 pressed，提示用户当前选择；
 - 加载失败时使用现有 `backgroundEffectError` toast，并重置到 None。
@@ -400,7 +400,14 @@ backgroundCameraRequired: 'Turn on camera to use background effects.'
 
 ```json
 {
-  "backgroundEffectsPreload": "auto"
+  "backgroundEffectsPreload": "auto",
+  "backgroundImages": [
+    {
+      "label": "Office",
+      "image": "backgrounds/office.jpg",
+      "thumbnail": "backgrounds/office-thumb.jpg"
+    }
+  ]
 }
 ```
 
@@ -408,10 +415,17 @@ backgroundCameraRequired: 'Turn on camera to use background effects.'
 
 ```ts
 type BackgroundEffectsPreload = 'auto' | 'off'
+
+type BackgroundImageConfig = {
+  label: string
+  image: string
+  thumbnail?: string
+}
 ```
 
 - `auto`：默认值，按设备/网络能力决定是否预加载；
-- `off`：完全关闭资源预加载，恢复纯按需加载。
+- `off`：完全关闭资源预加载，恢复纯按需加载；
+- `backgroundImages`：默认 `[]`，追加在内置 Desk/Nature/Lake/Flower 之后；本地文件放 `public/backgrounds/`，相对路径基于 `BASE_URL` 解析；remote 需 CORS，`thumbnail` 缺省使用 `image`。详见主设计文档 §3.8.6。
 
 ### 5.10 建议的代码结构
 
@@ -519,7 +533,7 @@ const {
   5. 加载中点击 None，最终保持无背景；
   6. 模拟 `hardwareConcurrency=2` / `saveData`：入会不预加载，点击后才加载；
   7. 资源请求失败：点击时回退；仍失败则 toast + 回到 None；
-  8. 摄像头关闭时预加载仍发生，但 Blur/Desk/Nature 按钮 disabled；打开摄像头后恢复可点击；
+  8. 摄像头关闭时预加载仍发生，但所有非 None filter 卡片 disabled；打开摄像头后恢复可点击；
   9. full reconnect 后背景效果仍可用。
 - 资源断言：
   - 预加载请求使用显式 `DEFAULT_WASM_BASE`，不是同源 `/vision_wasm_internal.js`；
@@ -548,7 +562,7 @@ const {
 
 1. `backgroundEffectsPreload` 默认 `auto`。
 2. 不采用模型 Blob URL；模型走普通 HTTP 缓存。
-3. 摄像头关闭时禁用 Blur / Desk / Nature，不允许点击 filter；显示开启摄像头提示。
+3. 摄像头关闭时禁用所有非 None filter，不允许点击；显示开启摄像头提示。
 4. 完整预热本期不做。
 5. 加载文案使用英文 `Loading filter model...`。
 6. 预加载延迟 2–3 秒；点击时最多等待 preload 10–15 秒后回退。
@@ -570,3 +584,4 @@ const {
 - 2026-11-13：初稿，提出入会后异步预热、能力门控、loading 提示与待 review 决策。
 - 2026-11-13：实测冷启动约 8.1 s、热缓存约 0.3 s；方案 v2 改为只做资源预加载、不 attach processor。
 - 2026-11-13：决策确认：`backgroundEffectsPreload` 默认 `auto`；不采用模型 Blob URL；摄像头关闭时禁用 filter；完整预热本期不做；补充显式 WASM base、fetch body 消费、CSP、超时回退和“不 attach”验收项。
+- 2026-11-13：实施完成（P0/P1/P2）；Chrome 桌面主要 E2E 通过；慢网/移动端手测待补。见 [`webmeeting_background_filter_impl_plan.md`](webmeeting_background_filter_impl_plan.md)。

@@ -333,7 +333,7 @@ GET /api/connection-details?roomName=..&participantName=..
 - `RecordingIndicator`：`useIsRecording()` 为 true 时弹 3 秒 toast，并在整个房间容器内嵌红色 3px 边框。
 - `SettingsMenu`：
   - tabs：`media`（camera/microphone/speaker）与可选 `recording`（仅 `NEXT_PUBLIC_LK_RECORD_ENDPOINT` 存在时）。
-  - Camera：本地预览、`TrackToggle`、`MediaDeviceMenu kind="videoinput"`、背景效果（None / Blur / 两张 Unsplash 图片）。
+  - Camera：本地预览、`TrackToggle`、`MediaDeviceMenu kind="videoinput"`、背景效果（meet 原实现为 None / Blur / 两张 Unsplash 图片；当前实现见 §3.8.6）。
   - Microphone：`TrackToggle`、`MediaDeviceMenu kind="audioinput"`、Krisp 降噪开关；非低功耗设备默认开启。
   - Speaker：`MediaDeviceMenu kind="audiooutput"`。
   - Recording：检查 `room.isE2EEEnabled`，E2EE 时拒绝；`fetch(endpoint + '/start|stop?roomName=...')`。
@@ -530,6 +530,12 @@ apps/web/meeting/
 ```ts
 export type MeetingVideoCodec = 'vp8' | 'h264' | 'vp9' | 'av1'
 
+export type BackgroundImageConfig = {
+  label: string                  // filter 卡片文案
+  image: string                  // http(s)://、data:image/... 或相对路径
+  thumbnail?: string             // 可选；缺省使用 image
+}
+
 export type MeetingConfigCommon = {
   appTitle: string               // UI 标题 / document.title，默认 "LivaChat Meeting"
   livekitUrl: string             // wss://<livekit-host>:<port>（最终 URL，不再做 region 解析）
@@ -538,6 +544,8 @@ export type MeetingConfigCommon = {
   showPreJoin: boolean           // 默认 false；true 则 Home -> PreJoin -> Meeting
   enableSettingsMenu: boolean    // 默认 true
   enableBackgroundEffects: boolean // 默认 true；关闭则不显示背景效果
+  backgroundEffectsPreload: 'auto' | 'off' // 默认 'auto'；入会后延迟预取 MediaPipe 资源，不 attach processor
+  backgroundImages: BackgroundImageConfig[] // 默认 []；追加到内置 Desk/Nature/Lake/Flower 之后
   mediapipeAssetBase?: string    // 空/缺省 = MediaPipe CDN；生产建议 `${BASE_URL}vendor/mediapipe/`
   showDebugPanel: boolean        // 默认 import.meta.env.DEV
 }
@@ -576,6 +584,8 @@ export type MeetingConfig = ClientTokenConfig | ServerTokenConfig
   "showPreJoin": false,
   "enableSettingsMenu": true,
   "enableBackgroundEffects": true,
+  "backgroundEffectsPreload": "auto",
+  "backgroundImages": [],
   "mediapipeAssetBase": "",
   "showDebugPanel": false
 }
@@ -1159,7 +1169,7 @@ return (
 - **Camera**
   - 本地预览（`VideoTrack`，镜像 `scaleX(-1)`）。
   - `TrackToggle` 摄像头开关 + `MediaDeviceMenu kind="videoinput"`。
-  - 背景效果：None / Blur / 虚拟背景图片（配置开关）。
+  - 背景效果：None / Blur / 虚拟背景图片（缩略图卡片；config 可追加本地或 remote 图片）。
 - **Microphone**
   - `TrackToggle` 麦克风开关 + `MediaDeviceMenu kind="audioinput"`。
   - **Krisp 本期不做**：不引入 `@livekit/krisp-noise-filter`，不 import `@livekit/components-react/krisp`；麦克风设置只保留开关与设备选择。
@@ -1200,7 +1210,7 @@ function getProcessor() {
 
 function modeOptions(): SwitchBackgroundProcessorOptions {
   return backgroundType === 'blur'
-    ? { mode: 'background-blur', blurRadius: 10 }
+    ? { mode: 'background-blur', blurRadius: 16 }
     : backgroundType === 'image' && imagePath
       ? { mode: 'virtual-background', imagePath }
       : { mode: 'disabled' }
@@ -1247,7 +1257,31 @@ useEffect(() => {
   - 非空：传给 `BackgroundProcessor` 的 `assetPaths = { tasksVisionFileSet: `${base}wasm`, modelAssetPath: `${base}selfie_segmenter.tflite` }`。
   - **生产/内网部署**按 `personal_meeting_design.md` §7.1 自托管：把 `@mediapipe/tasks-vision/wasm` 复制到 `public/vendor/mediapipe/wasm/`；模型 `selfie_segmenter.tflite` **不包含在 npm 包里**，需要从默认 URL 下载一次并放到 `public/vendor/mediapipe/`；config 设 `mediapipeAssetBase: "/meeting/vendor/mediapipe/"`，CSP 只需 `'self'`。
   - 或直接 `enableBackgroundEffects=false`，不加载该功能。
-- 背景图片放 `src/assets/backgrounds/`，用 Vite 的 `import` / `new URL(..., import.meta.url)`；不要从 `public/` 直接 import。建议用自有素材；如果沿用 meet 的 Unsplash 图，记录来源与许可。
+- 内置背景图片放 `src/assets/backgrounds/`，用 Vite 的 `import`；不要从 `public/` 直接 import。建议用自有素材；如果沿用 meet 的 Unsplash 图，记录来源与许可。
+- **背景 Filter 缩略图（2026-11-13）**：
+  - None 保持文字按钮；Blur 使用 `src/assets/backgrounds/blur.svg` 静态效果缩略图，实际虚化仍由 `blurRadius` 控制；Desk/Nature/Lake/Flower 各使用 1280×720 照片 WebP + 独立缩略图（`desk.webp`/`desk-thumb.webp`、`nature.webp`/`nature-thumb.webp`、`lake.webp`/`lake-thumb.webp`、`flower.webp`/`flower-thumb.webp`）。
+  - 设置页 filter 卡片固定 96×54，缩略图 `cover` 裁剪；Blur 文字居中显示，其他图片卡片只显示图片（label 仅作为 `aria-label`/`title`）；摄像头关闭/loading 时卡片禁用，None 保持可点击。
+- **config 追加背景图片**：
+
+  ```json
+  "backgroundImages": [
+    {
+      "label": "Office",
+      "image": "backgrounds/office.jpg",
+      "thumbnail": "backgrounds/office-thumb.jpg"
+    },
+    {
+      "label": "Library",
+      "image": "https://cdn.example.com/meeting/library.jpg"
+    }
+  ]
+  ```
+
+  - 列表追加在内置 Desk/Nature/Lake/Flower 之后，内置项不能通过该字段删除。
+  - 本地文件放 `apps/web/meeting/public/backgrounds/`；相对路径按 `BASE_URL` 解析，`backgrounds/office.jpg` 在 `/meeting/` 部署下即 `/meeting/backgrounds/office.jpg`；以 `/` 开头按站点根解析。
+  - remote 图片必须允许 CORS（`Access-Control-Allow-Origin`），并在 CSP `img-src` 中放行；否则 processor 会回退为黑背景。
+  - `thumbnail` 可选，缺省使用 `image`；建议单独提供小图，避免设置页加载整张大图。
+  - 图片建议 16:9、1280×720 或 1920×1080、单张 ≤300–500 KB；运行时会按 cover 裁剪到摄像头帧尺寸。
 - P0 先做一次 `BackgroundProcessor` + `jose` + `livekit-client` 的 `vite build` spike，确认 MediaPipe 在 Vite 8 下能构建；不要把这个问题留到 P1。
 
 **实现机制与厂商（2026-11-11 核实）**
@@ -1259,11 +1293,11 @@ useEffect(() => {
    - WebGL2 canvas + `@mediapipe/tasks-vision` 的 `ImageSegmenter`；
    - 模型 `selfie_segmenter.tflite`（float16、GPU delegate、VIDEO 模式、输出 category mask），逐帧分割人像；
    - mask 再做约 8px 的 box blur 软化边缘；
-   - 虚化：原始帧下采样 4x → 可分离高斯模糊（横向/纵向两 pass；App 传 `blurRadius=10`，库内部除以采样因子 4）→ 用 mask 将清晰人像合成到模糊背景；
+   - 虚化：原始帧下采样 4x → 可分离高斯模糊（横向/纵向两 pass；App 传 `blurRadius=16`，库内部除以采样因子 4）→ 用 mask 将清晰人像合成到模糊背景；
    - 虚拟背景：背景图 resize 成 cover 后，用同一 mask 合成；
    - 结果写入 canvas，包装为 `VideoFrame` 交回 LiveKit 编码发送。
 3. 远端参与者收到的是已处理的普通视频流，不加载 MediaPipe，也没有额外 GPU 开销。
-4. 加载时机：只有用户实际选择 Blur / 虚拟背景后才创建并挂载 `BackgroundProcessor`；默认 `none` 不加载 MediaPipe（避免每次入会都下载约 9 MB WASM + 分割模型）。full reconnect / 摄像头重新发布后，通过 `LocalTrackPublished` 事件幂等重挂 processor，避免背景效果在重连后丢失。
+4. 加载时机：只有用户实际选择 Blur / 虚拟背景后才创建并挂载 `BackgroundProcessor`；默认 `none` 不 attach processor。为避免首次点击等待，`backgroundEffectsPreload='auto'`（默认）会在入会后延迟预取 loader JS / WASM / model（仅资源，不创建 Blob URL、不 attach processor；能力门控与 15 秒超时回退见 [`webmeeting_background_filter.md`](webmeeting_background_filter.md)）。full reconnect / 摄像头重新发布后，通过 `LocalTrackPublished` 事件幂等重挂 processor，避免背景效果在重连后丢失。
 
 厂商与许可：
 
@@ -1279,7 +1313,7 @@ useEffect(() => {
 
 **现状边界与未来加强方向**：
 
-- **质量**：`selfie_segmenter` 是轻量模型；头发丝、快速运动、逆光/低照度、多人重叠处可能出现边缘抖动或漏分割。`blurRadius` 固定为 10，不随分辨率/设备自适应。加强路径：换更高质量分割/matting 模型、提高 mask 分辨率、对 mask 做时序平滑。
+- **质量**：`selfie_segmenter` 是轻量模型；头发丝、快速运动、逆光/低照度、多人重叠处可能出现边缘抖动或漏分割。`blurRadius` 当前固定为 16，不随分辨率/设备自适应。加强路径：换更高质量分割/matting 模型、提高 mask 分辨率、对 mask 做时序平滑。
 - **性能**：逐帧 GPU 分割 + WebGL 合成，低端机或 1080p+ 采集可能掉帧；当前 `useLowCPUOptimizer` 只降视频质量，未与背景处理器联动。加强路径：按设备能力动态降分辨率/帧率、利用 `onFrameProcessed` 的统计做自适应、CPU 受限时自动 `stopProcessor()`。
 - **可替换性**：`BackgroundProcessor` 的 `segmenterOptions` 仍绑定 MediaPipe `ImageSegmenter`；换非 MediaPipe 模型需要自定义 `VideoTransformer`（或换库），不是改一个路径就行。
 - **资源与合规**：默认从 jsDelivr / Google storage 加载（demo）；生产按上文自托管 wasm + 模型，并把模型文件纳入发布物和许可清单。
@@ -1758,6 +1792,7 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
   > 传输体积与缓存：主 JS 约 1.0 MB（gzip ~291 KB、zstd 更小），CSS gzip ~5 KB，因此 `encode zstd gzip` 必须开启；未压缩部署时首次加载会真的传 ~1 MB。带 hash 的 `assets/*` 配 `immutable` 后，正常刷新/再次访问直接命中 HTTP 缓存；`index.html` 的 `no-cache` 只做 304 校验；`config.json` 的 `no-store` 只影响这个小文件。只有新版本 hash 变化或 hard reload 才会重新下载主 bundle。MediaPipe 的 ~9 MB WASM/模型不在其中，只有用户选择背景效果时才懒加载。
   > 上面的 CSP 按**生产自托管 MediaPipe**收紧；demo 若使用默认 CDN，需要在 `script-src`/`worker-src` 加 `https://cdn.jsdelivr.net`、在 `connect-src` 加 `https://storage.googleapis.com`，否则背景效果会被拦截（见下条与 §3.8.6）。
 - `connect-src` 至少包含 LiveKit 的 WSS origin（**含端口**；非默认端口不能省略，否则 CSP 不匹配）。demo 环境把示例里的 `wss://<livekit-host>:<port>` 换成 config 中的实际 WSS URL（只写本地 `public/config.json`，不写入本文）。上面的方括号 `[...]` 表示**可选源**，不是 CSP 字面语法；部署时按实际启用的功能展开或删除。
+- 如果 `backgroundImages` 使用 remote 图片，把对应 origin 加入 `img-src`；本地 `public/backgrounds/` 图片由 `'self'` 覆盖。remote 图片还必须允许 CORS，否则虚拟背景会回退为黑背景。
 - 如果使用背景效果且不自托管 MediaPipe（`mediapipeAssetBase` 为空），默认会从 `cdn.jsdelivr.net` 加载 wasm loader JS（需要 `script-src` + `worker-src` + `connect-src`），并从 `storage.googleapis.com` 拉 `selfie_segmenter.tflite`（需要 `connect-src`）。MediaPipe 内部会用 `createElement('script')`/`importScripts` 加载资源，只放行 `connect-src` 不够。生产/内网部署按 §3.8.6 设 `mediapipeAssetBase: "/meeting/vendor/mediapipe/"` 自托管后，这些外部源都可以删掉，收紧到 `'self'`；demo 可先走 CDN 并放行上述源。Krisp 本期不做，因此不需要 `integrations.livekit.io`。不需要背景效果就删掉这些源。
 - `style-src 'unsafe-inline'` 是因为 LiveKit 组件使用内联 style；不要为此把 script 也放开。
 - `script-src 'wasm-unsafe-eval'` 用于 MediaPipe 的 WebAssembly；不用背景效果可去掉。Safari 对 `wasm-unsafe-eval` 的 CSP 支持不一致；如果 console 报 CSP 拦截，按 §3.10 矩阵处理（关闭背景效果或调整 CSP），不要假设所有浏览器都放行。

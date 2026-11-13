@@ -15,6 +15,10 @@ export function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
+export function cleanDeviceLabel(label: string): string {
+  return label.replace(/^Default\s*-\s*/i, '').trim()
+}
+
 export function isIOSLike(): boolean {
   if (typeof navigator === 'undefined') return false
   if (/iPad|iPhone|iPod/.test(navigator.userAgent)) return true

@@ -1,0 +1,29 @@
+.backgroundOption {
+  position: relative;
+}
+
+/* Make the current background choice obvious without shifting layout. */
+.backgroundOption[aria-pressed='true'] {
+  outline: 2px solid var(--lk-accent-bg, #7db4f5);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(125, 180, 245, 0.14);
+}
+
+.backgroundOption.thumbnailOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 54px;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--lk-bg3);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.blurLabel {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
