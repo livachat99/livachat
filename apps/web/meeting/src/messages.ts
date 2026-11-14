@@ -31,6 +31,8 @@ export const messages = {
   connectionLost: 'Connection lost. Check your network and retry.',
   mediaDeviceError: 'Media device error',
   backgroundEffectError: 'Background effect failed',
+  backgroundContextLost:
+    'Background effects stopped because the GPU context was lost.',
   couldNotJoin: 'Could not join the meeting',
   configErrorTitle: 'Meeting configuration error',
   configErrorHint:
@@ -41,7 +43,7 @@ export const messages = {
   unsupportedBrowserTitle: 'Browser not supported',
   unsupportedBrowserHint:
     'Use a recent Chrome, Edge, Firefox or Safari with WebRTC support.',
-  settingsMedia: 'Media devices',
+  settingsMedia: 'Settings',
   settingsCamera: 'Camera',
   settingsMicrophone: 'Microphone',
   settingsSpeaker: 'Speaker',

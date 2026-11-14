@@ -47,6 +47,51 @@ import styles from './CameraSettings.module.css'
 
 type BackgroundType = 'none' | 'blur' | 'image'
 
+type ProcessorInternals = {
+  transformer?: {
+    canvas?: HTMLCanvasElement | OffscreenCanvas
+  }
+}
+
+// track-processors does not recover from a lost WebGL context: the processed
+// track keeps emitting black frames. We attach one listener per internal
+// canvas and stop the processor if the context is lost. Keyed by canvas, not
+// by processor: a camera change/reconnect can restart the processor and
+// replace the canvas, and the new canvas needs its own listener.
+const canvasesWithContextListener = new WeakSet<
+  HTMLCanvasElement | OffscreenCanvas
+>()
+
+function isSafariWebKit(): boolean {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent
+  const ios =
+    /iP(hone|ad|od)/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  if (ios) return true
+  return /Safari\//.test(ua) && !/Chrome|Chromium|Edg|OPR|Android/.test(ua)
+}
+
+// Safari keeps showing black after LiveKit swaps the stopped processed track
+// back to the raw camera track inside the same MediaStream. Reassigning
+// srcObject forces the element to repaint (same workaround LiveKit uses in
+// attachToElement, but it only runs when the stream object itself changes).
+function refreshSafariVideoElements(track: LocalVideoTrack) {
+  if (!isSafariWebKit()) return
+  const mediaStreamTrack = track.mediaStreamTrack
+  if (!mediaStreamTrack) return
+  window.setTimeout(() => {
+    document.querySelectorAll('video').forEach((video) => {
+      const stream = video.srcObject
+      if (!(stream instanceof MediaStream)) return
+      if (!stream.getVideoTracks().includes(mediaStreamTrack)) return
+      video.srcObject = null
+      video.srcObject = stream
+      void video.play().catch(() => {})
+    })
+  }, 0)
+}
+
 // supportsBackgroundProcessors() probes WebGL2 by creating a canvas context.
 // CameraSettings re-renders frequently, so cache the result instead of
 // creating a fresh context on every render.
@@ -179,6 +224,76 @@ export function CameraSettings({
       : undefined
   }, [localParticipant, cameraTrack])
 
+  const cameraTrackRef = React.useRef(cameraTrack)
+  React.useEffect(() => {
+    cameraTrackRef.current = cameraTrack
+  }, [cameraTrack])
+
+  // Detach the processor and restore the raw camera track. switchTo('disabled')
+  // is not enough: track-processors keeps running the segmentation pipeline
+  // when backgroundDisabled is set (isDisabled is initialized to false and
+  // wins the nullish coalescing), so only stopProcessor() truly stops it.
+  const stopProcessorAndRestore = React.useCallback(async () => {
+    const processor = processorRef.current
+    processorRef.current = null
+    setLoading(false)
+    setProcessorReady(false)
+    firstFrameRef.current = false
+    const track = cameraTrackRef.current?.track
+    try {
+      if (isLocalTrack(track)) {
+        const localTrack = track as LocalVideoTrack
+        try {
+          await localTrack.stopProcessor()
+        } finally {
+          refreshSafariVideoElements(localTrack)
+        }
+      } else if (processor) {
+        await processor.destroy()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
+
+  const handleContextLostRef = React.useRef<(event: Event) => void>(() => {})
+  const contextLostEventRef = React.useRef((event: Event) => {
+    handleContextLostRef.current(event)
+  })
+
+  const handleContextLost = React.useCallback(
+    (event: Event) => {
+      // Ignore events from a canvas that was replaced by a processor restart.
+      const currentCanvas = (processorRef.current as ProcessorInternals | null)
+        ?.transformer?.canvas
+      if (event.target !== currentCanvas) return
+      event.preventDefault()
+      console.error('Background processor WebGL context lost')
+      toast.error(messages.backgroundContextLost)
+      setUnsupportedNotice(true)
+      setBackgroundType('none')
+      setImagePath(null)
+      void stopProcessorAndRestore()
+    },
+    [stopProcessorAndRestore],
+  )
+
+  React.useEffect(() => {
+    handleContextLostRef.current = handleContextLost
+  }, [handleContextLost])
+
+  const attachContextLossListener = React.useCallback(
+    (processor: BackgroundProcessorWrapper | null) => {
+      if (!processor) return
+      const canvas = (processor as ProcessorInternals).transformer?.canvas
+      if (!canvas || typeof canvas.addEventListener !== 'function') return
+      if (canvasesWithContextListener.has(canvas)) return
+      canvas.addEventListener('webglcontextlost', contextLostEventRef.current)
+      canvasesWithContextListener.add(canvas)
+    },
+    [],
+  )
+
   const onProcessorError = React.useCallback((error: unknown) => {
     console.error(error)
     toast.error(
@@ -192,11 +307,12 @@ export function CameraSettings({
   }, [])
 
   const handleFrameProcessed = React.useCallback(() => {
+    attachContextLossListener(processorRef.current)
     if (firstFrameRef.current) return
     firstFrameRef.current = true
     setProcessorReady(true)
     setLoading(false)
-  }, [])
+  }, [attachContextLossListener])
 
   const modeOptions = React.useCallback((): SwitchBackgroundProcessorOptions => {
     if (backgroundType === 'blur') {
@@ -209,10 +325,15 @@ export function CameraSettings({
   }, [backgroundType, imagePath])
 
   const getProcessor = React.useCallback((): BackgroundProcessorWrapper => {
-    if (processorRef.current) return processorRef.current
+    if (processorRef.current) {
+      // The processor may have restarted with a new canvas after a camera
+      // track change; attach is a cheap no-op when the canvas is unchanged.
+      attachContextLossListener(processorRef.current)
+      return processorRef.current
+    }
     const paths =
       preload.assets ?? resolveBackgroundAssetPaths(mediapipeAssetBase)
-    processorRef.current = BackgroundProcessor({
+    const processor = BackgroundProcessor({
       mode: 'disabled',
       assetPaths: {
         tasksVisionFileSet: paths.wasmBase,
@@ -220,8 +341,17 @@ export function CameraSettings({
       },
       onFrameProcessed: handleFrameProcessed,
     })
-    return processorRef.current
-  }, [handleFrameProcessed, mediapipeAssetBase, preload.assets])
+    processorRef.current = processor
+    // May be a no-op until the processor is initialized; the attach callback
+    // and the first processed frame retry once the canvas exists.
+    attachContextLossListener(processor)
+    return processor
+  }, [
+    attachContextLossListener,
+    handleFrameProcessed,
+    mediapipeAssetBase,
+    preload.assets,
+  ])
 
   const modeOptionsRef = React.useRef<SwitchBackgroundProcessorOptions>({
     mode: 'disabled',
@@ -229,6 +359,21 @@ export function CameraSettings({
   React.useEffect(() => {
     modeOptionsRef.current = modeOptions()
   }, [modeOptions])
+
+  React.useEffect(() => {
+    // "None" must detach the processor, not switch it to disabled mode:
+    // switchTo({ mode: 'disabled' }) keeps the segmentation pipeline running,
+    // so the device would keep paying the GPU/CPU cost for the rest of the
+    // meeting. Also cover a processor left on the track while this component
+    // was unmounted (e.g. the Settings widget remounts with state reset to
+    // None): the UI says None, so the track must be raw.
+    if (!enableBackgroundEffects) return
+    if (effectsActive) return
+    const track = cameraTrackRef.current?.track
+    const attached = isLocalTrack(track) ? track.getProcessor() : undefined
+    if (!processorRef.current && !attached) return
+    void stopProcessorAndRestore()
+  }, [effectsActive, enableBackgroundEffects, stopProcessorAndRestore])
 
   React.useEffect(() => {
     // Only instantiate the processor after the user actually selects an
@@ -264,6 +409,7 @@ export function CameraSettings({
           }
           entry.promise = localTrack
             .setProcessor(processor)
+            .then(() => attachContextLossListener(processor))
             .catch(onProcessorError)
             .finally(() => {
               if (attachInFlightRef.current === entry) {
@@ -277,6 +423,7 @@ export function CameraSettings({
       onProcessorError(error)
     }
   }, [
+    attachContextLossListener,
     cameraTrack,
     enableBackgroundEffects,
     effectsActive,
@@ -326,12 +473,7 @@ export function CameraSettings({
       {camTrackRef ? (
         <VideoTrack
           trackRef={camTrackRef}
-          style={{
-            maxHeight: '280px',
-            objectFit: 'contain',
-            objectPosition: 'right',
-            transform: 'scaleX(-1)',
-          }}
+          className={styles.cameraPreview}
         />
       ) : null}
 

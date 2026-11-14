@@ -2,7 +2,7 @@
 
 > **依据**：[`docs/webmeeting_background_filter.md`](webmeeting_background_filter.md)
 > **目标**：资源预加载（不 attach processor）；`backgroundEffectsPreload` 默认 `auto`；不使用 Blob URL；摄像头关闭时禁用 filter；完整预热本期不做。
-> **状态**：P0/P1/P2 完成；P3 Chrome 桌面主要 E2E 完成（含缩略图/config 图片）；Android Chrome 158 在 Adreno 740 上 filter 实测通过，在 Mali-G76 上按能力门控禁用；慢网失败回退、低端模拟、其他移动端手测待补
+> **状态**：P0/P1/P2 完成；P3 Chrome 桌面主要 E2E 完成（含缩略图/config 图片）；Android Chrome 158 在 Adreno 740 上 filter 实测通过；2026-11-14 修正 GPU 能力门控（iPad Safari 误判，Mac/iPad/iPhone Safari 验证通过）、修复 processor 生命周期（None → `stopProcessor()`、WebGL context loss 自动恢复；Mali-G76 生产构建验证）以及 Safari Blur→None 黑屏（srcObject 重置，Safari 验证通过）；慢网失败回退、低端模拟、其他移动端手测待补
 > **原则**：先配置/资源加载器，再 UI 集成，最后 E2E；每一步可构建、可测试、可回滚。
 
 ---
@@ -139,7 +139,7 @@
 | 选中态 | 卡片 `aria-pressed=true`，蓝色 outline `rgb(31, 140, 249) solid 2px` |
 | 摄像头关闭 | 所有非 None 卡片（含 config 图片）`disabled=true`，None 可点击；显示 camera-off 提示 |
 | 摄像头重新打开 | 卡片恢复可点击；预处理后的 camera track 仍工作 |
-| None | processor `mode=disabled`，None 获得选中态 |
+| None | processor `mode=disabled`，None 获得选中态（旧实现；2026-11-14 起改为 `stopProcessor()`） |
 | Desk 照片替换 | 设置页请求 `desk-thumb.webp`；点击后加载 1280×720 `desk.webp`，virtual background 与人物分割正常；卡片无文字，`aria-label`/`title=Desk` |
 | Nature 照片替换 | 设置页请求 `nature-thumb.webp`；点击后加载 1280×720 `nature.webp`，virtual background 与人物分割正常；卡片无文字，`aria-label`/`title=Nature` |
 | Nature v2 替换 | 新的 1280×720 PNG 直接转 WebP q82；缩略图与主图加载正常，virtual background 与人物分割正常 |
@@ -208,3 +208,7 @@
 | 2026-11-13 | 自托管 MediaPipe | 完成 | 加入本地 WASM/model；Huawei Browser 因缺少 float linear 在点击时提示 unsupported、不创建 processor，避免 CPU fallback |
 | 2026-11-13 | Android Chrome 158 | 完成（设备限制） | 安装 Chrome 158.0.8127.36；入会/摄像头正常；Mali-G76 缺少 float linear，点击 filter 显示 unsupported，不创建 processor |
 | 2026-11-13 | Android Chrome + Adreno 740 | 完成（主要路径） | 自托管 WASM/model 预加载；Blur、Lake、None 实测通过；Settings 竖屏全宽；Mali-G76 仍按能力门控拒绝 |
+| 2026-11-14 | GPU 能力门控修正 | 完成（iPad Safari 验证通过） | 按 MediaPipe `SegmentationPostprocessorGl::GlInit` 的实际条件：half-float 回退只需 `EXT_color_buffer_half_float`；移除 WebGL1 `OES_texture_half_float_linear` 要求，修复 iPad Safari 误判；Mali-G76 复测通过静态门控但约 20s 后 context loss，由恢复逻辑兜底 |
+| 2026-11-14 | Processor 生命周期修复 | 完成（生产构建验证） | None 改为 `stopProcessor()` 销毁并恢复原始 track；监听 `webglcontextlost` 自动停止、回 None、toast；Mali-G76 实测 Blur 约 20s 后 context loss，修复前持续黑帧，修复后恢复画面 |
+| 2026-11-14 | Huawei Browser 竖屏 Settings | 完成 | 生产构建 `build.cssTarget` 加入 `chrome99`，避免 Lightning CSS 输出 `(width<=640px)`；Chromium 99 会把 range 语法解析为 `not all` 并丢弃竖屏全宽规则。Huawei Browser 14 实测 Settings 覆盖全屏 |
+| 2026-11-14 | Safari None 黑屏修复 | 完成（Safari 验证通过） | `stopProcessor()` 后重置命中原始 track 的 `<video>` 的 `srcObject` 并 `play()`，强制 Safari 重绘；修复 Mac/iPad/iPhone Safari Blur→None 本地预览黑屏，Chrome/Firefox 不受影响 |

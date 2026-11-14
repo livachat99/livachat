@@ -1,3 +1,17 @@
+.cameraPreview {
+  max-height: 280px;
+  object-fit: contain;
+  object-position: right;
+  transform: scaleX(-1);
+}
+
+/* Portrait devices: center the camera image instead of hugging one side. */
+@media (orientation: portrait) {
+  .cameraPreview {
+    object-position: center;
+  }
+}
+
 .backgroundOption {
   position: relative;
 }

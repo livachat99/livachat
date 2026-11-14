@@ -1181,7 +1181,7 @@ return (
 
 #### 3.8.6 摄像头背景效果（新版 API）
 
-meet 用的是 `BackgroundBlur()` / `VirtualBackground()`（已标记 deprecated）。`@livekit/track-processors@0.8.1` 提供 `BackgroundProcessor(options, name?)`，返回 `BackgroundProcessorWrapper`，带 **`get mode()`** 和 **`switchTo()`**。正确姿势是**同一实例复用 + `switchTo`**，不要每次切换都新建：
+meet 用的是 `BackgroundBlur()` / `VirtualBackground()`（已标记 deprecated）。`@livekit/track-processors@0.8.1` 提供 `BackgroundProcessor(options, name?)`，返回 `BackgroundProcessorWrapper`，带 **`get mode()`** 和 **`switchTo()`**。正确姿势是**在 Blur/图片背景之间复用同一实例 + `switchTo`**；**None 时用 `stopProcessor()` 销毁处理器**（见下方 0.8.1 的 disabled 行为说明），不要每次切换都新建：
 
 ```ts
 import {
@@ -1222,8 +1222,9 @@ const onProcessorError = (err: unknown) => {
 }
 
 // 摄像头 track 变化时（关开摄像头会重建 track）：重新挂上同一个 processor，
-// 并立即应用当前模式；否则「先选模式、后开摄像头」会一直保持 disabled。
+// 并立即应用当前模式；None 时不要创建 processor。
 useEffect(() => {
+  if (backgroundType === 'none') return
   if (!supportsBackgroundProcessors()) return
   const track = cameraTrack?.track
   if (!isLocalTrack(track)) return
@@ -1234,21 +1235,32 @@ useEffect(() => {
   } catch (err) {
     onProcessorError(err)
   }
-}, [cameraTrack])
+}, [cameraTrack, backgroundType])
 
-// 模式变化时：只 switchTo，不重建
+// 模式变化时：Blur/图片之间只 switchTo；None 必须 stopProcessor()（见下）
 useEffect(() => {
-  const p = processorRef.current
-  if (!p) return
-  void p.switchTo(modeOptions()).catch(onProcessorError)
-}, [backgroundType, imagePath])
+  if (backgroundType !== 'none') {
+    const p = processorRef.current
+    if (!p) return
+    void p.switchTo(modeOptions()).catch(onProcessorError)
+    return
+  }
+  const track = cameraTrack?.track
+  processorRef.current = null
+  if (isLocalTrack(track)) {
+    void track.stopProcessor().catch(onProcessorError)
+  }
+}, [backgroundType, imagePath, cameraTrack])
 ```
 
 **与 meet 的差异（重要）**：
 
 - 旧写法用 `getProcessor()?.name` 反推模式；新 API 的默认 name 是 `'background-processor'`，但 wrapper 直接暴露 **`mode`**（`'disabled' | 'background-blur' | 'virtual-background' | 'legacy'`）。要读模式就读 `.mode`（把 `getProcessor()` 的结果 cast 成 `BackgroundProcessorWrapper`），不要用 name 反推，也不要为此维护一份容易漂移的 React state（state 只用于 UI 选中态，不参与 processor 生命周期）。
 - `BackgroundProcessor` 在浏览器不支持时**直接 throw**；用 `supportsBackgroundProcessors()` + WebGL float/linear 能力门控 processor 和预加载；背景控件仍显示，点击时再提示 unsupported；调用处 try/catch 并 toast。
-- `mode: 'disabled'` 是合法构造参数；`switchTo({ mode: 'disabled' })` 保持 processor 挂载但不处理帧，比 `stopProcessor()` 更适合反复切换。
+- **`switchTo({ mode: 'disabled' })` 在 0.8.1 中不会停止处理**（2026-11-14 实测）：库内 `skipProcessingFrame = this.isDisabled ?? this.options.backgroundDisabled ?? false`，而 `isDisabled` 初始化为 `false`，`??` 不会回退到 `backgroundDisabled`；再加上切到 disabled 时 `blurRadius` 仍保留，分割/模糊每帧继续跑。表现是：用户点 None 后画面看似关闭，但 GPU/CPU 开销持续，Mali-G76 上还会持续到 WebGL context loss。
+  因此 **None 必须调用 `LocalVideoTrack.stopProcessor()`**（会 destroy processor 并恢复原始 track），下次选 filter 时再重建。`mode: 'disabled'` 仍可用于构造/过渡，但不能作为“关闭”手段。
+- **Safari/WebKit 重绘**：`stopProcessor()` 在同一个 MediaStream 内把已停止的 processed track 换回原始 track，Safari 不会重绘，本地预览会黑屏（Chrome/Firefox 正常）。停止后要把命中原始 track 的 `<video>` 的 `srcObject` 置空再重新赋值并调用 `play()`，强制 Safari 重新渲染。
+- **WebGL context loss 必须兜底**：track-processors 不恢复丢失的 context，会以 30fps 持续输出黑帧。监听 processor 内部 canvas 的 `webglcontextlost`，触发时 `stopProcessor()`、UI 回到 None，并提示 `Background effects stopped because the GPU context was lost.`；否则视频会永久黑屏且切 None 也无法恢复。
 - **顺序问题**：只依赖 `backgroundType/imagePath` 的 effect 在 processor 尚未创建时会直接 return；如果用户先选 Blur 再开摄像头，camera effect 新建的 processor 会保持 `disabled`。因此 camera effect 在 `setProcessor` 后必须立即 `switchTo(当前 mode)`。
 - 摄像头关闭再打开会重建 track，processor 会丢失；在 `cameraTrack` 变化的 effect 里重新 `setProcessor(getProcessor())` 并应用当前 mode。
 - 只在 `cameraTrack?.track` 存在且 `isLocalTrack(cameraTrack.track)` 时调用 `setProcessor`；否则等下一次 `cameraTrack` 变化再应用，避免在未发布的 track 上抛错。
@@ -1288,7 +1300,7 @@ useEffect(() => {
 
 背景虚化/虚拟背景完全在**发送端本地**处理，LiveKit 服务端和接收端不参与：
 
-1. `CameraSettings` 用 `LocalVideoTrack.setProcessor()` 把 `BackgroundProcessor` 挂到本地摄像头 track；单实例复用，`switchTo()` 只切换模式（`disabled` / `background-blur` / `virtual-background`）。
+1. `CameraSettings` 用 `LocalVideoTrack.setProcessor()` 把 `BackgroundProcessor` 挂到本地摄像头 track；Blur/图片背景之间复用同一实例、`switchTo()` 切换模式；**None 时 `stopProcessor()` 销毁并恢复原始 track**；WebGL context loss 时同样停止并提示。
 2. `@livekit/track-processors@0.8.1` 内部：
    - WebGL2 canvas + `@mediapipe/tasks-vision` 的 `ImageSegmenter`；
    - 模型 `selfie_segmenter.tflite`（float16、GPU delegate、VIDEO 模式、输出 category mask），逐帧分割人像；
@@ -1402,7 +1414,8 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
   - Home/PreJoin 容器用 `min-height: 100dvh; overflow-y: auto;`，避免 `body { overflow: hidden }` 在小屏截断表单；
   - Home/PreJoin 加 `env(safe-area-inset-bottom)`；
   - 会中控制栏不要被 home indicator 遮挡（必要时给 `.lk-room-container` 加 padding）；
-  - 横屏/竖屏均由 LiveKit 网格自适应。
+  - 横屏/竖屏均由 LiveKit 网格自适应；
+  - 竖屏手机上 Settings 模态全宽：用 `@media (orientation: portrait) and (max-width: 640px)` 覆盖 LiveKit 的 `.lk-settings-menu-modal`（默认 `min-width: 50vw` 会留下侧边空隙）。**构建必须设置 `build.cssTarget` 包含 `chrome99`**：否则 Lightning CSS 会把媒体查询压成 Media Queries L4 range 语法 `(width<=640px)`，Huawei Browser 14（Chromium 99）解析为 `not all` 并丢弃整条规则，导致竖屏仍显示窄弹窗。
 - 可访问性：
   - 表单 `<label htmlFor>`、`aria-invalid`、`aria-describedby`；
   - 错误区域 `role="alert"`；
@@ -1715,7 +1728,7 @@ npm run dev
 - 必须 HTTPS（`crypto.subtle` + getUserMedia）。
 - **`dist/` 是 secret 材料**：client 模式下 `dist/config.json` 带 API secret，不得进公共镜像仓库、CI artifact、对象存储公共读、演示截图。demo 环境用专用 key；`dist` 只放到受控内网主机。
 - 把 `config.json` 放在 `dist/config.json`（构建后写入/挂载），不要打进版本库；如果构建时已在 `public/config.json`，Vite 会复制过去——这正是构建闸门要拦住的情况。
-- 缓存策略：`config.json` 用 `Cache-Control: no-store`（便于轮换）；`index.html` 用 `no-cache`；带 hash 的 `assets/*` 可以 `immutable, max-age=31536000`。
+- 缓存策略：`config.json` 用 `Cache-Control: no-store`（便于轮换）；`index.html` 用 `no-cache`；带 hash 的 `assets/*` 和自托管的 `vendor/mediapipe/*` 用 `immutable, max-age=31536000`（MediaPipe 资源依赖 HTTP cache 让预加载命中，不可省）。
 - **内网测试形态**：可在开发机跑 `npm run dev -- --host`（配 HTTPS），或把 `dist` 放到内网 nginx/Caddy；不需要公网域名、对象存储或 CDN。局域网设备访问时必须 HTTPS（见 §3.11.8），否则媒体/JWT 签发的安全上下文不成立。
 
 #### 3.12.2 可选：由 LivaChat FastAPI 挂载
@@ -1770,7 +1783,8 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
   meeting.internal {
     # base=/meeting/ 意味着请求路径是 /meeting/...，所以 root 必须是 /srv，而不是 /srv/meeting
     root * /srv
-    # 必须显式开启压缩：file_server 默认不压缩，主 JS 未压缩约 1 MB
+    # 必须显式开启压缩：file_server 默认不压缩；主 JS 未压缩约 1 MB，
+    # 自托管 MediaPipe WASM 未压缩约 9.4 MB（Brotli/zstd 后约 2.0 MB）
     encode zstd gzip
     header {
       Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' wss://<livekit-host>:<port>; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
@@ -1786,10 +1800,15 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
     header @index Cache-Control "no-cache"
     @assets path /meeting/assets/*
     header @assets Cache-Control "public, max-age=31536000, immutable"
+    # 自托管 MediaPipe（config.json 的 mediapipeAssetBase="/meeting/vendor/mediapipe/"）
+    # 必须长缓存，否则预加载的资源不会稳定命中 HTTP cache
+    @vendor path /meeting/vendor/*
+    header @vendor Cache-Control "public, max-age=31536000, immutable"
     file_server
   }
   ```
-  > 传输体积与缓存：主 JS 约 1.0 MB（gzip ~291 KB、zstd 更小），CSS gzip ~5 KB，因此 `encode zstd gzip` 必须开启；未压缩部署时首次加载会真的传 ~1 MB。带 hash 的 `assets/*` 配 `immutable` 后，正常刷新/再次访问直接命中 HTTP 缓存；`index.html` 的 `no-cache` 只做 304 校验；`config.json` 的 `no-store` 只影响这个小文件。只有新版本 hash 变化或 hard reload 才会重新下载主 bundle。MediaPipe 的 ~9 MB WASM/模型不在其中，只有用户选择背景效果时才懒加载。
+  > 传输体积与缓存：主 JS 约 1.0 MB（gzip ~291 KB、zstd 更小），CSS gzip ~5 KB，因此 `encode zstd gzip` 必须开启；未压缩部署时首次加载会真的传 ~1 MB。带 hash 的 `assets/*` 配 `immutable` 后，正常刷新/再次访问直接命中 HTTP 缓存；`index.html` 的 `no-cache` 只做 304 校验；`config.json` 的 `no-store` 只影响这个小文件。只有新版本 hash 变化或 hard reload 才会重新下载主 bundle。MediaPipe 的 WASM/模型不在主 bundle 中：自托管时由 `backgroundEffectsPreload` 在入会后后台预取（Brotli/zstd 后约 2.0 MB 传输、约 9.4 MB 解码），用户首次点击背景效果时命中 HTTP cache。
+  > **自托管 MediaPipe 的传输体积取决于压缩配置**：Caddy 的 `encode zstd gzip` 默认内容类型已包含 `application/wasm`（2023-10 起），传输约 2.0 MB；nginx 的 `gzip_types` 默认只有 `text/html`，必须显式加 `application/wasm`，否则会真的传 ~9.4 MB；同时确认响应 `Content-Type: application/wasm`（nginx 检查 `mime.types`），否则预加载的 `fetchAsset` 校验会失败。压缩与缓存细节见 `webmeeting_background_filter.md` §4.3。
   > 上面的 CSP 按**生产自托管 MediaPipe**收紧；demo 若使用默认 CDN，需要在 `script-src`/`worker-src` 加 `https://cdn.jsdelivr.net`、在 `connect-src` 加 `https://storage.googleapis.com`，否则背景效果会被拦截（见下条与 §3.8.6）。
 - `connect-src` 至少包含 LiveKit 的 WSS origin（**含端口**；非默认端口不能省略，否则 CSP 不匹配）。demo 环境把示例里的 `wss://<livekit-host>:<port>` 换成 config 中的实际 WSS URL（只写本地 `public/config.json`，不写入本文）。上面的方括号 `[...]` 表示**可选源**，不是 CSP 字面语法；部署时按实际启用的功能展开或删除。
 - 如果 `backgroundImages` 使用 remote 图片，把对应 origin 加入 `img-src`；本地 `public/backgrounds/` 图片由 `'self'` 覆盖。remote 图片还必须允许 CORS，否则虚拟背景会回退为黑背景。
@@ -2358,3 +2377,7 @@ export default function App() {
 - 2026-11-11（Leave 确认）：控制栏 Leave 点击改为捕获阶段拦截并弹确认框，Cancel/Esc/遮罩关闭不离开；确认后才 `room.disconnect()`。避免误触立即退会。
 - 2026-11-11（P2 调研）：确认 Safari 27 / iOS 27 / iPadOS 27 起支持网页 `getDisplayMedia`；当前 `is-ios` CSS 会在 27+ 误隐藏共享按钮。列入 P2 增强：移除 UA 隐藏、依赖 LiveKit 能力检测，并做 iPhone/iPad 27 实机验证（详细证据与步骤见 §3.8.11）。
 - 2026-11-13：需求变更，`showPreJoin` 默认改为 **false**（Home 直接入会）；PreJoin 保留为可选步骤，配置 `showPreJoin=true` 时启用。`config.example.json`、单测和本文档同步。
+- 2026-11-14：部署章节补充自托管 MediaPipe 的压缩与缓存要求：`vendor/mediapipe/*` 增加 `immutable` 长缓存；说明 Caddy 默认压缩 wasm、nginx 需显式 `gzip_types application/wasm`、`Content-Type: application/wasm` 校验，以及预加载后的传输体积（约 2.0 MB）/解码体积（约 9.4 MB）。
+- 2026-11-14：明确 `@livekit/track-processors@0.8.1` 的 disabled 行为：`switchTo({ mode: 'disabled' })` 不会停止分割/模糊处理；None 改为 `stopProcessor()` 销毁并恢复原始 track；新增 WebGL context loss 兜底（停止处理、回 None、提示），避免持续黑帧。
+- 2026-11-14：修复 Huawei Browser 竖屏 Settings 未全宽：生产构建设置 `build.cssTarget` 包含 `chrome99`，防止 Lightning CSS 输出 `(width<=640px)` range 语法（Chromium 99 解析为 `not all` 并丢弃竖屏全宽规则）；实测 Huawei Browser 14 竖屏 Settings 已覆盖全屏。
+- 2026-11-14：修复 Safari（Mac/iPad/iPhone）Blur→None 后本地预览黑屏：`stopProcessor()` 在同一 MediaStream 内换回原始 track，Safari 不重绘；停止后重置命中原始 track 的 `<video>` 的 `srcObject` 并重新 `play()`。Chrome/Firefox 不受影响。

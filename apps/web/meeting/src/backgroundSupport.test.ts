@@ -14,7 +14,6 @@ function glWithExtensions(...extensions: string[]): WebGLExtensionProbe {
 const FLOAT_COLOR = 'EXT_color_buffer_float'
 const HALF_COLOR = 'EXT_color_buffer_half_float'
 const FLOAT_LINEAR = 'OES_texture_float_linear'
-const HALF_LINEAR = 'OES_texture_half_float_linear'
 const FLOAT_BLEND = 'EXT_float_blend'
 
 describe('supportsFloatColorBuffer', () => {
@@ -40,16 +39,16 @@ describe('supportsFloatColorBuffer', () => {
     ).toBe(false)
   })
 
-  it('accepts the half-float fallback with half linear filtering', () => {
-    expect(
-      supportsFloatColorBuffer(glWithExtensions(HALF_COLOR, HALF_LINEAR)),
-    ).toBe(true)
+  it('accepts a half-float-only capability set (iPad Safari)', () => {
+    // WebGL2 does not expose the WebGL1 OES_texture_half_float_linear
+    // extension, so half-float linear filtering must not be required here.
+    expect(supportsFloatColorBuffer(glWithExtensions(HALF_COLOR))).toBe(
+      true,
+    )
   })
 
-  it('rejects half-float without half linear filtering', () => {
-    expect(supportsFloatColorBuffer(glWithExtensions(HALF_COLOR))).toBe(
-      false,
-    )
+  it('rejects when neither float32 nor half-float color buffers exist', () => {
+    expect(supportsFloatColorBuffer(glWithExtensions())).toBe(false)
   })
 
   it('accepts half fallback when float32 is unavailable', () => {
@@ -59,7 +58,6 @@ describe('supportsFloatColorBuffer', () => {
           FLOAT_COLOR,
           FLOAT_LINEAR,
           HALF_COLOR,
-          HALF_LINEAR,
         ),
       ),
     ).toBe(true)

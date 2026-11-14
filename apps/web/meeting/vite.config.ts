@@ -46,5 +46,13 @@ export default defineConfig({
     port: 5174,
     // 不需要 /api 代理：token 在浏览器生成，LiveKit 走 WSS 直连
   },
-  build: { outDir: 'dist' },
+  build: {
+    outDir: 'dist',
+    // Huawei Browser 14 is Chromium 99. Without an explicit CSS target,
+    // Lightning CSS minifies media queries to Media Queries Level 4 range
+    // syntax (e.g. `(width<=640px)`), which Chromium 99 parses as `not all`
+    // and silently drops. Keep CSS output compatible with our oldest
+    // supported engine.
+    cssTarget: ['chrome99', 'edge99', 'firefox115', 'safari16.4', 'ios16.4'],
+  },
 })

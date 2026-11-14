@@ -1,6 +1,6 @@
 # Web Meeting 背景 Filter 预加载设计
 
-> **状态**：已实施（2026-11-13）；P0/P1/P2 完成，P3 Chrome 桌面主要 E2E 通过；Android Chrome 158 在 Adreno 740 上 filter 实测通过，Mali-G76 按能力门控禁用；慢网/其他移动端手测待补。
+> **状态**：已实施（2026-11-13）；P0/P1/P2 完成，P3 Chrome 桌面主要 E2E 通过；Android Chrome 158（Adreno 740）filter 实测通过；2026-11-14 修复 iPad Safari GPU 门控误判（Mac/iPad/iPhone Safari 验证通过）、None 生命周期（`stopProcessor()`）、WebGL context loss 恢复、Safari None 黑屏和 Huawei Browser 竖屏 Settings；Mali-G76 实测可通过门控，但约 20s 后发生 context loss，由恢复逻辑兜底；慢网/其他移动端手测待补。
 > **日期**：2026-11-13
 > **范围**：`apps/web/meeting` 会中 Settings 的 Blur / 虚拟背景功能
 > **相关文档**：[`webmeeting_design.md`](webmeeting_design.md) §3.8.6、[`webmeeting_impl_plan.md`](webmeeting_impl_plan.md)、[`webmeeting_background_filter_impl_plan.md`](webmeeting_background_filter_impl_plan.md)
@@ -109,11 +109,33 @@
 
 ### 4.3 资源体积与缓存
 
-| 资源 | 传输大小 | 解码后大小 | 缓存策略 |
-|------|----------|------------|----------|
-| `vision_wasm_internal.js` | 45,605 B | 209,826 B | `immutable, max-age=31536000` |
-| `vision_wasm_internal.wasm` | 2,005,751 B | 9,423,986 B | `immutable, max-age=31536000` |
-| `selfie_segmenter.tflite` | 249,537 B | 249,537 B | `max-age=3600`（1 小时） |
+表中“传输大小”是默认 CDN（jsDelivr）在 `Accept-Encoding: br` 下的**压缩后**字节数；“解码后大小”是磁盘上的原始字节数，也是浏览器解压后占用的内存体积。实测响应头：
+
+```text
+content-type: application/wasm
+content-encoding: br
+content-length: 2005451
+```
+
+| 资源 | 传输大小（Brotli） | 解码后大小 | 压缩比 | 缓存策略 |
+|------|------------------|------------|--------|----------|
+| `vision_wasm_internal.js` | 45,605 B | 209,826 B | ~4.6× | `immutable, max-age=31536000` |
+| `vision_wasm_internal.wasm` | 2,005,751 B | 9,423,986 B | ~4.7× | `immutable, max-age=31536000` |
+| `selfie_segmenter.tflite` | 249,537 B | 249,537 B | 1×（tflite 本身已压缩） | `max-age=3600`（1 小时） |
+
+**压缩由静态服务器决定，自托管时必须显式配置**：
+
+| 服务器 | wasm 是否默认压缩 | 配置 |
+|--------|------------------|------|
+| jsDelivr（默认 CDN） | 是（Brotli） | 无需配置 |
+| Caddy | 是（2023-10 起 `encode` 默认内容类型已含 `application/wasm*`） | `encode zstd gzip` |
+| nginx | **否**（`gzip_types` 默认只有 `text/html`） | `gzip on; gzip_types application/wasm;`；Brotli 需 ngx_brotli 模块 |
+| Vite dev / preview | 否（无内置压缩） | 仅用于局域网测试，不能用来评估公网传输 |
+
+- 未压缩自托管时，客户端会真的传输约 9.4 MB（约 4.7×）；gzip -9 实测 2,857,545 B（约 2.9 MB），Brotli 优于 gzip；
+- 无论是否压缩，浏览器解码后的 WASM 都占约 9.4 MB；`fetchAsset` 预取消费 body 时会短暂持有这份内存；
+- 自托管响应必须是 `Content-Type: application/wasm`，否则 §5.3.2 的 `fetchAsset` 校验会判定失败（nginx 需确认 `mime.types` 含 `application/wasm wasm;`）；
+- `apps/web/meeting/public/vendor/mediapipe/` 约 19 MB，是因为同时放了 SIMD / non-SIMD 两套 WASM；`FilesetResolver` 按浏览器能力二选一，每个客户端只下载一套。
 
 结论：
 
@@ -271,9 +293,17 @@ const results = await Promise.allSettled([
   `https://cdn.jsdelivr.net` 和 `https://storage.googleapis.com`；
   只配置 `script-src`/`worker-src` 不够。自托管时 `connect-src 'self'`。
 - 不使用 Blob URL，因此不需要在 CSP 中增加 `blob:`。
-- 自托管时必须给 WASM/loader/model 配置长缓存。
+- 自托管时必须给 WASM/loader/model 配置长缓存（例如 `/meeting/vendor/*` 设
+  `Cache-Control: public, max-age=31536000, immutable`），否则预加载不会稳定命中
+  HTTP cache；同时确认响应 `Content-Type` 为 `application/wasm` 且服务器开启压缩
+  （未压缩时 WASM 传输约 9.4 MB，Brotli/zstd 后约 2.0 MB，见 §4.3）。
 - 自托管部署时把 WASM + model 放到 `apps/web/meeting/public/vendor/mediapipe/`；`config.example.json` 默认走 CDN，本地 `public/config.json` 可覆写为 `/meeting/vendor/mediapipe/`。
-- **能力门控**：启动 filter 前同时要求 WebGL2 的 float/half-float color-buffer 和对应线性过滤扩展。float32 路径要求 `EXT_color_buffer_float` + `OES_texture_float_linear` + `EXT_float_blend`；half-float 回退要求 `EXT_color_buffer_half_float` + `OES_texture_half_float_linear`。Huawei Browser 虽然暴露 color-buffer，但缺少 float linear，MediaPipe GPU postprocess 会 abort；这类设备仍显示 background effects 控件，但点击后只显示 unsupported 提示，不创建 processor，也不使用性能不可接受的 CPU delegate。升级到 Chrome for Android 158 后实测限制相同（Mali-G76 驱动仍不暴露 float/half-float linear），因此该门控按 GPU 能力而非浏览器版本判断。同一 Chrome 版本在 Adreno 740 上暴露 `OES_texture_float_linear` 和 `EXT_float_blend`，Blur/图片背景/None 均实测通过。
+- **能力门控**：启动 filter 前按 MediaPipe `SegmentationPostprocessorGl::GlInit` 的实际条件检查（`mediapipe/tasks/cc/vision/image_segmenter/calculators/segmentation_postprocessor_gl.cc`）：
+  - float32 路径：`EXT_color_buffer_float` + `OES_texture_float_linear` + `EXT_float_blend`；
+  - half-float 回退：**只要求 `EXT_color_buffer_half_float`**；
+  - 两者满足其一即可。
+  注意 half-float 线性过滤在 WebGL2 是核心能力，`OES_texture_half_float_linear` 是 WebGL1 扩展、WebGL2 不会暴露；此前门控额外要求该扩展，导致 iPad Safari 被误判为不支持（该设备此前实测 filter 可用）。iPadOS 上 `EXT_float_blend` 的暴露率约一半（Web3D Survey ~49%），不少 iPad 只能走 half-float 回退，因此不能把 half 路径绑在 WebGL1 扩展上。
+  Huawei Browser 14（Chromium 99）实测 `EXT_color_buffer_half_float`、`OES_texture_float_linear`、`OES_texture_half_float_linear` 均缺失，静态门控拒绝，不创建 processor。Mali-G76 的 Chrome 158 有 `EXT_color_buffer_half_float`，会通过门控；生产构建实测首次开启 Blur 后 4–8fps 持续约 20s（processing 30–85ms），随后 processor 的 WebGL context 丢失并以 30fps 持续输出黑帧。§5.7 的 context-loss 监听会停止 processor、回 None、恢复原始画面；首屏慢的问题需要性能守卫（本期未实现）。同一 Chrome 版本在 Adreno 740 上 F32 路径完整（`EXT_color_buffer_float` + `OES_texture_float_linear` + `EXT_float_blend`），Blur/图片背景/None 均实测通过。
 
 ### 5.4 设备与网络能力门控
 
@@ -334,7 +364,8 @@ const results = await Promise.allSettled([
 
 - 取消待应用目标；
 - 隐藏 loading；
-- 资源预加载可以继续，但不会创建 processor（如果尚未创建）。
+- 如果 processor 已创建，调用 `LocalVideoTrack.stopProcessor()` 销毁它并恢复原始摄像头 track（真正停止处理，见 §5.7）；
+- 资源预加载可以继续，但不会创建新的 processor。
 
 加载中用户切换其他 filter：
 
@@ -363,7 +394,17 @@ type EffectPhase =
 
 - 同一个 `preloadPromise` 只存在一个，避免重复请求；
 - 资源预加载不需要 attach processor；
-- processor 仍然按需创建，沿用现有单实例 + `switchTo()` 逻辑；
+- processor 按需创建；在 Blur / 图片背景之间复用同一实例 + `switchTo()`；
+- **None 必须 `stopProcessor()`**：`@livekit/track-processors@0.8.1` 的
+  `switchTo({ mode: 'disabled' })` 不会停止分割/模糊（`isDisabled` 初始为
+  false，`??` 不会回退到 `backgroundDisabled`，且 `blurRadius` 仍保留），
+  必须销毁 processor 并恢复原始 track；下次选 filter 时重建；
+- **Safari/WebKit 重新挂载 workaround**：`stopProcessor()` 后 LiveKit 在同一个
+  MediaStream 内把已停止的 processed track 换回原始 track；Safari 不会重绘，本地
+  预览黑屏（Chrome/Firefox 正常）。停止后需要把命中原始 track 的 `<video>`
+  的 `srcObject` 置空再重新赋值并 `play()`，强制重绘；
+- **WebGL context loss**：监听 processor canvas 的 `webglcontextlost`，触发时
+  停止 processor、回 None、toast；track-processors 不会自行恢复，否则会持续输出黑帧；
 - 组件卸载/离开会议时忽略迟到的 preload/processor promise；
 - 摄像头关闭时不发起新的 filter 请求；已经进行中的 processor 请求可以完成，
   但 UI 保持 cameraRequired，不进入 active；重新打开摄像头后再恢复。
@@ -519,6 +560,8 @@ const {
 - **preload 超时后点击**：processor 已用远程 URL 启动，迟到完成的 preload 结果应被丢弃。
 - **模型/loader 请求失败**：后台预加载静默失败；用户点击时回退到远程 URL，仍失败则 toast + None。
 - **快速连续点击**：只保留最后一次选择。
+- **点击 None**：`stopProcessor()` 销毁 processor 并恢复原始摄像头 track；之后 `cameraTrack.getProcessor()` 为 undefined，不再有后台分割/模糊开销。Safari/WebKit 需要额外重置本地预览 `<video>` 的 `srcObject`，否则同一个 MediaStream 内换回原始 track 后画面保持黑屏（Chrome/Firefox 不需要）。
+- **WebGL context loss**：track-processors 的 canvas context 丢失后不会自行恢复，会以 30fps 持续输出黑帧；监听 `webglcontextlost`，停止 processor、回 None、toast，并恢复原始画面。Mali-G76 实测开启 Blur 约 20s 后会发生。
 - **Settings 关闭后重新打开**：组件常驻，ResourcePhase 和 EffectPhase 应保持。
 - **页面不可见**：推迟预加载；返回前台后继续。
 - **跨域/CORS**：fetch loader/WASM/model 需要 CORS；失败时回退到 processor 原生加载路径。
@@ -534,11 +577,12 @@ const {
   2. 预加载完成后、点击前，`cameraTrack.getProcessor()` 仍为 undefined，且没有新增 video/processor（确认“不 attach”）；
   3. 预加载完成后点击 Blur，显示 loading，约 0.3 s 内出现效果；
   4. 用 route 延迟资源请求，加载中点击 Blur，显示 `Loading filter model...`；
-  5. 加载中点击 None，最终保持无背景；
+  5. 加载中/已生效后点击 None，最终保持无背景，且 `cameraTrack.getProcessor()` 为 undefined；
   6. 模拟 `hardwareConcurrency=2` / `saveData`：入会不预加载，点击后才加载；
   7. 资源请求失败：点击时回退；仍失败则 toast + 回到 None；
   8. 摄像头关闭时预加载仍发生，但所有非 None filter 卡片 disabled；打开摄像头后恢复可点击；
-  9. full reconnect 后背景效果仍可用。
+  9. full reconnect 后背景效果仍可用；
+  10. 强制触发 processor canvas 的 `webglcontextlost`：处理器停止、UI 回 None、原始画面恢复，不出现持续黑帧。
 - 资源断言：
   - 预加载请求使用显式 `DEFAULT_WASM_BASE`，不是同源 `/vision_wasm_internal.js`；
   - preload 请求确实被后续 processor 复用（资源缓存命中 / transferSize 0）；
@@ -559,6 +603,9 @@ const {
 - 低端/省流量设备：不预加载，点击后才加载。
 - 摄像头关闭时 filter 按钮 disabled，并显示提示；预加载仍继续。
 - 预加载失败不影响会议，用户可回退/重试。
+- 点击 None 后 processor 被销毁，`getProcessor()` 为 undefined，原始摄像头 track 恢复。
+- Safari（Mac / iPad / iPhone）Blur→None 后本地预览恢复正常，不出现黑屏。
+- WebGL context loss 后自动停止处理并恢复原始画面，不出现持续黑帧。
 - 不因预加载产生 processor、GPU 或 sender track 的额外开销。
 - 不使用 Blob URL，不要求 CSP 放开 `blob:`。
 
@@ -590,3 +637,7 @@ const {
 - 2026-11-13：决策确认：`backgroundEffectsPreload` 默认 `auto`；不采用模型 Blob URL；摄像头关闭时禁用 filter；完整预热本期不做；补充显式 WASM base、fetch body 消费、CSP、超时回退和“不 attach”验收项。
 - 2026-11-13：实施完成（P0/P1/P2）；Chrome 桌面主要 E2E 通过；慢网/移动端手测待补。见 [`webmeeting_background_filter_impl_plan.md`](webmeeting_background_filter_impl_plan.md)。
 - 2026-11-13：Android Chrome 158.0.8127.36 实测：Mali-G76 缺少 float/half-float linear，点击 filter 显示 unsupported；Adreno 740 支持 float linear，自托管资源预加载后 Blur、Lake、None 均正常；确认门控应按 GPU 能力而非浏览器版本判断。
+- 2026-11-14：澄清 §4.3 的传输体积是 CDN Brotli 压缩后大小（解码后约 9.4 MB）；补充自托管时各服务器的压缩配置、`application/wasm` content-type 校验和 `/meeting/vendor/*` 长缓存要求。
+- 2026-11-14：修正 §5.3.2 GPU 能力门控：按 MediaPipe `SegmentationPostprocessorGl::GlInit` 的实际条件，half-float 回退只要求 `EXT_color_buffer_half_float`，不再要求 WebGL1 的 `OES_texture_half_float_linear`；修复 iPad Safari 被误判为不支持（此前实测 filter 可用）。Mali-G76 的运行时行为需复测。
+- 2026-11-14：修正 processor 生命周期：None 改为 `stopProcessor()` 销毁并恢复原始 track（`@livekit/track-processors@0.8.1` 的 `switchTo({ mode: 'disabled' })` 不会停止分割/模糊）；新增 WebGL context loss 监听与恢复。Mali-G76 生产构建实测开启 Blur 约 20s 后 context loss，原实现会持续输出黑帧；修复后自动停止并恢复画面。
+- 2026-11-14：修复 Safari（Mac/iPad/iPhone）Blur→None 后本地预览黑屏：`stopProcessor()` 会在同一个 MediaStream 内换回原始 track，Safari 不重绘；停止后重置命中原始 track 的 `<video>` 的 `srcObject` 并重新 `play()`。Chrome/Firefox 不受影响。
