@@ -444,7 +444,7 @@ event = receiver.receive(raw_body_str, authorization_header)
 - 在 **WebView** 中：
   - Android：必须实现 `WebChromeClient.onPermissionRequest`，对会议 origin 授予 `RESOURCE_AUDIO_CAPTURE` / `RESOURCE_VIDEO_CAPTURE`；**不实现时 WebView 默认拒绝**。
   - iOS：iOS 14.3+ WKWebView 支持 `getUserMedia`；iOS 15+ 可用 `WKUIDelegate.webView(_:requestMediaCapturePermissionFor:initiatedByFrame:type:decisionHandler:)` 显式授权。不实现时行为依赖 WebKit 默认提示（可能出现系统权限框），无法做 origin 级控制/自动授权，不能作为稳定集成方案。
-  - 现有 LivaChat WebView **两者都没有**（见 §2.4），所以“应用内 web 入会”需要专门改造。
+  - 现有 LivaChat WebView：**Android 已于 2026-11-15 实现** `onPermissionRequest` 与受信任会议页媒体授权（见 `docs/android_webview_meeting_support.md`）；iOS 仍未接入，应用内 web 入会需继续使用 Safari/系统浏览器或专门改造。
 - 自签证书：LiveKit 官方要求可信证书；WebView 现有“对当前 server 放行自签”的逻辑只覆盖 LivaChat server 的 host:port，不覆盖 LiveKit 子域名。**不要依赖 WebView 的自签放行来跑 WebRTC**。
 
 **本文建议**：

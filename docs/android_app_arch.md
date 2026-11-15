@@ -124,7 +124,7 @@ NavHost(startDestination = "splash")
 | History | `HistoryViewModel` + `HistoryUiState` | 本地会话列表、搜索、删除、清空 |
 | HistoryDetail | `HistoryDetailViewModel` | 只读消息列表、图片查看器、agent job 结果查看 |
 | Settings | `SettingsViewModel` + `SettingsUiState` | 服务器配置（地址/密钥/检测/保存重启）、视频默认值、触觉、关于 |
-| WebView | 无 | 展示会话/历史/MyLife 中 Markdown 链接打开的网页；设置页隐私政策/用户协议行当前为占位，未接跳转 |
+| WebView | 无 | 展示会话/历史/MyLife 中 Markdown 链接打开的网页；支持受信任会议页的布局/视口与摄像头/麦克风授权（2026-11-15，见 `docs/android_webview_meeting_support.md`）；设置页隐私政策/用户协议行当前为占位，未接跳转 |
 | MyLife Timeline | `TimelineViewModel` + `TimelineUiState` | 日/周/月/年时间线、总览、范围钻取、搜索、热点入口 |
 | FrameGallery | `FrameGalleryViewModel` | 关键帧网格、分页、帧查看、批量删除 |
 | HotSlot | `HotSlotViewModel` | 热点时段事件列表；`EventListViewerScreen` 复用同一 ViewModel 类（各自以路由 backstack entry 为 owner） |

@@ -1439,7 +1439,7 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 - iOS/iPadOS **26 及以前** Safari 不支持 `getDisplayMedia`：会中不要显示可点击的屏幕共享按钮。**iOS/iPadOS 27+ 已支持**（见 §3.8.11 末尾的 P2 增强说明）：届时移除 `is-ios` CSS/UA 判断，依赖 LiveKit `supportsScreenSharing()` 的能力检测；`setSinkId` 支持仍不完整，`MediaDeviceMenu kind="audiooutput"` 可能无效。
 - `VideoConference` **不暴露 `controls` prop**；当前用 `.is-ios .lk-control-bar [data-lk-source='screen_share']` 隐藏旧 iOS 的屏幕共享按钮。该规则在启用 iOS 27+ 共享时应删除（`VideoConference` 内部 `ControlBar` 已按 `supportsScreenSharing()` 隐藏/显示），或改用自定义 `ControlBar`（`controls` prop）。不要假设能通过 `VideoConference` prop 控制单个按钮。
 - 如果配置 `videoCodec: 'vp9' | 'av1'`，必须在 Safari 上确认协商结果；不要假设所有目标浏览器都支持 SVC codec（默认 vp8 正是为了避开这个问题）。
-- WebView：本 app 面向系统浏览器；LivaChat 现有 WebView 没有媒体采集权限桥接（见 `docs/personal_meeting_design.md` §3.7），不作为入会容器。
+- WebView：本 app 仍面向系统浏览器；Android 应用内 WebView 已于 2026-11-15 支持受信任会议页的摄像头/麦克风（见 `docs/android_webview_meeting_support.md`），但屏幕共享仍应使用系统浏览器。
 - 安全上下文要求：
   - `crypto.subtle`（签 JWT）与 `getUserMedia`/`getDisplayMedia` 都需要 HTTPS 或 localhost。
   - `http://localhost`、`http://127.0.0.1` 可用；`http://192.168.x.x` 不可用。
