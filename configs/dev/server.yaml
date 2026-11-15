@@ -282,6 +282,32 @@ webroot:
   enabled: true
   root: ""                          # empty = <recording.base_dir>/webroot (/opt/lvdata/webroot)
 
+# Agent-created meetings + LiveKit token issuance (docs/livachat_meeting.md)
+# Dev template defaults to disabled: enabling requires a built apps/web/meeting/dist
+# and LiveKit credentials. Never commit LiveKit credentials. Local dev/test values
+# live in the gitignored repo-root .env as LIVACHAT__MEETING__* overrides:
+#   LIVACHAT__MEETING__ENABLED=true
+#   LIVACHAT__MEETING__EXTERNAL_SERVER_ADDR=http://127.0.0.1:5174
+#   LIVACHAT__MEETING__LIVEKIT_KEY=...
+#   LIVACHAT__MEETING__LIVEKIT_SECRET=...
+#   LIVACHAT__MEETING__LIVEKIT_SERVER=wss://<livekit-host>
+# `external_server_addr` must be the externally reachable web base (no trailing
+# slash); `livekit_server` MUST be wss:// (ws:// is rejected even for localhost).
+# `web_dir` is repo-root relative; build the server-mode SPA first
+# (`cd apps/web/meeting && cp config.example.json public/config.json && npm run build`,
+# see apps/web/meeting/README.md).
+meeting:
+  enabled: false
+  external_server_addr: ""          # set via LIVACHAT__MEETING__EXTERNAL_SERVER_ADDR in .env
+  livekit_key: ""                   # set via LIVACHAT__MEETING__LIVEKIT_KEY in .env
+  livekit_secret: ""                # set via LIVACHAT__MEETING__LIVEKIT_SECRET in .env
+  livekit_server: ""                # set via LIVACHAT__MEETING__LIVEKIT_SERVER in .env
+  web_dir: "apps/web/meeting/dist"
+  token_ttl_s: 600
+  join_early_s: 1800
+  expire_after_end_s: 14400
+  join_rate_limit_per_min: 10
+
 # Agent Relay — external agent integration
 agent_relay:
   enabled: true

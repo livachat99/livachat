@@ -15,6 +15,8 @@ $timezone_hint
 
 $webroot_hint
 
+$meeting_hint
+
 # 契约:只允许三种响应
 
 收到任何 prompt 后,输出**唯一 JSON 对象**,无额外文本:

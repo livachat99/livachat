@@ -155,6 +155,19 @@ CREATE TABLE IF NOT EXISTS day_stats_state (
 );
 """
 
+# Agent 会议（docs/livachat_meeting.md）：8 位会议号主键；软状态不做，删除是硬删除。
+MEETINGS_SQL = """
+CREATE TABLE IF NOT EXISTS meetings (
+    meeting_number TEXT PRIMARY KEY,
+    topic          TEXT NOT NULL,
+    start_at_ms    INTEGER NOT NULL,
+    end_at_ms      INTEGER NOT NULL,
+    timezone       TEXT NOT NULL DEFAULT '',
+    created_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE INDEX IF NOT EXISTS idx_meetings_start ON meetings(start_at_ms);
+"""
+
 # §5.2 files 表增强列（幂等 ALTER）
 FILES_ALTERS = (
     ("device_uuid", "TEXT"),
@@ -239,7 +252,8 @@ CREATE TABLE IF NOT EXISTS recording_files_sync_state (
 
 V2_DDL = (EVENTS_SQL, ANALYSIS_RUNS_SQL, DAY_SUMMARY_SQL, TIMEZONES_SQL,
           DAY_SCAN_STATE_SQL, DAY_DEFERRED_SQL,
-          PERIOD_SUMMARY_SQL, FLUSH_STATE_SQL, INDEX_STATE_SQL, DAY_STATS_STATE_SQL)
+          PERIOD_SUMMARY_SQL, FLUSH_STATE_SQL, INDEX_STATE_SQL, DAY_STATS_STATE_SQL,
+          MEETINGS_SQL)
 
 
 def normalize_ts(value: str | None) -> str | None:

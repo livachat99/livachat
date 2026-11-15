@@ -12,6 +12,7 @@ import logging
 import re
 import sqlite3
 from pathlib import Path
+from typing import Any
 
 from shared.config.models import BffConfig, RecordingConfig
 
@@ -55,12 +56,17 @@ def _page_sql(where_clause: str, windowed: bool) -> str:
 
 
 class BffError(Exception):
-    """Base for BFF-domain errors mapped to API error envelope codes."""
+    """Base for BFF-domain errors mapped to API error envelope codes.
 
-    def __init__(self, code: str, message: str):
+    `details` is merged into the error envelope (e.g. meeting opens_at_ms);
+    empty details keeps the legacy `{code,message}` shape.
+    """
+
+    def __init__(self, code: str, message: str, **details: Any):
         super().__init__(message)
         self.code = code
         self.message = message
+        self.details = details
 
 
 class LvdataStore:

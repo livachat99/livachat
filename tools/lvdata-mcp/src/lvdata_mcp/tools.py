@@ -4,6 +4,7 @@
 用 issubclass() 直接检查未 eval 的注解字符串，字符串注解会抛 TypeError。
 """
 
+import asyncio
 import base64
 import json
 from typing import Any
@@ -15,15 +16,19 @@ from pydantic import ValidationError
 
 from .consts import EVENT_TYPES
 from .index import build_fts_query, is_stopword_query, search as _search
+from .meetings import Meeting, MeetingStore
 from .schemas import (
+    CreateMeetingParams,
     EventParams,
+    GetMeetingsParams,
     RecentEventsParams,
+    RemoveMeetingParams,
     SearchParams,
     SemanticSearchParams,
     TimelineParams,
 )
 from .store import DataStore, StoreError
-from .timeutil import date_window_ms, ms_to_local_or_none
+from .timeutil import date_window_ms, ms_to_local, ms_to_local_or_none
 from .vec import VecIndex, expand_context, rrf_merge
 
 log = structlog.get_logger("lvdata_mcp.tools")
@@ -46,8 +51,20 @@ def _safe_call(fn, *args):
         return error_result(e.code, e.message, **e.extra)
 
 
+def _meeting_view(meeting: Meeting, tz: str, tz_out: str) -> dict:
+    """Meeting → tool JSON（本地 ISO；不含 join_url，URL 由 LivaChat prompt hint 注入）。"""
+    return {
+        "meeting_number": meeting.meeting_number,
+        "topic": meeting.topic,
+        "start_time": ms_to_local(meeting.start_at_ms, tz),
+        "end_time": ms_to_local(meeting.end_at_ms, tz),
+        "timezone": tz_out,
+    }
+
+
 def register_tools(mcp: FastMCP, store: DataStore,
-                   vec_index: VecIndex | None = None) -> None:
+                   vec_index: VecIndex | None = None,
+                   meeting_store: MeetingStore | None = None) -> None:
     @mcp.tool(
         annotations={"readOnlyHint": True},
         description=(
@@ -272,3 +289,94 @@ def register_tools(mcp: FastMCP, store: DataStore,
         except ValidationError as e:
             return error_result("invalid_param", str(e.errors()[0]["msg"]))
         return _safe_call(store.get_recent_events, p.days, p.timezone) or {}
+
+    if meeting_store is None:
+        return
+
+    @mcp.tool(
+        annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False},
+        description=(
+            "Create a meeting from a topic and ISO 8601 start time. end_time is optional "
+            "and defaults to start plus 60 minutes. Returns an 8-digit meeting_number and "
+            "local start/end times."
+        ),
+    )
+    async def create_meeting(
+        topic: str,
+        start_time: str,
+        end_time: str | None = None,
+        timezone: str | None = None,
+    ) -> dict:
+        try:
+            p = CreateMeetingParams(
+                topic=topic, start_time=start_time, end_time=end_time, timezone=timezone)
+        except ValidationError as e:
+            return error_result("invalid_param", str(e.errors()[0]["msg"]))
+        try:
+            meeting = await asyncio.to_thread(
+                meeting_store.create, topic=p.topic, start_time=p.start_time,
+                end_time=p.end_time, timezone=p.timezone)
+        except StoreError as e:
+            return error_result(e.code, e.message, **e.extra)
+        tz, tz_out = store.effective_tz(meeting.timezone or None)
+        return {"meeting": _meeting_view(meeting, tz, tz_out)}
+
+    @mcp.tool(
+        annotations={"readOnlyHint": False, "destructiveHint": True, "idempotentHint": False},
+        description=(
+            "Delete a meeting by 8-digit meeting_number. Hard delete: the row is removed "
+            "and the meeting can no longer be joined. Returns the deleted meeting details. "
+            "A second delete returns not_found."
+        ),
+    )
+    async def remove_meeting(meeting_number: str) -> dict:
+        try:
+            p = RemoveMeetingParams(meeting_number=meeting_number)
+        except ValidationError as e:
+            return error_result("invalid_param", str(e.errors()[0]["msg"]))
+        try:
+            meeting = await asyncio.to_thread(meeting_store.delete, p.meeting_number)
+        except StoreError as e:
+            return error_result(e.code, e.message, **e.extra)
+        if meeting is None:
+            return error_result("not_found", f"Meeting not found: {p.meeting_number}")
+        tz, tz_out = store.effective_tz(meeting.timezone or None)
+        return {"removed": True, "meeting": _meeting_view(meeting, tz, tz_out)}
+
+    @mcp.tool(
+        annotations={"readOnlyHint": True},
+        description=(
+            "List meetings, optionally filtered by local start_date/end_date. Defaults to "
+            "meetings that have not ended; include_past=true also returns past meetings. "
+            "Returns 8-digit meeting numbers and local start/end times."
+        ),
+    )
+    async def get_meetings(
+        start_date: str | None = None,
+        end_date: str | None = None,
+        timezone: str | None = None,
+        include_past: bool = False,
+        limit: int = 50,
+    ) -> dict:
+        try:
+            p = GetMeetingsParams(
+                start_date=start_date, end_date=end_date, timezone=timezone,
+                include_past=include_past, limit=limit)
+        except ValidationError as e:
+            return error_result("invalid_param", str(e.errors()[0]["msg"]))
+        tz, tz_out = store.effective_tz(p.timezone)
+        try:
+            start_ms, end_ms = date_window_ms(p.start_date, p.end_date, tz)
+        except ValueError as e:
+            return error_result("invalid_param", str(e))
+        try:
+            meetings, total = await asyncio.to_thread(
+                meeting_store.list, start_ms=start_ms, end_ms=end_ms,
+                include_past=p.include_past, limit=p.limit)
+        except StoreError as e:
+            return error_result(e.code, e.message, **e.extra)
+        return {
+            "timezone": tz_out,
+            "meetings": [_meeting_view(m, tz, tz_out) for m in meetings],
+            "total": total,
+        }

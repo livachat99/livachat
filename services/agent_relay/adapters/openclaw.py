@@ -59,6 +59,7 @@ from agent_relay.metrics import (
 from agent_relay.prompt_hints import (
     agent_name_hint,
     language_hint,
+    meeting_hint,
     timezone_hint,
     webroot_hint,
 )
@@ -149,6 +150,10 @@ class OpenClawAdapter(AgentAdapter):
         # 注入点（application wiring；单测可留 None）
         self.job_store: JobStore | None = None
         self.webroot_dir: str = ""   # webroot 静态目录；未启用 = ""（prompt 不含 web 段）
+        self.meeting_enabled: bool = False
+        self.external_server_addr: str = ""
+        self.join_early_s: int = 1800
+        self.expire_after_end_s: int = 14400
 
         self._monitor_template = self._load_template(cfg.monitor_prompt_path, _MONITOR_TEMPLATE)
         self._task_template = self._load_template(cfg.task_prompt_path, _BACKGROUND_TEMPLATE)
@@ -1481,6 +1486,13 @@ class OpenClawAdapter(AgentAdapter):
             agent_name_hint=agent_name_hint(self._cfg.nickname, verbose=True),
             timezone_hint=timezone_hint(timezone, verbose=True),
             webroot_hint=webroot_hint(self.webroot_dir, verbose=True),
+            meeting_hint=meeting_hint(
+                self.meeting_enabled,
+                external_server_addr=self.external_server_addr,
+                join_early_s=self.join_early_s,
+                expire_after_end_s=self.expire_after_end_s,
+                verbose=True,
+            ),
         )
         contract = contract.rstrip() + "\n\n" + language_hint(language, verbose=True)
         data = {
@@ -1509,6 +1521,13 @@ class OpenClawAdapter(AgentAdapter):
             timezone_hint=timezone_hint(timezone, verbose=False),
             agent_name_hint=agent_name_hint(self._cfg.nickname, verbose=False),
             webroot_hint=webroot_hint(self.webroot_dir, verbose=False),
+            meeting_hint=meeting_hint(
+                self.meeting_enabled,
+                external_server_addr=self.external_server_addr,
+                join_early_s=self.join_early_s,
+                expire_after_end_s=self.expire_after_end_s,
+                verbose=False,
+            ),
         )
         if language is None:
             return rendered

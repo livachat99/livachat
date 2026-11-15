@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   countCodePoints,
+  isValidMeetingNumber,
   isValidParticipantName,
   isValidRoomName,
+  normalizeMeetingNumber,
   normalizeRoomName,
-  randomRoomId,
 } from './validation'
 
 describe('meeting number validation', () => {
@@ -27,9 +28,15 @@ describe('meeting number validation', () => {
     expect(isValidRoomName('中文')).toBe(false)
   })
 
-  it('generates lowercase room ids', () => {
-    const id = randomRoomId()
-    expect(id).toMatch(/^[a-z0-9]{4}-[a-z0-9]{4}$/)
+  it('normalizes 8-digit meeting numbers', () => {
+    expect(normalizeMeetingNumber(' 1234-5678 ')).toBe('12345678')
+    expect(normalizeMeetingNumber('１２３４５６７８')).toBe('12345678')
+    expect(normalizeMeetingNumber('１２３４－５６７８')).toBe('12345678')
+    expect(isValidMeetingNumber('12345678')).toBe(true)
+    expect(isValidMeetingNumber('1234567')).toBe(false)
+    expect(isValidMeetingNumber('123456789')).toBe(false)
+    expect(isValidMeetingNumber('abcdefgh')).toBe(false)
+    expect(isValidMeetingNumber('1234-5678')).toBe(false)
   })
 })
 

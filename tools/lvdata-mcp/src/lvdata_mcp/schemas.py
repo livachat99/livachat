@@ -88,3 +88,28 @@ class RemoveParams(BaseModel):
             if not isinstance(ref, str) or not ref.strip():
                 raise ValueError("event_refs elements must be non-empty strings")
         return v
+
+
+class CreateMeetingParams(BaseModel):
+    """create_meeting：topic + ISO 8601 start/end + timezone（docs/livachat_meeting.md）。"""
+
+    topic: str = Field(min_length=1, max_length=100)
+    start_time: str = Field(min_length=1, max_length=64)
+    end_time: str | None = Field(default=None, max_length=64)
+    timezone: str | None = Field(default=None, max_length=64)
+
+
+class RemoveMeetingParams(BaseModel):
+    """remove_meeting：8 位会议号（允许空格/连字符，由 MeetingStore 归一化）。"""
+
+    meeting_number: str = Field(min_length=1, max_length=32)
+
+
+class GetMeetingsParams(BaseModel):
+    """get_meetings：本地日期窗 + include_past + limit。"""
+
+    start_date: str | None = None
+    end_date: str | None = None
+    timezone: str | None = None
+    include_past: bool = False
+    limit: int = Field(50, ge=1, le=100)

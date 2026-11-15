@@ -14,13 +14,30 @@ Do not expose it publicly and do not use a production LiveKit key. The productio
 ```bash
 npm install
 cp config.example.json public/config.json
-# Fill public/config.json with the real demo server URL / key pair.
+# config.example.json is the production server-mode template
+# (tokenEndpoint=/api/mylife/join_meeting, no LiveKit secret).
 npm run dev
-# http://localhost:5174/meeting/
+# http://localhost:5174/meeting/  (Vite proxies /api to https://localhost:8080)
 ```
+
+For a client-mode demo, create a separate `public/config.json` with
+`tokenMode=client`, a **wss://** LiveKit URL and the demo key pair; then use
+`npm run build:demo`. `ws://` (including localhost) is rejected because WebRTC
+does not work over it.
 
 `public/config.json` is gitignored. `config.example.json` stays at the app root and is never
 copied to `dist/`.
+
+## URL and identity
+
+- `/meeting/<8-digit-number>` (e.g. `/meeting/34479999`) prefills the meeting number;
+  `/meeting/` or an invalid path leaves it empty. Manual entry always works.
+- The display name is stored in `localStorage` under `livachat-meeting:display-name`;
+  missing, invalid, or unreadable values are ignored.
+- Inputs have no placeholder text. Touch devices do not autofocus; a fine-pointer
+  desktop focuses the first empty field.
+- Production must serve unknown `/meeting/*` navigation paths through the SPA fallback
+  (`SpaStaticFiles` in `services/app/application.py`); missing assets stay 404.
 
 ## Build
 
@@ -33,7 +50,8 @@ npm run build
 ```
 
 The Vite build gate fails if `public/config.json` contains a client-mode `apiSecret` and
-`ALLOW_CLIENT_TOKEN=1` is not set.
+`ALLOW_CLIENT_TOKEN=1` is not set. `livekitUrl` is optional in server mode; the BFF
+returns `serverUrl` from `meeting.livekit_server` (always `wss://`).
 
 ## Test
 

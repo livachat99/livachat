@@ -297,6 +297,26 @@ class WebrootConfig(BaseModel):
     root: str = ""
 
 
+class MeetingConfig(BaseModel):
+    """Agent 会议 + LiveKit token 签发（docs/livachat_meeting.md）。
+
+    `livekit_server` 必须始终是 wss://（localhost/dev 也不例外）；`ws://` 由
+    validation._validate_meeting 拒绝。`external_server_addr` 是 Agent 通知里的
+    web 基址（scheme+host+port，无 path/尾斜杠），入会 URL = {addr}/meeting/。
+    """
+
+    enabled: bool = False
+    external_server_addr: str = ""
+    livekit_key: str = ""
+    livekit_secret: str = ""
+    livekit_server: str = ""
+    web_dir: str = ""
+    token_ttl_s: int = Field(default=600, ge=60, le=3600)
+    join_early_s: int = Field(default=1800, ge=0)
+    expire_after_end_s: int = Field(default=14400, ge=0)
+    join_rate_limit_per_min: int = Field(default=10, gt=0)
+
+
 # ---------------------------------------------------------------------------
 # Root config (BaseSettings — reads env vars)
 # ---------------------------------------------------------------------------
@@ -326,4 +346,5 @@ class AppConfig(BaseSettings):
     recording: RecordingConfig = RecordingConfig()
     bff: BffConfig = BffConfig()
     webroot: WebrootConfig = WebrootConfig()
+    meeting: MeetingConfig = MeetingConfig()
     agent_relay: dict | None = None

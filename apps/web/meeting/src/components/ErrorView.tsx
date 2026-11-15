@@ -36,7 +36,7 @@ export function ErrorView({ message, onRetry, onBack }: ErrorViewProps) {
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${styles.light}`}>
       <section className={styles.card} role="alert">
         <h1 className={styles.title}>{messages.couldNotJoin}</h1>
         <p className={styles.error}>{sanitizeMessage(message)}</p>

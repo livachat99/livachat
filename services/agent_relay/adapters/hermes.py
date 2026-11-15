@@ -62,6 +62,7 @@ from agent_relay.metrics import (
 from agent_relay.prompt_hints import (
     agent_name_hint,
     language_hint,
+    meeting_hint,
     timezone_hint,
     webroot_hint,
 )
@@ -294,6 +295,11 @@ class HermesAdapter(AgentAdapter):
         self.base_dir: str = "/opt/lvdata"
         # webroot 静态目录（docs/webroot_feature.md §3.1/§3.3）；未启用 = ""（prompt 不含 web 段）
         self.webroot_dir: str = ""
+        # 会议 prompt 注入点（docs/livachat_meeting.md §9.5）；默认关闭
+        self.meeting_enabled: bool = False
+        self.external_server_addr: str = ""
+        self.join_early_s: int = 1800
+        self.expire_after_end_s: int = 14400
 
         self._mission_template = self._load_template(cfg.monitor_prompt_path, _MISSION_TEMPLATE)
 
@@ -2616,6 +2622,13 @@ class HermesAdapter(AgentAdapter):
             timezone_hint=timezone_hint(context.timezone, verbose=True),
             agent_name_hint=agent_name_hint(self._cfg.nickname, verbose=True),
             webroot_hint=webroot_hint(self.webroot_dir, verbose=True),
+            meeting_hint=meeting_hint(
+                self.meeting_enabled,
+                external_server_addr=self.external_server_addr,
+                join_early_s=self.join_early_s,
+                expire_after_end_s=self.expire_after_end_s,
+                verbose=True,
+            ),
         )
         return rendered.rstrip() + "\n\n" + language_hint(context.language, verbose=True)
 
@@ -2631,6 +2644,13 @@ class HermesAdapter(AgentAdapter):
             timezone_hint=timezone_hint(timezone, verbose=False),
             agent_name_hint=agent_name_hint(self._cfg.nickname, verbose=False),
             webroot_hint=webroot_hint(self.webroot_dir, verbose=False),
+            meeting_hint=meeting_hint(
+                self.meeting_enabled,
+                external_server_addr=self.external_server_addr,
+                join_early_s=self.join_early_s,
+                expire_after_end_s=self.expire_after_end_s,
+                verbose=False,
+            ),
         )
         return rendered.rstrip() + "\n\n" + language_hint(language, verbose=False)
 

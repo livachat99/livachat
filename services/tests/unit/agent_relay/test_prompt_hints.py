@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agent_relay.prompt_hints import language_hint, normalize_language
+from agent_relay.prompt_hints import language_hint, meeting_hint, normalize_language
 
 
 class TestNormalizeLanguage:
@@ -65,3 +65,68 @@ class TestLanguageHint:
     @pytest.mark.parametrize("value", ["", "   ", None])
     def test_empty_defaults_to_en(self, value):
         assert '`"en"`' in language_hint(value, verbose=True)
+
+
+class TestMeetingHint:
+    ADDR = "https://chat.example.test:8080/"
+
+    def _hint(self, verbose: bool) -> str:
+        return meeting_hint(
+            True, external_server_addr=self.ADDR,
+            join_early_s=1800, expire_after_end_s=14400, verbose=verbose,
+        )
+
+    def test_disabled_or_empty_address(self):
+        assert meeting_hint(
+            False, external_server_addr=self.ADDR,
+            join_early_s=1800, expire_after_end_s=14400, verbose=True,
+        ) == ""
+        assert meeting_hint(
+            True, external_server_addr="",
+            join_early_s=1800, expire_after_end_s=14400, verbose=True,
+        ) == ""
+
+    def test_address_whitespace_and_slashes_normalized(self):
+        hint = meeting_hint(
+            True, external_server_addr="  https://chat.example.test:8080// ",
+            join_early_s=1800, expire_after_end_s=14400, verbose=False,
+        )
+        assert "https://chat.example.test:8080/meeting/" in hint
+        assert "https://chat.example.test:8080/meeting/34479999" in hint
+        assert "8080//meeting" not in hint
+
+    def test_monitor_variant(self):
+        hint = self._hint(True)
+        assert "# 会议" in hint
+        assert "https://chat.example.test:8080/meeting/" in hint
+        assert "https://chat.example.test:8080/meeting/34479999" in hint
+        assert "meeting_number" in hint and "拼接" in hint
+        assert "8 位" in hint
+        assert "30 分钟" in hint and "4 小时" in hint
+        assert "message" in hint and "job_request" in hint
+        assert "查看会议" in hint
+        assert "创建/预约/修改必须有会议时间和会议主题" in hint
+        assert "缺少新主题/新时间或目标不明确时先追问" in hint
+        assert "新会议号" in hint
+        assert "多个候选" in hint
+        assert "纯文本" in hint
+        assert "不要在主 turn 调用 MCP" in hint
+        assert "链接不带会议号" not in hint
+        assert "$" not in hint
+
+    def test_background_variant(self):
+        hint = self._hint(False)
+        for tool in ("create_meeting", "remove_meeting", "get_meetings"):
+            assert tool in hint
+        assert "https://chat.example.test:8080/meeting/" in hint
+        assert "https://chat.example.test:8080/meeting/34479999" in hint
+        assert "meeting_number" in hint and "拼接" in hint
+        assert "信息不全时不要 remove_meeting" in hint
+        assert "0 个" in hint and "多个候选" in hint
+        assert "新 meeting_number" in hint
+        assert "取消/删除不生成入会链接" in hint
+        assert "纯文本" in hint
+        assert "NOOP" in hint and "8 位" in hint
+        assert "链接不带会议号" not in hint
+        assert "livachat_url://" not in hint
+        assert "$" not in hint

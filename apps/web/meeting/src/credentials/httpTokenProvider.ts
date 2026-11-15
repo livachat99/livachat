@@ -1,9 +1,21 @@
 import type { ConnectionDetails, CredentialProvider, JoinRequest } from './types'
 
 type TokenResponse = Partial<ConnectionDetails> & {
-  // personal_meeting_design.md §7.2 production field names
+  // production field names (docs/livachat_meeting.md §6.2)
   livekit_url?: string
   token?: string
+}
+
+export class TokenEndpointError extends Error {
+  constructor(
+    readonly code: string,
+    message: string,
+    readonly status: number,
+    readonly details: Record<string, unknown> = {},
+  ) {
+    super(message)
+    this.name = 'TokenEndpointError'
+  }
 }
 
 function validateServerUrl(value: string): string {
@@ -13,7 +25,8 @@ function validateServerUrl(value: string): string {
   } catch {
     throw new Error('Token endpoint returned an invalid serverUrl')
   }
-  if (url.protocol !== 'ws:' && url.protocol !== 'wss:') {
+  // wss:// only, including localhost/dev.
+  if (url.protocol !== 'wss:') {
     throw new Error('Token endpoint returned an invalid serverUrl')
   }
   return url.toString().replace(/\/$/, '')
@@ -22,44 +35,72 @@ function validateServerUrl(value: string): string {
 export function parseConnectionDetails(
   raw: TokenResponse,
   request: JoinRequest,
+  fallbackServerUrl = '',
 ): ConnectionDetails {
-  const serverUrl = validateServerUrl(raw.serverUrl ?? raw.livekit_url ?? '')
+  const serverUrl = validateServerUrl(
+    raw.serverUrl ?? raw.livekit_url ?? fallbackServerUrl,
+  )
   const participantToken = raw.participantToken ?? raw.token ?? ''
   if (!participantToken) {
     throw new Error('Token endpoint returned an empty token')
   }
+  const participantName = request.participantName.trim()
   if (raw.roomName && raw.roomName !== request.roomName) {
     throw new Error('Token endpoint returned a mismatched roomName')
   }
-  if (raw.participantName && raw.participantName !== request.participantName) {
+  if (raw.participantName && raw.participantName !== participantName) {
     throw new Error('Token endpoint returned a mismatched participantName')
   }
   return {
     serverUrl,
     roomName: request.roomName,
-    participantName: request.participantName,
+    participantName,
     participantToken,
   }
 }
 
-/**
- * Reserved for production. The production endpoint's request body is
- * `{ invite_token, display_name, passcode? }`, not `{ roomName, participantName }`;
- * extend JoinRequest to a discriminated union when wiring it up.
- */
 export class HttpTokenProvider implements CredentialProvider {
-  constructor(private readonly endpoint: string) {}
+  constructor(
+    private readonly endpoint: string,
+    private readonly fallbackServerUrl = '',
+  ) {}
 
   async getConnectionDetails(request: JoinRequest): Promise<ConnectionDetails> {
+    const participantName = request.participantName.trim()
     const res = await fetch(this.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request),
+      body: JSON.stringify({
+        meeting_number: request.roomName,
+        participant_name: participantName,
+      }),
       credentials: 'same-origin',
     })
     if (!res.ok) {
-      throw new Error(`Token endpoint failed: HTTP ${res.status}`)
+      let code = 'token_endpoint_failed'
+      let message = `Token endpoint failed: HTTP ${res.status}`
+      const details: Record<string, unknown> = {}
+      try {
+        const body = (await res.json()) as {
+          error?: { code?: unknown; message?: unknown }
+        }
+        const err = body.error
+        if (err && typeof err === 'object') {
+          if (typeof err.code === 'string') code = err.code
+          if (typeof err.message === 'string') message = err.message
+          for (const [key, value] of Object.entries(err)) {
+            if (key !== 'code' && key !== 'message') details[key] = value
+          }
+        }
+      } catch {
+        // Non-JSON proxy/error page: keep the HTTP status fallback.
+      }
+      throw new TokenEndpointError(code, message, res.status, details)
     }
-    return parseConnectionDetails((await res.json()) as TokenResponse, request)
+    return parseConnectionDetails(
+      (await res.json()) as TokenResponse,
+      { ...request, participantName },
+      this.fallbackServerUrl,
+    )
   }
 }

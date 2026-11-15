@@ -7,7 +7,7 @@ export function createCredentialProvider(
   config: MeetingConfig,
 ): CredentialProvider {
   if (config.tokenMode === 'server') {
-    return new HttpTokenProvider(config.tokenEndpoint)
+    return new HttpTokenProvider(config.tokenEndpoint, config.livekitUrl ?? '')
   }
   return new ClientTokenProvider(config)
 }

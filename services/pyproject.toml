@@ -30,6 +30,7 @@ dependencies = [
     "opuslib>=3.0",
     "Pillow>=13.0.0",  # 12.3.0 命中 59 条 OSV（含 JPEG/FPX 解码 RCE）
     "PyJWT>=2.9",
+    "livekit-api>=1.2.2",  # 会议 LiveKit JWT 签发（docs/livachat_meeting.md）
     "livachat-protocol",
     "tzdata>=2024.1 ; platform_system == 'Linux'",  # zoneinfo 极简镜像兜底（timezone-support.md §5.4）
 ]

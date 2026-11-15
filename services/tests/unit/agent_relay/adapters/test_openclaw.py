@@ -204,6 +204,49 @@ class TestPayloadRendering:
         assert "面向用户输出语言" not in rendered
 
 
+class TestMeetingHint:
+    ADDR = "https://chat.example.test:8080/"
+
+    def _enabled(self):
+        a = _adapter()
+        a.meeting_enabled = True
+        a.external_server_addr = self.ADDR
+        return a
+
+    def test_nudge_with_meeting(self):
+        a = self._enabled()
+        update = ChatlogUpdate(path="/p", chat_session_id="cs", new_lines=[])
+        message = a._render_nudge(update, "")
+        assert "# 会议" in message
+        assert "https://chat.example.test:8080/meeting/" in message
+        assert "https://chat.example.test:8080/meeting/34479999" in message
+        assert "$meeting_hint" not in message
+
+    def test_nudge_meeting_off(self):
+        a = _adapter()
+        update = ChatlogUpdate(path="/p", chat_session_id="cs", new_lines=[])
+        message = a._render_nudge(update, "")
+        assert "# 会议" not in message
+        assert "create_meeting" not in message
+        assert "$meeting_hint" not in message
+
+    def test_background_with_meeting(self):
+        a = self._enabled()
+        rendered = a._render_background_task("创建会议", "cs-1", "/tmp/history.jsonl")
+        for tool in ("create_meeting", "remove_meeting", "get_meetings"):
+            assert tool in rendered
+        assert "https://chat.example.test:8080/meeting/" in rendered
+        assert "https://chat.example.test:8080/meeting/34479999" in rendered
+        assert "$meeting_hint" not in rendered
+
+    def test_background_meeting_off(self):
+        a = _adapter()
+        rendered = a._render_background_task("创建会议", "cs-1", "/tmp/history.jsonl")
+        assert "# 会议" not in rendered
+        assert "create_meeting" not in rendered
+        assert "$meeting_hint" not in rendered
+
+
 class TestAskLanguageHint:
     async def test_ask_appends_language_hint(self, monkeypatch):
         from agent_relay.adapters.base import AgentContext

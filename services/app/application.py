@@ -3,9 +3,13 @@ from __future__ import annotations
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
+from starlette.exceptions import HTTPException
+from starlette.staticfiles import StaticFiles
+from starlette.types import Scope
 
 from app.lifespan import get_shutdown_handler
 from app.routes import router
@@ -203,6 +207,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
                     hermes.webroot_dir = (
                         resolve_webroot_dir(cfg) if cfg.webroot.enabled else ""
                     )
+                    hermes.meeting_enabled = cfg.meeting.enabled
+                    hermes.external_server_addr = cfg.meeting.external_server_addr
+                    hermes.join_early_s = cfg.meeting.join_early_s
+                    hermes.expire_after_end_s = cfg.meeting.expire_after_end_s
                 openclaw = adapters.get("openclaw")
                 if openclaw is not None:
                     # docs/openclaw_adaptor_design.md §5.4：B 方案 job 链路
@@ -211,6 +219,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
                     openclaw.webroot_dir = (
                         resolve_webroot_dir(cfg) if cfg.webroot.enabled else ""
                     )
+                    openclaw.meeting_enabled = cfg.meeting.enabled
+                    openclaw.external_server_addr = cfg.meeting.external_server_addr
+                    openclaw.join_early_s = cfg.meeting.join_early_s
+                    openclaw.expire_after_end_s = cfg.meeting.expire_after_end_s
 
                 for name, adapter in adapters.items():
                     try:
@@ -422,7 +434,6 @@ def _with_agent_awareness(system_prompt: str, agents: list[NamedAgent]) -> str:
 
 def _write_startup_marker() -> None:
     try:
-        from pathlib import Path
         Path("/tmp/livachat-ready").touch()
     except Exception:
         pass
@@ -452,14 +463,13 @@ def create_app(config: AppConfig | None = None) -> FastAPI:
         register_bff(app)
 
     _mount_webroot(app, config)
+    _mount_meeting(app, config)
 
     return app
 
 
 def resolve_webroot_dir(config: AppConfig) -> str:
     """webroot 静态目录唯一解析点（挂载与 hermes prompt 渲染共用；docs/webroot_feature.md §3.1）。"""
-    from pathlib import Path
-
     return config.webroot.root or str(Path(config.recording.base_dir) / "webroot")
 
 
@@ -472,9 +482,6 @@ def _mount_webroot(app: FastAPI, config: AppConfig) -> None:
     """
     if not config.webroot.enabled:
         return
-    from pathlib import Path
-
-    from fastapi.staticfiles import StaticFiles
 
     root = Path(resolve_webroot_dir(config))
     try:
@@ -486,3 +493,56 @@ def _mount_webroot(app: FastAPI, config: AppConfig) -> None:
             "(install contract: /opt/lvdata must exist)"
         ) from exc
     app.mount("/webroot", StaticFiles(directory=str(root), html=True), name="webroot")
+
+
+def _is_spa_navigation(path: str, scope: Scope) -> bool:
+    """True for browser navigation paths that may fall back to index.html."""
+    if scope.get("method") not in ("GET", "HEAD"):
+        return False
+    if Path(path).suffix or path.startswith(("assets/", "vendor/")):
+        return False
+    accept = next(
+        (value.decode("latin-1") for key, value in scope.get("headers", [])
+         if key == b"accept"),
+        "",
+    )
+    return "text/html" in accept
+
+
+class SpaStaticFiles(StaticFiles):
+    """Static files + SPA fallback for navigation paths（docs §19）。
+
+    `/meeting/<meeting_number>`（以及非法路径）返回 index.html，由前端决定
+    是否预填；缺失的 JS/CSS/vendor 资源仍按 404 返回。
+    """
+
+    async def get_response(self, path: str, scope: Scope):
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as exc:
+            if exc.status_code == 404 and _is_spa_navigation(path, scope):
+                return await super().get_response("index.html", scope)
+            raise
+
+
+def _mount_meeting(app: FastAPI, config: AppConfig) -> None:
+    """Serve the built meeting SPA at /meeting（docs/livachat_meeting.md §6.8/§19）。
+
+    enabled=false → 不挂载、无 FS 副作用。enabled=true 时 web_dir 必须存在且含
+    index.html；否则启动 fail-fast（与 webroot 的承诺语义一致）。create_app(config=...)
+    会绕过 validate_config，因此这里必须重复检查。
+    """
+    if not config.meeting.enabled:
+        return
+
+    from shared.config.loader import resolve_path
+
+    if not config.meeting.web_dir.strip():
+        raise RuntimeError("meeting.web_dir is empty")
+    root = Path(resolve_path(config.meeting.web_dir.strip()))
+    if not (root / "index.html").is_file():
+        raise RuntimeError(
+            f"meeting web_dir has no index.html: {root}; "
+            "build apps/web/meeting and point meeting.web_dir at dist"
+        )
+    app.mount("/meeting", SpaStaticFiles(directory=str(root), html=True), name="meeting")

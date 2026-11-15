@@ -10,7 +10,8 @@ import type {
   CredentialProvider,
 } from '../credentials/types'
 import { messages } from '../messages'
-import { errorMessage } from '../utils'
+import { saveParticipantName } from '../storage'
+import { formatMeetingError } from '../utils'
 import styles from '../styles/home.module.css'
 
 export type PreJoinStageProps = {
@@ -34,6 +35,7 @@ export function PreJoinStage({
 
   const handlePreJoinSubmit = async (values: LocalUserChoices) => {
     if (joining) return
+    saveParticipantName(values.username)
     setJoining(true)
     try {
       const details = await provider.getConnectionDetails({
@@ -43,7 +45,7 @@ export function PreJoinStage({
       onJoined(details, values)
     } catch (error) {
       console.error(error)
-      toast.error(`${messages.tokenFailed}: ${errorMessage(error)}`)
+      toast.error(formatMeetingError(error))
       setJoining(false)
     }
   }

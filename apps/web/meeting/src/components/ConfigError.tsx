@@ -9,7 +9,7 @@ export type FatalErrorProps = {
 
 export function FatalError({ title, message, hint }: FatalErrorProps) {
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${styles.light}`}>
       <section className={styles.card} role="alert">
         <h1 className={styles.title}>{title}</h1>
         <p className={styles.error}>{message}</p>

@@ -229,6 +229,58 @@ class TestWebrootHint:
         assert "$webroot_hint" not in rendered
 
 
+class TestMeetingHint:
+    """docs/livachat_meeting.md §9.5：会议提示开/关两态 + 占位符不残留。"""
+
+    ADDR = "https://chat.example.test:8080/"
+
+    def _enabled(self):
+        adapter = _adapter()
+        adapter.base_dir = "/opt/lvdata"
+        adapter.meeting_enabled = True
+        adapter.external_server_addr = self.ADDR
+        return adapter
+
+    @pytest.mark.asyncio
+    async def test_render_mission_with_meeting(self):
+        adapter = self._enabled()
+        ctx = AgentContext(session_id="sess-1", device_id="dev-1", language="zh")
+        rendered = await adapter._render_mission(ctx)
+        assert "# 会议" in rendered
+        assert "https://chat.example.test:8080/meeting/" in rendered
+        assert "https://chat.example.test:8080/meeting/34479999" in rendered
+        assert "8 位" in rendered
+        assert "30 分钟" in rendered and "4 小时" in rendered
+        assert "$meeting_hint" not in rendered
+
+    @pytest.mark.asyncio
+    async def test_render_mission_meeting_off(self):
+        adapter = _adapter()
+        adapter.base_dir = "/opt/lvdata"
+        ctx = AgentContext(session_id="sess-1", device_id="dev-1", language="zh")
+        rendered = await adapter._render_mission(ctx)
+        assert "# 会议" not in rendered
+        assert "create_meeting" not in rendered
+        assert "$meeting_hint" not in rendered
+
+    def test_render_job_task_with_meeting(self):
+        adapter = self._enabled()
+        rendered = adapter._render_job_task("创建会议", "sess-1", "/tmp/history.jsonl")
+        for tool in ("create_meeting", "remove_meeting", "get_meetings"):
+            assert tool in rendered
+        assert "https://chat.example.test:8080/meeting/" in rendered
+        assert "https://chat.example.test:8080/meeting/34479999" in rendered
+        assert "NOOP" in rendered
+        assert "$meeting_hint" not in rendered
+
+    def test_render_job_task_meeting_off(self):
+        adapter = _adapter()
+        rendered = adapter._render_job_task("创建会议", "sess-1", "/tmp/history.jsonl")
+        assert "# 会议" not in rendered
+        assert "create_meeting" not in rendered
+        assert "$meeting_hint" not in rendered
+
+
 class TestLanguageHint:
     """docs/agent_multilingual.md：mission/job task 末尾追加语言指令（不翻译模板）。"""
 

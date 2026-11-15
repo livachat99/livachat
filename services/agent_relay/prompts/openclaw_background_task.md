@@ -19,6 +19,8 @@ $task
 
 $webroot_hint
 
+$meeting_hint
+
 # 输出要求
 
 最终 text 就是发给用户的成品文案:口语、简洁、无需解释过程。

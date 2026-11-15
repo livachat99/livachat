@@ -14,10 +14,10 @@ import type {
   CredentialProvider,
 } from './credentials/types'
 import { messages } from './messages'
+import { meetingNumberFromUrl } from './meetingUrl'
+import { saveParticipantName } from './storage'
 import type { JoinParams } from './types'
-import { errorMessage } from './utils'
-
-const NAME_STORAGE_KEY = 'livachat-meeting:display-name'
+import { errorMessage, formatMeetingError } from './utils'
 
 type Stage =
   // roomName/participantName let Home be prefilled after Back/Leave; Home
@@ -35,12 +35,12 @@ const DEFAULT_CHOICES: LocalUserChoices = {
   audioDeviceId: '',
 }
 
-function saveDisplayName(name: string) {
-  try {
-    localStorage.setItem(NAME_STORAGE_KEY, name)
-  } catch {
-    // Storage may be unavailable in private mode; the app still works.
-  }
+function initialStage(): Stage {
+  const roomName =
+    typeof window === 'undefined'
+      ? null
+      : meetingNumberFromUrl(window.location.pathname)
+  return roomName ? { kind: 'home', roomName } : { kind: 'home' }
 }
 
 export default function App() {
@@ -49,7 +49,7 @@ export default function App() {
   const [provider, setProvider] = React.useState<CredentialProvider | null>(
     null,
   )
-  const [stage, setStage] = React.useState<Stage>({ kind: 'home' })
+  const [stage, setStage] = React.useState<Stage>(initialStage)
 
   React.useEffect(() => {
     let cancelled = false
@@ -103,12 +103,12 @@ export default function App() {
         roomName: params.roomName,
         participantName: params.participantName,
       })
-      saveDisplayName(details.participantName)
+      saveParticipantName(details.participantName)
       setStage({ kind: 'meeting', details, choices: params.choices })
     } catch (error) {
       setStage({
         kind: 'error',
-        message: errorMessage(error),
+        message: formatMeetingError(error),
         retry: params,
       })
     }
@@ -155,7 +155,7 @@ export default function App() {
             })
           }
           onJoined={(details, choices) => {
-            saveDisplayName(details.participantName)
+            saveParticipantName(details.participantName)
             setStage({ kind: 'meeting', details, choices })
           }}
         />

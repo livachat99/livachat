@@ -11,7 +11,6 @@ export type BackgroundImageConfig = {
 
 export type MeetingConfigCommon = {
   appTitle: string
-  livekitUrl: string
   tokenTtlSeconds: number
   videoCodec: MeetingVideoCodec
   showPreJoin: boolean
@@ -25,6 +24,7 @@ export type MeetingConfigCommon = {
 
 export type ClientTokenConfig = MeetingConfigCommon & {
   tokenMode: 'client'
+  livekitUrl: string
   apiKey: string
   apiSecret: string
 }
@@ -32,6 +32,7 @@ export type ClientTokenConfig = MeetingConfigCommon & {
 export type ServerTokenConfig = MeetingConfigCommon & {
   tokenMode: 'server'
   tokenEndpoint: string
+  livekitUrl?: string
 }
 
 export type MeetingConfig = ClientTokenConfig | ServerTokenConfig
@@ -231,18 +232,16 @@ function readMediapipeAssetBase(raw: Record<string, unknown>): string {
   return value.endsWith('/') ? value : `${value}/`
 }
 
-function validateLivekitUrl(rawUrl: string, isHttps: boolean): string {
+function validateLivekitUrl(rawUrl: string): string {
   let url: URL
   try {
     url = new URL(rawUrl)
   } catch {
     throw new Error(messages.invalidServerUrl)
   }
-  if (url.protocol !== 'ws:' && url.protocol !== 'wss:') {
+  // wss:// is mandatory even for localhost/dev: ws:// cannot carry WebRTC reliably.
+  if (url.protocol !== 'wss:') {
     throw new Error(messages.invalidServerUrl)
-  }
-  if (isHttps && url.protocol === 'ws:') {
-    throw new Error(messages.mixedContent)
   }
   return url.toString().replace(/\/$/, '')
 }
@@ -254,10 +253,6 @@ export function validateConfig(
   const record = asRecord(raw)
   const common: MeetingConfigCommon = {
     appTitle: readOptionalString(record, 'appTitle') || DEFAULT_TITLE,
-    livekitUrl: validateLivekitUrl(
-      readRequiredString(record, 'livekitUrl', 'livekitUrl'),
-      opts.isHttps,
-    ),
     tokenTtlSeconds: readInteger(
       record,
       'tokenTtlSeconds',
@@ -289,13 +284,22 @@ export function validateConfig(
         'config.json: tokenMode=server must not contain apiKey/apiSecret.',
       )
     }
-    return { ...common, tokenMode: 'server', tokenEndpoint }
+    const livekitUrl = readOptionalString(record, 'livekitUrl')
+    return {
+      ...common,
+      tokenMode: 'server',
+      tokenEndpoint,
+      ...(livekitUrl ? { livekitUrl: validateLivekitUrl(livekitUrl) } : {}),
+    }
   }
 
   if (tokenMode !== 'client') {
     throw new Error('config.json: "tokenMode" must be "client" or "server".')
   }
 
+  const livekitUrl = validateLivekitUrl(
+    readRequiredString(record, 'livekitUrl', 'livekitUrl'),
+  )
   const apiKey = readRequiredString(record, 'apiKey', 'apiKey')
   const apiSecret = readRequiredString(record, 'apiSecret', 'apiSecret')
   if (record.tokenEndpoint !== undefined) {
@@ -303,7 +307,7 @@ export function validateConfig(
       'config.json: tokenEndpoint is only valid when tokenMode=server.',
     )
   }
-  return { ...common, tokenMode: 'client', apiKey, apiSecret }
+  return { ...common, tokenMode: 'client', livekitUrl, apiKey, apiSecret }
 }
 
 export async function loadConfig(

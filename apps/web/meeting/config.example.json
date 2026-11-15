@@ -1,9 +1,7 @@
 {
   "appTitle": "LivaChat Meeting",
-  "livekitUrl": "wss://<livekit-host>:<port>",
-  "tokenMode": "client",
-  "apiKey": "<LIVEKIT_API_KEY>",
-  "apiSecret": "<LIVEKIT_API_SECRET>",
+  "tokenMode": "server",
+  "tokenEndpoint": "/api/mylife/join_meeting",
   "tokenTtlSeconds": 600,
   "videoCodec": "vp8",
   "showPreJoin": false,
@@ -11,6 +9,6 @@
   "enableBackgroundEffects": true,
   "backgroundEffectsPreload": "auto",
   "backgroundImages": [],
-  "mediapipeAssetBase": "",
+  "mediapipeAssetBase": "/meeting/vendor/mediapipe/",
   "showDebugPanel": false
 }

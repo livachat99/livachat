@@ -12,6 +12,69 @@
   overflow-y: auto;
 }
 
+/* Lift the join card slightly above the optical center (grid centering
+   distributes the extra bottom padding as an upward shift). */
+.home {
+  padding-bottom: calc(12vh + 1.5rem + env(safe-area-inset-bottom));
+}
+
+/* Join/entry page is light; the in-meeting room keeps the dark LiveKit theme. */
+.light {
+  background: #f4f6fb;
+  color: #101828;
+  color-scheme: light;
+}
+
+.light .card {
+  border-color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.light .title {
+  color: #0f172a;
+}
+
+.light .subtitle,
+.light .label {
+  color: #5b6475;
+}
+
+.light .input {
+  border-color: #cbd5e1;
+  background: #fff;
+  color: #101828;
+}
+
+.light :global(.lk-button) {
+  border-color: #d0d5dd;
+  background: #eef2f7;
+  color: #1d2939;
+}
+
+.light :global(.lk-button:hover:not(:disabled)) {
+  background: #e2e8f0;
+}
+
+.light .submit {
+  background: #2563eb;
+  color: #fff;
+}
+
+.light .submit:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.light .error {
+  color: #b42318;
+}
+
+.light .devWarning {
+  border-color: rgba(180, 83, 9, 0.35);
+  background: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+}
+
 .card {
   width: min(100%, 440px);
   display: flex;
@@ -75,11 +138,6 @@
 
 .roomRow .input {
   flex: 1;
-}
-
-.randomButton {
-  min-width: 2.8rem;
-  padding-inline: 0.6rem;
 }
 
 .submit {

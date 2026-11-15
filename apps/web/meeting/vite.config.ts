@@ -43,8 +43,16 @@ export default defineConfig({
   base: '/meeting/',
   plugins: [react(), guardClientTokenConfig()],
   server: {
+    // 与 dev 的 LIVACHAT__MEETING__EXTERNAL_SERVER_ADDR（127.0.0.1:5174）对齐；
+    // Node 的 localhost 在本机可能只绑定 ::1，导致通知链接打不开。
+    host: '127.0.0.1',
     port: 5174,
-    // 不需要 /api 代理：token 在浏览器生成，LiveKit 走 WSS 直连
+    // client 模式不需要 /api；tokenMode=server 时把 BFF 请求代理到本地 server。
+    // dev server 默认 HTTPS（configs/dev/server.yaml ssl.enabled=true）；
+    // secure:false 接受本地自签证书（与 apps/web/mylife 一致）。
+    proxy: {
+      '/api': { target: 'https://localhost:8080', secure: false },
+    },
   },
   build: {
     outDir: 'dist',

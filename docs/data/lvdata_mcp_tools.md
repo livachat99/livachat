@@ -1006,10 +1006,13 @@ embedding API 往返（~93 ms p50 / 461 ms tail）与相应的失败面；**只�
    上下文（常驻）。**当前逐字如下，措辞即契约（改文案 = 改 agent 行为，需评审）**：
 
 ```text
-LivaChat's recorded multimodal lifelog data. Read-only.
+LivaChat's recorded multimodal lifelog data and meeting scheduler.
+Lifelog tools are read-only. Manage meetings with create_meeting / remove_meeting / get_meetings.
 Locate with get_recent_events / get_timeline; search with search (fast, preferred) / semantic_search (alternative wording); fetch details with get_event by event_ref.
-Conventions: start_date/end_date are YYYY-MM-DD inclusive; timezone is the timezone of the current query; list/search results are lightweight projections; fetch details and keyframe images with get_event by event_ref; failures return error{code,message} (do not rely only on isError).
+Conventions: start_date/end_date are YYYY-MM-DD inclusive; timezone is the timezone of the current query; list/search results are lightweight projections; fetch details and keyframe images with get_event by event_ref; meeting times are ISO 8601 with timezone offset; failures return error{code,message} (do not rely only on isError).
 ```
+
+   > 2026-11-14：会议功能新增 `create_meeting` / `remove_meeting` / `get_meetings`，工具集从 5 个变为 8 个；本节其余“5 个工具”的历史口径保留作演进记录，最新契约见 `docs/livachat_meeting.md`。
 
    历史中文版本（§14/§16/§17）已被 D9 取代；工具描述里逐字重复的共同约定收拢进
    instructions，描述只留各工具特有行为（净账见 §16.2）。

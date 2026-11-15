@@ -7,6 +7,7 @@ from bff.agent_jobs.router import router as agent_jobs_router
 from bff.common.media import router as media_router
 from bff.common.store import BffError
 from bff.graph.router import router as graph_router
+from bff.meeting.router import router as meeting_router
 from bff.remove.router import router as remove_router
 from bff.search.router import router as search_router
 from bff.timeline.router import router as timeline_router
@@ -18,13 +19,19 @@ router.include_router(search_router)
 router.include_router(media_router)
 router.include_router(remove_router)
 router.include_router(agent_jobs_router)
+router.include_router(meeting_router)
 
 _STATUS_BY_CODE = {"bad_request": 400, "unauthorized": 401, "not_found": 404,
                    "conflict": 409, "range_invalid": 416,
                    "upstream_unavailable": 502,
                    "removal_disabled": 503,
                    "agent_relay_unavailable": 503,
-                   "cancel_incomplete": 503}
+                   "cancel_incomplete": 503,
+                   "meeting_not_found": 404,
+                   "meeting_not_started": 403,
+                   "meeting_expired": 410,
+                   "meeting_disabled": 503,
+                   "rate_limited": 429}
 
 
 def register(app: FastAPI) -> None:
@@ -33,6 +40,9 @@ def register(app: FastAPI) -> None:
     @app.exception_handler(BffError)
     async def _bff_error_handler(_: Request, exc: BffError) -> JSONResponse:
         status = _STATUS_BY_CODE.get(exc.code, 500)
-        return JSONResponse(status_code=status, content={"error": {"code": exc.code, "message": exc.message}})
+        return JSONResponse(
+            status_code=status,
+            content={"error": {"code": exc.code, "message": exc.message, **exc.details}},
+        )
 
     app.include_router(router)

@@ -104,6 +104,9 @@ class TestLoadConfig:
         monkeypatch.setenv("CARTESIA_API_KEY", "cart-key")
         monkeypatch.setenv("OPENAI_API_KEY", "oai-key")
         monkeypatch.setenv("LIVACHAT__REDIS__URL", "redis://localhost:6379/0")
+        # meeting.web_dir 是 gitignored 的构建产物（apps/web/meeting/dist）；
+        # 单测不能依赖本机是否构建过 web app，会议校验另有专项测试。
+        monkeypatch.setenv("LIVACHAT__MEETING__ENABLED", "false")
 
         cfg = load_config("dev")
         assert cfg.server.port == 8080
@@ -132,6 +135,8 @@ class TestLoadConfig:
         monkeypatch.setenv("OPENAI_API_KEY", "oai-key")
         monkeypatch.setenv("LIVACHAT__REDIS__URL", "x")
         monkeypatch.setenv("LIVACHAT__ASR__ACTIVE", "alibaba_bailian")
+        # 同 test_load_dev_config：web_dir 依赖本地构建产物
+        monkeypatch.setenv("LIVACHAT__MEETING__ENABLED", "false")
 
         cfg = load_config("dev")
         assert cfg.asr.active == "alibaba_bailian"

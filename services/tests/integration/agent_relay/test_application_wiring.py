@@ -112,7 +112,8 @@ def _install_mocks(monkeypatch, fake_hermes: _FakeHermes, *,
 
 
 def _make_app(*, chat_server_db_path: str = "", hermes_nickname: str = "",
-              omni_enabled: bool = False, relay_proactive_enabled: bool = True):
+              omni_enabled: bool = False, relay_proactive_enabled: bool = True,
+              meeting: dict | None = None):
     from app.application import create_app
 
     hermes_cfg = {"mode": "proactive"}
@@ -130,6 +131,7 @@ def _make_app(*, chat_server_db_path: str = "", hermes_nickname: str = "",
         agent_relay=agent_relay,
         omni={"enabled": omni_enabled},
         redis=RedisConfig(url="", key_prefix="livachat_test"),
+        meeting=meeting or {},
         sqlite={"enabled": True, "max_queue_size": 128,
                 "chat_server_db_path": chat_server_db_path},
     )
@@ -371,6 +373,32 @@ class TestNoRedisWiring:
         assert "adapter_connect" in events
         # shutdown 经 SM.shutdown()（桩记录）——SM 存在时 adapter 由其关闭
         assert "sm_shutdown" in events
+
+class TestMeetingWiring:
+    async def test_relay_wires_meeting_config(self, monkeypatch, tmp_path):
+        from app.application import lifespan
+
+        dist = tmp_path / "dist"
+        dist.mkdir()
+        (dist / "index.html").write_text("ok", encoding="utf-8")
+        fake_hermes = _FakeHermes()
+        _install_mocks(monkeypatch, fake_hermes)
+        app = _make_app(
+            chat_server_db_path=str(tmp_path / "chat_server.db"),
+            meeting={
+                "enabled": True,
+                "web_dir": str(dist),
+                "external_server_addr": "https://chat.example.test:8080",
+                "join_early_s": 1800,
+                "expire_after_end_s": 14400,
+            },
+        )
+        async with lifespan(app):
+            assert fake_hermes.meeting_enabled is True
+            assert fake_hermes.external_server_addr == "https://chat.example.test:8080"
+            assert fake_hermes.join_early_s == 1800
+            assert fake_hermes.expire_after_end_s == 14400
+
 
 class TestOmniModeWiring:
     """omni.enabled = "允许全模态模式"：三段式服务必须同时存在，两个 prompt 分离。

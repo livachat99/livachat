@@ -2,15 +2,13 @@ export const messages = {
   appTitle: 'LivaChat Meeting',
   homeSubtitle: 'Join a meeting by number',
   meetingNumberLabel: 'Meeting number',
-  meetingNumberPlaceholder: '123-456-789',
   meetingNumberRequired: 'Enter a meeting number.',
   meetingNumberInvalid:
     'Use letters, numbers, hyphens and underscores (max 64).',
+  meetingNumberFormat: 'Enter an 8-digit meeting number.',
   participantNameLabel: 'Your name',
-  participantNamePlaceholder: 'Alice',
   participantNameRequired: 'Enter your name.',
   participantNameTooLong: 'Name must be 1-40 characters.',
-  generateRoom: 'Generate a random meeting number',
   joinMeeting: 'Join meeting',
   joining: 'Joining...',
   back: 'Back',
@@ -18,8 +16,7 @@ export const messages = {
   leave: 'Leave',
   cancel: 'Cancel',
   leaveConfirmTitle: 'Leave the meeting?',
-  leaveConfirmMessage:
-    'Your camera and microphone will stop and you will return to the home screen.',
+  leaveConfirmMessage: 'Leave the meeting and return to the home screen.',
   devWarning:
     'Demo mode: LiveKit credentials are embedded in this client. Do not deploy publicly.',
   noOneElse:
@@ -62,7 +59,12 @@ export const messages = {
   meetingEnded: 'The meeting has ended.',
   joinFailed: 'Could not connect to the meeting.',
   tokenFailed: 'Could not create a meeting token.',
-  invalidServerUrl: 'The configured LiveKit URL is invalid.',
-  mixedContent:
-    'The page is HTTPS but the LiveKit URL is ws://. Use wss:// or open the page over HTTP.',
+  invalidServerUrl: 'The LiveKit URL must use wss://.',
+  mixedContent: 'The LiveKit URL must use wss://.',
+  meetingNotFound: 'Meeting not found. Check the meeting number.',
+  meetingNotStarted: 'This meeting is not open yet.',
+  meetingExpired: 'This meeting has ended.',
+  meetingRateLimited: 'Too many attempts. Try again later.',
+  meetingDisabled: 'Meetings are not enabled.',
+  meetingServiceUnavailable: 'Meeting service is temporarily unavailable.',
 } as const

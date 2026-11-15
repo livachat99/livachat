@@ -2,22 +2,14 @@ import * as React from 'react'
 import type { MeetingConfig } from '../config'
 import { messages } from '../messages'
 import {
+  isValidMeetingNumber,
   isValidParticipantName,
   isValidRoomName,
+  normalizeMeetingNumber,
   normalizeRoomName,
-  randomRoomId,
 } from '../validation'
+import { readStoredParticipantName, saveParticipantName } from '../storage'
 import styles from '../styles/home.module.css'
-
-const NAME_STORAGE_KEY = 'livachat-meeting:display-name'
-
-function readStoredName(): string {
-  try {
-    return localStorage.getItem(NAME_STORAGE_KEY) ?? ''
-  } catch {
-    return ''
-  }
-}
 
 export type HomeProps = {
   config: MeetingConfig
@@ -36,14 +28,22 @@ export function Home({
     defaultRoomName ?? '',
   )
   const [participantName, setParticipantName] = React.useState(
-    defaultParticipantName ?? readStoredName(),
+    defaultParticipantName ?? readStoredParticipantName() ?? '',
   )
   const [errors, setErrors] = React.useState<{
     room?: string
     name?: string
   }>({})
   const [submitting, setSubmitting] = React.useState(false)
-  const nameInputRef = React.useRef<HTMLInputElement>(null)
+  const serverMode = config.tokenMode === 'server'
+  // Touch devices must not autofocus (it pops the soft keyboard). Only a
+  // fine pointer (desktop) focuses the first empty field on mount.
+  const autoFocusEnabled = React.useMemo(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return false
+    }
+    return !window.matchMedia('(pointer: coarse)').matches
+  }, [])
 
   React.useEffect(() => {
     if (defaultRoomName !== undefined) setRoomName(defaultRoomName)
@@ -54,12 +54,6 @@ export function Home({
       setParticipantName(defaultParticipantName)
     }
   }, [defaultParticipantName])
-
-  const handleGenerate = () => {
-    setRoomName(randomRoomId())
-    setErrors((current) => ({ ...current, room: undefined }))
-    nameInputRef.current?.focus()
-  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     // Do not submit while an IME composition is active.
@@ -72,14 +66,22 @@ export function Home({
     event.preventDefault()
     if (submitting) return
 
-    const normalizedRoom = normalizeRoomName(roomName)
+    const normalizedRoom = serverMode
+      ? normalizeMeetingNumber(roomName)
+      : normalizeRoomName(roomName)
     const trimmedName = participantName.trim()
     const nextErrors: { room?: string; name?: string } = {}
 
     if (!normalizedRoom) {
       nextErrors.room = messages.meetingNumberRequired
-    } else if (!isValidRoomName(normalizedRoom)) {
-      nextErrors.room = messages.meetingNumberInvalid
+    } else if (
+      serverMode
+        ? !isValidMeetingNumber(normalizedRoom)
+        : !isValidRoomName(normalizedRoom)
+    ) {
+      nextErrors.room = serverMode
+        ? messages.meetingNumberFormat
+        : messages.meetingNumberInvalid
     }
 
     if (!trimmedName) {
@@ -91,6 +93,7 @@ export function Home({
     setErrors(nextErrors)
     if (nextErrors.room || nextErrors.name) return
 
+    saveParticipantName(trimmedName)
     setSubmitting(true)
     try {
       await onJoin(normalizedRoom, trimmedName)
@@ -100,7 +103,7 @@ export function Home({
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${styles.light} ${styles.home}`}>
       <form className={styles.card} onSubmit={handleSubmit} noValidate>
         <header className={styles.header}>
           <h1 className={styles.title}>{config.appTitle}</h1>
@@ -121,25 +124,15 @@ export function Home({
                 setErrors((current) => ({ ...current, room: undefined }))
               }}
               onKeyDown={handleKeyDown}
-              placeholder={messages.meetingNumberPlaceholder}
               autoComplete="off"
               autoCapitalize="none"
               spellCheck={false}
-              inputMode="text"
-              maxLength={64}
-              autoFocus
+              inputMode={serverMode ? 'numeric' : 'text'}
+              maxLength={serverMode ? 12 : 64}
+              autoFocus={autoFocusEnabled && !roomName}
               aria-invalid={Boolean(errors.room)}
               aria-describedby={errors.room ? 'meeting-number-error' : undefined}
             />
-            <button
-              type="button"
-              className={`lk-button ${styles.randomButton}`}
-              onClick={handleGenerate}
-              title={messages.generateRoom}
-              aria-label={messages.generateRoom}
-            >
-              🎲
-            </button>
           </div>
           {errors.room ? (
             <p id="meeting-number-error" className={styles.error} role="alert">
@@ -154,7 +147,6 @@ export function Home({
           </label>
           <input
             id="participant-name"
-            ref={nameInputRef}
             className={styles.input}
             value={participantName}
             onChange={(event) => {
@@ -162,8 +154,10 @@ export function Home({
               setErrors((current) => ({ ...current, name: undefined }))
             }}
             onKeyDown={handleKeyDown}
-            placeholder={messages.participantNamePlaceholder}
             autoComplete="name"
+            autoFocus={
+              autoFocusEnabled && Boolean(roomName) && !participantName
+            }
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? 'participant-name-error' : undefined}
           />

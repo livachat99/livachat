@@ -37,6 +37,39 @@ async def remove_events(base_url: str, token: str, timeout_s: float,
     return resp.json()
 
 
+async def get_meeting(base_url: str, token: str, timeout_s: float,
+                      meeting_number: str, *,
+                      transport: httpx.AsyncBaseTransport | None = None) -> dict:
+    """GET {base_url}/api/meetings/{meeting_number}（Bearer）。
+
+    404 → meeting_not_found；400 → bad_request；连接失败/超时/非 200/坏 JSON →
+    upstream_unavailable。`transport` 供测试注入（httpx.MockTransport）。
+    """
+    if not base_url:
+        raise BffError("meeting_disabled", "bff.lvdata_api_url 未配置，会议端点禁用")
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
+    try:
+        async with httpx.AsyncClient(timeout=timeout_s, transport=transport) as client:
+            resp = await client.get(
+                f"{base_url.rstrip('/')}/api/meetings/{meeting_number}",
+                headers=headers,
+            )
+    except httpx.HTTPError as exc:
+        raise BffError("upstream_unavailable", f"lvdata-mcp 请求失败: {exc}") from exc
+    if resp.status_code == 404:
+        raise BffError("meeting_not_found", "meeting not found")
+    if resp.status_code == 400:
+        raise BffError("bad_request", _error_message(resp))
+    if resp.status_code != 200:
+        raise BffError("upstream_unavailable", f"lvdata-mcp HTTP {resp.status_code}")
+    try:
+        body = resp.json()
+        meeting = body["meeting"]
+    except (ValueError, KeyError, TypeError) as exc:
+        raise BffError("upstream_unavailable", "lvdata-mcp returned invalid meeting payload") from exc
+    return meeting
+
+
 def _error_message(resp: httpx.Response) -> str:
     try:
         body = resp.json()

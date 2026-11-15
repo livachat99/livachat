@@ -20,6 +20,7 @@ from starlette.routing import Route
 
 from . import VERSION
 from .config import LvdataMcpConfig
+from .meetings import MeetingStore, normalize_meeting_number
 from .remove import EventRemover
 from .schemas import RemoveParams, TriggerParams
 from .store import DataStore, StoreError
@@ -35,19 +36,24 @@ log = structlog.get_logger("lvdata_mcp.server")
 # §16：工具描述里逐字重复的共同约定（日期窗/时间口径/轻量投影/详情链/错误约定）收拢到这里，
 # 描述只留各工具特有行为。
 INSTRUCTIONS = (
-    "LivaChat's recorded multimodal lifelog data. Read-only.\n"
+    "LivaChat's recorded multimodal lifelog data and meeting scheduler.\n"
+    "Lifelog tools are read-only. Manage meetings with create_meeting / remove_meeting / "
+    "get_meetings.\n"
     "Locate with get_recent_events / get_timeline; search with search (fast, preferred) / "
     "semantic_search (alternative wording); fetch details with get_event by event_ref.\n"
     "Conventions: start_date/end_date are YYYY-MM-DD inclusive; timezone is the timezone of "
     "the current query; list/search results are lightweight projections; fetch details and "
-    "keyframe images with get_event by event_ref; failures return error{code,message} "
-    "(do not rely only on isError).")
+    "keyframe images with get_event by event_ref; meeting times are ISO 8601 with timezone "
+    "offset; failures return error{code,message} (do not rely only on isError).")
 
 
 def create_app(settings: LvdataMcpConfig, watcher: Watcher | None = None,
                start_watcher: bool = True, vec_index: VecIndex | None = None,
-               remover: EventRemover | None = None) -> Starlette:
+               remover: EventRemover | None = None,
+               meeting_store: MeetingStore | None = None) -> Starlette:
     store = DataStore(settings)
+    if meeting_store is None:
+        meeting_store = MeetingStore(settings)
     started_at = time.monotonic()
     if vec_index is None:
         # embedding 整块为空 → build_provider 返回 None（离线模式，仅 FTS）
@@ -63,7 +69,7 @@ def create_app(settings: LvdataMcpConfig, watcher: Watcher | None = None,
     # （"1.29.1"）；低层 Server 支持 version，这里补上（§14 D1）。测试断言 initialize 的
     # serverInfo.version == VERSION——SDK 将来若改了这层，会以测试失败暴露而非静默回退。
     mcp._mcp_server.version = VERSION
-    register_tools(mcp, store, vec_index)
+    register_tools(mcp, store, vec_index, meeting_store)
     mcp_app = mcp.streamable_http_app()
 
     async def healthz(request: Request) -> JSONResponse:
@@ -139,6 +145,41 @@ def create_app(settings: LvdataMcpConfig, watcher: Watcher | None = None,
         return JSONResponse({"accepted": True, "stages": p.stages or "all",
                              "reason": "enqueued"})
 
+    async def api_get_meeting(request: Request) -> JSONResponse:
+        """按会议号查会议（BFF 内部调用，Bearer 中间件覆盖）。
+
+        只返回原始时间/主题，不做入会窗口判断（窗口在 LivaChat BFF 签发 token 前判定）。
+        同步 sqlite 读取经 to_thread 卸载，避免阻塞事件循环。
+        """
+        raw = request.path_params["meeting_number"]
+        try:
+            number = normalize_meeting_number(raw)
+        except StoreError as e:
+            return JSONResponse(error_result(e.code, e.message, **e.extra),
+                                status_code=400)
+        try:
+            meeting = await asyncio.to_thread(meeting_store.get, number)
+        except StoreError as e:
+            code = 503 if e.code == "database_not_initialized" else 500
+            if code == 500:
+                log.exception("meeting get failed")
+            return JSONResponse(error_result(e.code, e.message, **e.extra),
+                                status_code=code)
+        if meeting is None:
+            return JSONResponse(
+                error_result("not_found", f"Meeting not found: {number}"),
+                status_code=404)
+        return JSONResponse(
+            {"meeting": {
+                "meeting_number": meeting.meeting_number,
+                "topic": meeting.topic,
+                "start_at_ms": meeting.start_at_ms,
+                "end_at_ms": meeting.end_at_ms,
+                "timezone": meeting.timezone,
+            }},
+            headers={"Cache-Control": "no-store"},
+        )
+
     async def api_remove(request: Request) -> JSONResponse:
         """运维面：删除 video 事件（同步执行，docs/bff_service_remove.md §2.2）。
 
@@ -200,6 +241,7 @@ def create_app(settings: LvdataMcpConfig, watcher: Watcher | None = None,
             Route("/healthz", healthz),
             Route("/readyz", readyz),
             Route("/api/status", api_status),
+            Route("/api/meetings/{meeting_number}", api_get_meeting),
             Route("/api/analysis/trigger", api_trigger, methods=["POST"]),
             Route("/api/events/remove", api_remove, methods=["POST"]),
             *mcp_app.routes,

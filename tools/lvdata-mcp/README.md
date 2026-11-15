@@ -8,9 +8,10 @@ LvData MCP Service v2 — 多模态生活数据建档、分析与查询服务（
   事实源，不再扫文件系统），进程内完成同步（recording_watch）、chat 三 jsonl →
   events（analysis/chatlog）、音频/视频分析（analysis/audio|vision）、
   索引/向量增量、日摘要（summary/day）——无 subprocess。
-- **Query 平面**：Streamable HTTP MCP server，**5 个只读 tools**（数据面 = `events`）；
-  另有运维 REST 端点 `/api/status`、`/api/analysis/trigger`（同 token 鉴权，
-  见 [REST 端点](#rest-端点运维面)）。
+- **Query 平面**：Streamable HTTP MCP server，**8 个 tools（5 个只读 lifelog + 3 个会议管理）**
+  （数据面 = `events` + `meetings`）；另有 REST 端点 `/api/status`、
+  `/api/analysis/trigger`、`/api/events/remove`、`/api/meetings/{meeting_number}`
+  （同 token 鉴权，见 [REST 端点](#rest-端点运维面)）。
 
 ## 前置条件
 
@@ -141,6 +142,9 @@ agent 连上后（MCP `initialize`）还会收到一段英文 `instructions`（�
 | `get_timeline` | events 表时间线：日期窗 `start_date`/`end_date`（`YYYY-MM-DD` 含端点）+ `timezone`；按日分组（日升序、日内升序，轻量投影），`[ts_ms, type, event_id]` 三元组游标翻页 |
 | `get_event` | 单事件详情（chat/audio/window/video/agent_job）；`timezone` 缺省/无效 = 服务配置时区；video 且关键帧存在时返回值附图片（image content） |
 | `get_recent_events` | 近 N 个本地日的事件清单（days=1 今天、上限 31；轻量投影、按日分组日倒序，详情按 `event_ref` 调 `get_event`） |
+| `create_meeting` | 创建会议：`topic` + ISO 8601 `start_time`（必填）、可选 `end_time`（默认 +60min）、`timezone`；返回 8 位 `meeting_number` 和本地时间 |
+| `remove_meeting` | 按 8 位会议号硬删除；返回被删会议详情；第二次删除返回 `not_found` |
+| `get_meetings` | 列出会议：可选本地日期窗、`include_past`、`limit`；默认只返回未结束的会议 |
 
 ## REST 端点（运维面）
 
@@ -150,6 +154,8 @@ agent 连上后（MCP `initialize`）还会收到一段英文 `instructions`（�
 |------|------|
 | `GET /api/status` | 服务与数据新鲜度（watcher/pipeline/index 状态、pending/failed 分析积压、day_summary 状态）；配 embedding 时另含 `cache.query_embeddings`（查询向量缓存的 size/hits/misses） |
 | `POST /api/analysis/trigger` | 手动触发 pipeline（body `{session_id?, stages?, force?}`，幂等入队；stages: inventory/chatlog/audio/video/reindex/embed/day_summary/day_stats，缺省 = 全链） |
+| `POST /api/events/remove` | 删除 video 事件（部分成功语义） |
+| `GET /api/meetings/{meeting_number}` | 按 8 位会议号查会议（BFF 内部调用；返回原始时间/主题，`Cache-Control: no-store`） |
 
 ```bash
 curl -s -H "Authorization: Bearer $LVDATA_MCP_TOKEN" http://127.0.0.1:8090/api/status

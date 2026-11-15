@@ -74,12 +74,25 @@ def _seed_index(root: Path) -> None:
 # ── 工具集合（§12：session 维度工具删除）────────────────────────────────
 
 def test_tool_set(env):
-    """对外工具集恰为 5 个（运维件已迁 REST、list_jobs 已删除、get_key_image 并入
-    get_event，见 docs/data/lvdata_mcp_tools.md）。"""
+    """对外工具集恰为 8 个（5 个 lifelog 只读 + 3 个会议管理）。"""
     url, _ = env
     names = _assert_tools(url)
     assert names == {"search", "semantic_search", "get_timeline", "get_event",
-                     "get_recent_events"}
+                     "get_recent_events", "create_meeting", "remove_meeting",
+                     "get_meetings"}
+
+
+def test_meeting_tool_annotations(env):
+    """写入/删除工具必须显式标注；destructiveHint 不要依赖 SDK 默认值。"""
+    url, _ = env
+    tools = {t.name: t for t in asyncio.run(_tool_list(url)).tools}
+    create = tools["create_meeting"].annotations
+    remove = tools["remove_meeting"].annotations
+    listing = tools["get_meetings"].annotations
+    assert create is not None and create.readOnlyHint is False
+    assert create.destructiveHint is False
+    assert remove is not None and remove.destructiveHint is True
+    assert listing is not None and listing.readOnlyHint is True
 
 
 def test_get_timeline(env):
@@ -453,13 +466,15 @@ def test_ts_ms_zero_renders_null(tmp_path):
 # initialize 的 instructions 文案（与 docs/data/lvdata_mcp_tools.md §14.2 的 §16 修订版逐字一致）。
 # 措辞即契约——改文案必须同时改这里与文档（agent 常驻上下文，行为随之改变）。
 INSTRUCTIONS = (
-    "LivaChat's recorded multimodal lifelog data. Read-only.\n"
+    "LivaChat's recorded multimodal lifelog data and meeting scheduler.\n"
+    "Lifelog tools are read-only. Manage meetings with create_meeting / remove_meeting / "
+    "get_meetings.\n"
     "Locate with get_recent_events / get_timeline; search with search (fast, preferred) / "
     "semantic_search (alternative wording); fetch details with get_event by event_ref.\n"
     "Conventions: start_date/end_date are YYYY-MM-DD inclusive; timezone is the timezone of "
     "the current query; list/search results are lightweight projections; fetch details and "
-    "keyframe images with get_event by event_ref; failures return error{code,message} "
-    "(do not rely only on isError).")
+    "keyframe images with get_event by event_ref; meeting times are ISO 8601 with timezone "
+    "offset; failures return error{code,message} (do not rely only on isError).")
 
 
 def _initialize(base: str) -> dict:
@@ -540,7 +555,8 @@ def test_tool_descriptions_delegate_conventions(env):
     assert not _CJK.search(INSTRUCTIONS)
     assert not any(_CJK.search(d) for d in tools.values())
     # 描述体量护栏：英文比中文长；上限防再次塞入共同约定或长文。
-    assert sum(len(d) for d in tools.values()) < 1100
+    # 8 个工具（含 3 个会议工具）的合理上限。
+    assert sum(len(d) for d in tools.values()) < 1800
 
 
 _CJK = re.compile(r"[㐀-䶿一-鿿]")

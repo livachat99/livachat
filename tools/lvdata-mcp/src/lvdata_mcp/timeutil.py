@@ -66,7 +66,7 @@ def try_resolve_timezone(tz_str: str):
         else:
             offset = timedelta(hours=float(s))
         return timezone(sign * offset)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, OverflowError):
         return None
 
 

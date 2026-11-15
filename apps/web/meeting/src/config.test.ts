@@ -172,13 +172,15 @@ describe('validateConfig', () => {
     ).toThrow()
   })
 
-  it('rejects ws:// when the page is HTTPS', () => {
-    expect(() =>
-      validateConfig(
-        { livekitUrl: 'ws://localhost:7880', apiKey: 'key', apiSecret: 'secret' },
-        { isHttps: true },
-      ),
-    ).toThrow()
+  it('rejects ws:// even for localhost/dev', () => {
+    for (const isHttps of [true, false]) {
+      expect(() =>
+        validateConfig(
+          { livekitUrl: 'ws://localhost:7880', apiKey: 'key', apiSecret: 'secret' },
+          { isHttps },
+        ),
+      ).toThrow()
+    }
   })
 
   it('requires key pair for client mode and rejects server secrets', () => {
@@ -202,16 +204,40 @@ describe('validateConfig', () => {
     ).toThrow()
   })
 
-  it('accepts server mode without a client secret', () => {
+  it('accepts server mode without a client secret or livekitUrl', () => {
     const config = validateConfig(
       {
-        livekitUrl: clientConfig.livekitUrl,
         tokenMode: 'server',
-        tokenEndpoint: '/api/meetings/join',
+        tokenEndpoint: '/api/mylife/join_meeting',
       },
       { isHttps: false },
     )
     expect(config.tokenMode).toBe('server')
+    expect('livekitUrl' in config).toBe(false)
+  })
+
+  it('accepts an optional wss livekitUrl in server mode and rejects ws://', () => {
+    const config = validateConfig(
+      {
+        tokenMode: 'server',
+        tokenEndpoint: '/api/mylife/join_meeting',
+        livekitUrl: 'wss://livekit.example.test:7880',
+      },
+      { isHttps: false },
+    )
+    expect(config.tokenMode).toBe('server')
+    expect(config.livekitUrl).toBe('wss://livekit.example.test:7880')
+
+    expect(() =>
+      validateConfig(
+        {
+          tokenMode: 'server',
+          tokenEndpoint: '/api/mylife/join_meeting',
+          livekitUrl: 'ws://localhost:7880',
+        },
+        { isHttps: false },
+      ),
+    ).toThrow()
   })
 
   it('validates TTL, codec and mediapipeAssetBase', () => {
@@ -284,5 +310,21 @@ describe('loadConfig', () => {
     await expect(
       loadConfig({ fetchImpl, isHttps: false, isDev: false }),
     ).rejects.toThrow(/did not return JSON/)
+  })
+
+  it('loads a server-mode config without livekitUrl', async () => {
+    const serverConfig = {
+      tokenMode: 'server',
+      tokenEndpoint: '/api/mylife/join_meeting',
+    }
+    const fetchImpl = (async () =>
+      new Response(JSON.stringify(serverConfig), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      })) as unknown as typeof fetch
+
+    const config = await loadConfig({ fetchImpl, isHttps: false, isDev: false })
+    if (config.tokenMode !== 'server') throw new Error('expected server mode')
+    expect(config.tokenEndpoint).toBe('/api/mylife/join_meeting')
   })
 })

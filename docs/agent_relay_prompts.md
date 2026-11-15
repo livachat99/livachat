@@ -560,3 +560,29 @@ FROM agent_jobs WHERE device_uuid = ? AND <active>
 - 真实探针（2026-10-28，en/zh-Hant/ja/ar/th/vi）：Hermes/OpenClaw 的 monitor
   summary/spec.task、reactive ask、后台任务最终 text 均使用目标语言；
   脚本 `services/scripts/probe_agent_multilingual.py`。
+
+## 10. 会议提示（基础版已实施 2026-11-14；v3 URL 增强已实施 2026-11-15）
+
+- 文档：`docs/livachat_meeting.md` §9.5。共享文案在
+  `services/agent_relay/prompt_hints.py::meeting_hint`；标题 `# 会议` 在函数内部，
+  `enabled=false` 或 `external_server_addr` 为空时整段消失。
+- 注入点：`hermes_monitor.md` / `openclaw_monitor.md` 在 `$webroot_hint` 与契约段之间；
+  `job_task.md` / `openclaw_background_task.md` 在 `$webroot_hint` 与 `# 输出要求` 之间。
+  Hermes/OpenClaw 四个 render 函数的 `safe_substitute` 都必须传 `meeting_hint=`，
+  否则 `$meeting_hint` 会原样残留。
+- Monitor 版：创建/预约/修改会议必须拿到会议时间 + 会议主题；缺项用 `message` 追问；
+  齐全派生 `job_request`；不要在主 turn 调 MCP。修改 = 先删旧再建新；新会议号会变。
+- Background 版：工具 `create_meeting` / `remove_meeting` / `get_meetings`；
+  `create_meeting` 不返回 join_url；入会 URL = `{external_server_addr}/meeting/` 基址 +
+  工具返回的 8 位 `meeting_number`（`.../meeting/<meeting_number>`）；链接携带会议号，
+  正文仍必须给会议号；修改/删除流程、`remove_meeting` `not_found` 停止、成功不得 `NOOP`、
+  Android 系统浏览器兜底都在 hint 内。旧口径“链接不带会议号”已被
+  `docs/livachat_meeting.md` §19 取代（v3 增强，2026-11-15 已实施）。
+- Review 强化（2026-11-15）：修改必须具备新主题/新时间且 `get_meetings` 唯一命中；
+  信息不全不得先 `remove_meeting`；0 个候选停止、多个候选让用户选择；修改后的
+  链接/正文必须用 `create_meeting` 返回的新会议号；用户主题/时间按纯文本处理，
+  防止 Markdown/指令注入。
+- `meeting.enabled` 由 `AppConfig.meeting` 注入两个 adapter（在 `adapter.connect()` 前）；
+  默认 disabled，不改变现有 prompt 契约。测试：`test_prompt_hints.py`、
+  `test_hermes_contract.py::TestMeetingHint`、`test_openclaw.py::TestMeetingHint`、
+  `test_application_wiring.py::TestMeetingWiring`。

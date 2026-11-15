@@ -71,13 +71,17 @@ def test_ensure_schema_creates_v2_tables(tmp_path):
         "SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
     for t in ("events", "analysis_runs", "day_summary", "timezones",
               "day_scan_state", "day_deferred", "period_summary",
-              "flush_state", "recording_sessions", "files", "index_state"):
+              "flush_state", "recording_sessions", "files", "index_state",
+              "meetings"):
         assert t in tables, t
     assert "chat_messages" not in tables  # 2026-09-15 修订裁定 G：已删除
     assert "day_force" not in tables      # session_json_refactor 裁决 A：已删除
     # events 索引
     idx = {r[1] for r in conn.execute("PRAGMA index_list(events)").fetchall()}
     assert {"idx_events_rsession_ts", "idx_events_ts", "idx_events_type"} <= idx
+    # meetings 索引
+    midx = {r[1] for r in conn.execute("PRAGMA index_list(meetings)").fetchall()}
+    assert "idx_meetings_start" in midx
     # files 增强列
     cols = {r[1] for r in conn.execute("PRAGMA table_info(files)").fetchall()}
     assert {"device_uuid", "analysis_status", "fail_count", "analyzed_at", "error"} <= cols
