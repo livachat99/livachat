@@ -49,6 +49,13 @@ Environment variables (required; startup fails fast if missing)
 
 `cp .env.example .env` and fill in the required fields.
 
+Optional local LiveKit Server (first install generates `bin/livekit/` and writes
+the meeting key/secret to `.env`; set `LIVACHAT__MEETING__LIVEKIT_SERVER` manually):
+
+```bash
+./livachat.sh install --livekit --skip-base
+```
+
 ```bash
 .venv/bin/livachat-server     # https://localhost:8080 (hot reload on by default, watches services/ only—restart manually after configs/ changes; set LIVACHAT_SERVER_RELOAD=0 to disable)
 .venv/bin/lvdata-mcp serve    # http://127.0.0.1:8090 (/mcp /healthz /readyz)

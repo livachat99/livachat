@@ -20,3 +20,8 @@ apps/web/meeting/public/config.json
 
 # Playwright MCP 测试产物
 .playwright-mcp/
+
+# LiveKit local install (binary/config/secret sample) and .env update leftovers
+/bin/
+/.env.tmp.*
+/.env.bak.*

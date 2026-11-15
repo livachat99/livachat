@@ -17,6 +17,19 @@ MCP_BOOT="$LOG_DIR/lvdata_mcp.boot.log"
 SRV_PID="$RUN_DIR/livachat.pid"
 MCP_PID="$RUN_DIR/lvdata_mcp.pid"
 
+# Optional LiveKit server (installed by `install --livekit`; see docs/livekit_install.md)
+BIN_DIR="$ROOT/bin/livekit"
+LIVEKIT_BIN="$BIN_DIR/livekit-server"
+LIVEKIT_CONFIG="$BIN_DIR/livekit.yaml"
+LIVEKIT_SAMPLE="$BIN_DIR/config-sample.yaml"
+LIVEKIT_VERSION_FILE="$BIN_DIR/VERSION"
+LIVEKIT_DEFAULT_VERSION="1.13.11"
+LIVEKIT_KEY=""
+LIVEKIT_SECRET=""
+LIVEKIT_TMP_DIR=""
+LIVEKIT_ENV_TMP=""
+LIVEKIT_CONFIG_TMP=""
+
 # Ports come from configs/test (resolve_ports); fall back to the defaults recorded in REPO.md if unreadable
 SRV_PORT=8080
 MCP_PORT=8090
@@ -29,12 +42,19 @@ usage() {
   cat <<EOF
 LivaChat local service manager (chat server + lvdata-mcp)
 
-Usage: ./livachat.sh <command>
+Usage: ./livachat.sh <command> [options]
 
   install   Install uv and Python 3.12, create .venv, editable-install services and dependencies
   start     Start both services in background and wait for health checks
   stop      Gracefully stop both services (SIGTERM, SIGKILL after 10s if still running)
   status    Show process and /healthz status; exit 0 when all running and healthy, otherwise 1
+
+install options:
+  --livekit                Install LiveKit Server into <repo>/bin/livekit
+  --skip-base              With --livekit: skip the Python base install
+  --livekit-version <ver>  LiveKit version (default: 1.13.11)
+  --dry-run                Print planned actions; no network access, no writes
+  -h, --help               Show this help
 EOF
 }
 
@@ -106,6 +126,7 @@ env_effective() {
   [ -n "$line" ] || return 0
   line="${line#*=}"
   line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  line="${line%$'\r'}"
   case "$line" in
     \"*\") line="${line#\"}"; line="${line%\"}" ;;
     \'*\') line="${line#\'}"; line="${line%\'}" ;;
@@ -289,8 +310,7 @@ ensure_uv() {
 
 # ---------------------------------------------------------------- commands
 
-cmd_install() {
-  cd "$ROOT"
+install_base() {
   ensure_uv
 
   info ""
@@ -323,17 +343,546 @@ cmd_install() {
     -e "$ROOT/packages/sdk-python" \
     -e "$ROOT/services" \
     -e "$ROOT/tools/lvdata-mcp[image,vec]"
+}
+
+cmd_install() {
+  local livekit=0 skip_base=0 dry_run=0 version_given=0
+  local livekit_version="$LIVEKIT_DEFAULT_VERSION"
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --livekit) livekit=1; shift ;;
+      --skip-base) skip_base=1; shift ;;
+      --livekit-version)
+        [ $# -ge 2 ] || die "--livekit-version requires a value"
+        case "$2" in -*) die "--livekit-version requires a value" ;; esac
+        livekit_version="$2"; version_given=1; shift 2 ;;
+      --livekit-version=*)
+        livekit_version="${1#*=}"; version_given=1; shift ;;
+      --dry-run) dry_run=1; shift ;;
+      -h|--help) usage; return 0 ;;
+      *) die "unknown install option: $1" ;;
+    esac
+  done
+
+  livekit_version="${livekit_version#v}"
+  [ "$skip_base" -eq 1 ] && [ "$livekit" -eq 0 ] && die "--skip-base requires --livekit"
+  [ "$version_given" -eq 1 ] && [ "$livekit" -eq 0 ] && die "--livekit-version requires --livekit"
+  if [ "$livekit" -eq 1 ]; then
+    livekit_validate_version "$livekit_version"
+  fi
+
+  cd "$ROOT"
+  local env_existed=0
+  [ -f "$ROOT/.env" ] && env_existed=1 || true
+
+  if [ "$dry_run" -eq 1 ]; then
+    info "Dry run: no changes will be made."
+    if [ "$skip_base" -eq 0 ]; then
+      info "Would install Python base (uv/Python 3.12/.venv/editable packages)."
+    fi
+    if [ "$livekit" -eq 1 ]; then
+      livekit_dry_run "$livekit_version"
+    fi
+    return 0
+  fi
+
+  if [ "$skip_base" -eq 0 ]; then
+    install_base
+  fi
+
+  if [ "$livekit" -eq 1 ]; then
+    info ""
+    info "== LiveKit Server =="
+    livekit_install "$livekit_version"
+  fi
 
   info ""
-  info "Install complete."
-  if [ -f "$ROOT/.env" ]; then
-    info "Next: ./livachat.sh start (.env already exists)"
+  if [ "$skip_base" -eq 0 ]; then
+    info "Install complete."
+    if [ "$env_existed" -eq 1 ] && [ -f "$ROOT/.env" ]; then
+      info "Next: ./livachat.sh start (.env already exists)"
+    else
+      info "Next steps:"
+      info "  1) cp .env.example .env (if missing) and fill in DASHSCOPE_API_KEY / DASHSCOPE_API_HOST /"
+      info "     DASHSCOPE_WORKSPACE_ID / APP_AUTH_TOKEN"
+      info "  2) ./livachat.sh start"
+    fi
   else
-    info "Next steps:"
-    info "  1) cp .env.example .env and fill in DASHSCOPE_API_KEY / DASHSCOPE_API_HOST /"
-    info "     DASHSCOPE_WORKSPACE_ID / APP_AUTH_TOKEN"
-    info "  2) ./livachat.sh start"
+    info "LiveKit install complete."
+    info "Next: edit .env and set LIVACHAT__MEETING__LIVEKIT_SERVER=wss://..."
   fi
+}
+
+# ---------------------------------------------------------------- LiveKit
+
+livekit_cleanup() {
+  [ -n "$LIVEKIT_TMP_DIR" ] && rm -rf "$LIVEKIT_TMP_DIR"
+  [ -n "$LIVEKIT_ENV_TMP" ] && rm -f "$LIVEKIT_ENV_TMP"
+  [ -n "$LIVEKIT_CONFIG_TMP" ] && rm -f "$LIVEKIT_CONFIG_TMP"
+  return 0
+}
+
+livekit_validate_version() {
+  local v="$1"
+  if [[ ! "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z]+)*$ ]]; then
+    die "invalid LiveKit version: $v"
+  fi
+}
+
+livekit_platform() {
+  case "$(uname -s)" in
+    Linux) LIVEKIT_OS=linux ;;
+    Darwin) LIVEKIT_OS=darwin ;;
+    *)
+      die "unsupported platform: $(uname -s); use Linux/macOS (WSL is Linux) or set LIVEKIT_SERVER_BIN"
+      ;;
+  esac
+}
+
+livekit_binary_version() {
+  local bin="$1" out
+  [ -x "$bin" ] || return 1
+  out="$("$bin" --version 2>/dev/null)" || return 1
+  printf '%s\n' "$out" | sed -n 's/^livekit-server version //p' | head -n1
+}
+
+livekit_version_ok() {
+  local actual="$1" target="$2"
+  case "$actual" in
+    "$target"|"$target"-*|"$target"+*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+livekit_curl() { curl -fsSL --retry 3 --connect-timeout 10 "$@"; }
+
+livekit_sha256() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
+livekit_shell_var_set() {
+  local name="$1" seen
+  eval "seen=\${$name+set}"
+  [ -n "$seen" ]
+}
+
+livekit_env_file_value() {
+  local name="$1" line
+  [ -f "$ROOT/.env" ] || return 0
+  line="$(grep -E "^[[:space:]]*(export[[:space:]]+)?$name=" "$ROOT/.env" 2>/dev/null | tail -n 1 || true)"
+  [ -n "$line" ] || return 0
+  line="${line#*=}"
+  line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  line="${line%$'\r'}"
+  case "$line" in
+    \"*\") line="${line#\"}"; line="${line%\"}" ;;
+    \'*\') line="${line#\'}"; line="${line%\'}" ;;
+  esac
+  printf '%s' "$line"
+}
+
+livekit_install_linux() {
+  local ver="$1" arch asset base url archive checksums expected actual
+  case "$(uname -m)" in
+    x86_64|amd64) arch=amd64 ;;
+    aarch64|arm64) arch=arm64 ;;
+    armv7l|armv7) arch=armv7 ;;
+    *) die "unsupported Linux architecture: $(uname -m)" ;;
+  esac
+
+  if [ -x "$LIVEKIT_BIN" ] && [ -f "$LIVEKIT_VERSION_FILE" ] && [ "$(cat "$LIVEKIT_VERSION_FILE")" = "$ver" ]; then
+    if actual="$(livekit_binary_version "$LIVEKIT_BIN")" && livekit_version_ok "$actual" "$ver"; then
+      info "LiveKit $ver already installed: $LIVEKIT_BIN"
+      return 0
+    fi
+    warn "installed LiveKit binary failed version check; reinstalling"
+  fi
+
+  command -v curl >/dev/null 2>&1 || die "curl not found (required to download LiveKit)"
+  base="${LIVEKIT_RELEASE_BASE:-https://github.com/livekit/livekit/releases/download}"
+  base="${base%/}"
+  asset="livekit_${ver}_linux_${arch}.tar.gz"
+  url="$base/v${ver}/$asset"
+  archive="$LIVEKIT_TMP_DIR/$asset"
+  checksums="$LIVEKIT_TMP_DIR/checksums.txt"
+  info "Downloading $url"
+  livekit_curl -o "$archive" "$url" || die "failed to download $url"
+  livekit_curl -o "$checksums" "$base/v${ver}/checksums.txt" || die "failed to download checksums.txt"
+  expected="$(awk -v a="$asset" '$2 == a { print $1; exit }' "$checksums")"
+  [ -n "$expected" ] || die "checksum missing for $asset"
+  [ "$(livekit_sha256 "$archive")" = "$expected" ] || die "checksum mismatch for $asset"
+
+  mkdir -p "$LIVEKIT_TMP_DIR/extract"
+  tar -xzf "$archive" -C "$LIVEKIT_TMP_DIR/extract" livekit-server LICENSE \
+    || die "failed to extract $asset"
+  actual="$(livekit_binary_version "$LIVEKIT_TMP_DIR/extract/livekit-server")" \
+    || die "downloaded livekit-server is not executable"
+  livekit_version_ok "$actual" "$ver" || die "downloaded LiveKit version '$actual' does not match $ver"
+
+  mkdir -p "$BIN_DIR"
+  install -m 755 "$LIVEKIT_TMP_DIR/extract/livekit-server" "$LIVEKIT_BIN.new"
+  mv "$LIVEKIT_BIN.new" "$LIVEKIT_BIN"
+  install -m 644 "$LIVEKIT_TMP_DIR/extract/LICENSE" "$BIN_DIR/LICENSE.new"
+  mv "$BIN_DIR/LICENSE.new" "$BIN_DIR/LICENSE"
+  install -m 644 "$checksums" "$BIN_DIR/checksums.txt.new"
+  mv "$BIN_DIR/checksums.txt.new" "$BIN_DIR/checksums.txt"
+  printf '%s\n' "$ver" > "$LIVEKIT_VERSION_FILE.new"
+  chmod 644 "$LIVEKIT_VERSION_FILE.new"
+  mv "$LIVEKIT_VERSION_FILE.new" "$LIVEKIT_VERSION_FILE"
+  info "Installed LiveKit $ver: $LIVEKIT_BIN"
+}
+
+livekit_install_macos() {
+  local ver="$1" src actual brew_prefix
+  if [ -x "$LIVEKIT_BIN" ]; then
+    if actual="$(livekit_binary_version "$LIVEKIT_BIN")"; then
+      if ! livekit_version_ok "$actual" "$ver"; then
+        warn "local LiveKit version $actual differs from requested $ver; keeping existing binary"
+      fi
+      mkdir -p "$BIN_DIR"
+      printf '%s\n' "$actual" > "$LIVEKIT_VERSION_FILE.new"
+      chmod 644 "$LIVEKIT_VERSION_FILE.new"
+      mv "$LIVEKIT_VERSION_FILE.new" "$LIVEKIT_VERSION_FILE"
+      info "LiveKit $actual already installed: $LIVEKIT_BIN"
+      return 0
+    fi
+    warn "local LiveKit binary is not executable; reinstalling"
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    for src in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+      if [ -x "$src" ]; then
+        PATH="$(dirname "$src"):$PATH"
+        export PATH
+        break
+      fi
+    done
+  fi
+  command -v brew >/dev/null 2>&1 || die "Homebrew not found; install Homebrew or set LIVEKIT_SERVER_BIN"
+
+  if ! brew list --versions livekit >/dev/null 2>&1; then
+    info "Installing Homebrew livekit..."
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install livekit || die "brew install livekit failed"
+  fi
+  brew_prefix="$(brew --prefix livekit 2>/dev/null || true)"
+  [ -n "$brew_prefix" ] || die "cannot locate Homebrew livekit prefix"
+  src="$brew_prefix/bin/livekit-server"
+  [ -x "$src" ] || die "Homebrew livekit-server not found: $src"
+  actual="$(livekit_binary_version "$src")" || die "cannot read Homebrew LiveKit version"
+
+  mkdir -p "$BIN_DIR"
+  install -m 755 "$src" "$LIVEKIT_BIN.new"
+  mv "$LIVEKIT_BIN.new" "$LIVEKIT_BIN"
+  printf '%s\n' "$actual" > "$LIVEKIT_VERSION_FILE.new"
+  chmod 644 "$LIVEKIT_VERSION_FILE.new"
+  mv "$LIVEKIT_VERSION_FILE.new" "$LIVEKIT_VERSION_FILE"
+  if ! livekit_version_ok "$actual" "$ver"; then
+    warn "Homebrew LiveKit version $actual differs from requested $ver; recorded actual version"
+  fi
+  info "Installed LiveKit $actual: $LIVEKIT_BIN"
+}
+
+livekit_install_server_bin() {
+  local ver="$1" src="${LIVEKIT_SERVER_BIN:-}" actual
+  [ -n "$src" ] && [ -x "$src" ] || die "LIVEKIT_SERVER_BIN is not executable: $src"
+  actual="$(livekit_binary_version "$src")" || die "cannot read LIVEKIT_SERVER_BIN version"
+  mkdir -p "$BIN_DIR"
+  install -m 755 "$src" "$LIVEKIT_BIN.new"
+  mv "$LIVEKIT_BIN.new" "$LIVEKIT_BIN"
+  printf '%s\n' "$actual" > "$LIVEKIT_VERSION_FILE.new"
+  chmod 644 "$LIVEKIT_VERSION_FILE.new"
+  mv "$LIVEKIT_VERSION_FILE.new" "$LIVEKIT_VERSION_FILE"
+  if ! livekit_version_ok "$actual" "$ver"; then
+    warn "LIVEKIT_SERVER_BIN version $actual differs from requested $ver; recorded actual version"
+  fi
+  info "Installed LiveKit $actual from LIVEKIT_SERVER_BIN: $LIVEKIT_BIN"
+}
+
+livekit_ensure_sample() {
+  local ver="$1" base url tmp
+  if [ -f "$LIVEKIT_SAMPLE" ]; then
+    info "config sample exists: $LIVEKIT_SAMPLE"
+    return 0
+  fi
+  command -v curl >/dev/null 2>&1 || die "curl not found (required to download config-sample.yaml)"
+  base="${LIVEKIT_RAW_BASE:-https://raw.githubusercontent.com/livekit/livekit}"
+  base="${base%/}"
+  url="$base/v${ver}/config-sample.yaml"
+  tmp="$LIVEKIT_TMP_DIR/config-sample.yaml"
+  if ! livekit_curl -o "$tmp" "$url"; then
+    if [ "$ver" != "$LIVEKIT_DEFAULT_VERSION" ]; then
+      warn "config sample for $ver unavailable; trying $LIVEKIT_DEFAULT_VERSION"
+      url="$base/v${LIVEKIT_DEFAULT_VERSION}/config-sample.yaml"
+      livekit_curl -o "$tmp" "$url" || die "failed to download config-sample.yaml"
+    else
+      die "failed to download config-sample.yaml"
+    fi
+  fi
+  [ -s "$tmp" ] && grep -q '^port: 7880' "$tmp" || die "downloaded config-sample.yaml is invalid"
+  mkdir -p "$BIN_DIR"
+  install -m 644 "$tmp" "$LIVEKIT_SAMPLE.new"
+  mv "$LIVEKIT_SAMPLE.new" "$LIVEKIT_SAMPLE"
+  info "Installed config sample: $LIVEKIT_SAMPLE"
+}
+
+livekit_ensure_license() {
+  local ver="$1" base url tmp brew_prefix
+  [ -f "$BIN_DIR/LICENSE" ] && return 0
+  if command -v brew >/dev/null 2>&1; then
+    brew_prefix="$(brew --prefix livekit 2>/dev/null || true)"
+    if [ -n "$brew_prefix" ] && [ -f "$brew_prefix/LICENSE" ]; then
+      install -m 644 "$brew_prefix/LICENSE" "$BIN_DIR/LICENSE.new"
+      mv "$BIN_DIR/LICENSE.new" "$BIN_DIR/LICENSE"
+      return 0
+    fi
+  fi
+  if ! command -v curl >/dev/null 2>&1; then
+    warn "curl not found; skipping LiveKit LICENSE download"
+    return 0
+  fi
+  base="${LIVEKIT_RAW_BASE:-https://raw.githubusercontent.com/livekit/livekit}"
+  base="${base%/}"
+  url="$base/v${ver}/LICENSE"
+  tmp="$LIVEKIT_TMP_DIR/LICENSE"
+  if livekit_curl -o "$tmp" "$url"; then
+    install -m 644 "$tmp" "$BIN_DIR/LICENSE.new"
+    mv "$BIN_DIR/LICENSE.new" "$BIN_DIR/LICENSE"
+  else
+    warn "could not install LiveKit LICENSE; see $url"
+  fi
+}
+
+livekit_generate_keypair() {
+  local out key secret
+  out="$("$LIVEKIT_BIN" generate-keys 2>/dev/null)" || die "livekit-server generate-keys failed"
+  key="$(printf '%s\n' "$out" | sed -n 's/^API Key:[[:space:]]*//p' | head -n1)"
+  secret="$(printf '%s\n' "$out" | sed -n 's/^API Secret:[[:space:]]*//p' | head -n1)"
+  [ -n "$key" ] && [ -n "$secret" ] || die "could not parse key/secret from generate-keys"
+  case "$key" in *[!A-Za-z0-9._-]*) die "generated LiveKit key contains unsupported characters" ;; esac
+  case "$secret" in *[!A-Za-z0-9._-]*) die "generated LiveKit secret contains unsupported characters" ;; esac
+  [ "$key" != "$secret" ] || die "generated LiveKit key and secret are identical"
+  LIVEKIT_KEY="$key"
+  LIVEKIT_SECRET="$secret"
+}
+
+livekit_read_yaml_pair() {
+  local line key secret
+  [ -f "$LIVEKIT_CONFIG" ] || return 1
+  line="$(awk '
+    /^keys:[[:space:]]*$/ { f=1; next }
+    f && /^[[:space:]]*$/ { next }
+    f && /^[[:space:]]*#/ { next }
+    f { print; exit }
+  ' "$LIVEKIT_CONFIG")"
+  [ -n "$line" ] || return 1
+  key="$(printf '%s\n' "$line" | sed -n 's/^[[:space:]]*"\([^"]*\)"[[:space:]]*:[[:space:]]*"\([^"]*\)"[[:space:]]*$/\1/p')"
+  secret="$(printf '%s\n' "$line" | sed -n 's/^[[:space:]]*"\([^"]*\)"[[:space:]]*:[[:space:]]*"\([^"]*\)"[[:space:]]*$/\2/p')"
+  [ -n "$key" ] && [ -n "$secret" ] || return 1
+  LIVEKIT_YAML_KEY="$key"
+  LIVEKIT_YAML_SECRET="$secret"
+}
+
+livekit_check_existing() {
+  local fkey fsec skey ssec
+  info "Existing LiveKit config preserved: $LIVEKIT_CONFIG"
+  if livekit_read_yaml_pair; then
+    fkey="$(livekit_env_file_value LIVACHAT__MEETING__LIVEKIT_KEY)"
+    fsec="$(livekit_env_file_value LIVACHAT__MEETING__LIVEKIT_SECRET)"
+    if [ -z "$fkey" ] || [ -z "$fsec" ]; then
+      warn ".env key/secret is missing; livekit.yaml was not modified"
+    elif [ "$fkey" != "$LIVEKIT_YAML_KEY" ] || [ "$fsec" != "$LIVEKIT_YAML_SECRET" ]; then
+      warn ".env key/secret does not match livekit.yaml; not modifying .env/livekit.yaml"
+    fi
+    if livekit_shell_var_set LIVACHAT__MEETING__LIVEKIT_KEY; then
+      skey="$(env_effective LIVACHAT__MEETING__LIVEKIT_KEY)"
+      [ "$skey" = "$LIVEKIT_YAML_KEY" ] || warn "shell LIVEKIT_KEY differs from livekit.yaml; not modifying .env/livekit.yaml"
+    fi
+    if livekit_shell_var_set LIVACHAT__MEETING__LIVEKIT_SECRET; then
+      ssec="$(env_effective LIVACHAT__MEETING__LIVEKIT_SECRET)"
+      [ "$ssec" = "$LIVEKIT_YAML_SECRET" ] || warn "shell LIVEKIT_SECRET differs from livekit.yaml; not modifying .env/livekit.yaml"
+    fi
+  else
+    warn "could not parse keys from livekit.yaml; not modifying .env/livekit.yaml"
+  fi
+  [ -f "$LIVEKIT_SAMPLE" ] || warn "$LIVEKIT_SAMPLE is missing; fetch it manually or delete livekit.yaml and rerun (regenerates keys)"
+  [ -f "$BIN_DIR/LICENSE" ] || warn "$BIN_DIR/LICENSE is missing; fetch it manually or delete livekit.yaml and rerun (regenerates keys)"
+}
+
+livekit_first_install() {
+  local had_pair=0 env_created=0 backup ts old_umask
+  old_umask="$(umask)"
+  umask 077
+  if [ -L "$ROOT/.env" ]; then
+    die "$ROOT/.env is a symlink; resolve it manually before running install --livekit"
+  fi
+  if [ -f "$ROOT/.env" ]; then
+    grep -Eq '^[[:space:]]*(export[[:space:]]+)?LIVACHAT__MEETING__LIVEKIT_(KEY|SECRET)[[:space:]]*=' "$ROOT/.env" \
+      && had_pair=1 || true
+  else
+    if [ -f "$ROOT/.env.example" ]; then
+      cp "$ROOT/.env.example" "$ROOT/.env"
+    else
+      : > "$ROOT/.env"
+    fi
+    chmod 600 "$ROOT/.env"
+    env_created=1
+  fi
+
+  mkdir -p "$BIN_DIR"
+  LIVEKIT_CONFIG_TMP="$(mktemp "$BIN_DIR/.livekit.yaml.XXXXXX")"
+  chmod 600 "$LIVEKIT_CONFIG_TMP"
+  cat > "$LIVEKIT_CONFIG_TMP" <<EOF
+# Generated by ./livachat.sh install --livekit.
+# Single-node only: Redis / cluster mode is intentionally not supported.
+# Keep the key pair in sync with repo-root .env:
+#   LIVACHAT__MEETING__LIVEKIT_KEY / LIVACHAT__MEETING__LIVEKIT_SECRET
+port: 7880
+
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 60000
+  use_external_ip: true
+
+room:
+  empty_timeout: 300
+  departure_timeout: 300
+  max_participants: 100
+
+keys:
+  "$LIVEKIT_KEY": "$LIVEKIT_SECRET"
+
+logging:
+  level: info
+EOF
+
+  ts="$(date -u +%Y%m%dT%H%M%SZ)"
+  backup="$ROOT/.env.bak.$ts"
+  cp "$ROOT/.env" "$backup"
+  chmod 600 "$backup"
+
+  LIVEKIT_ENV_TMP="$(mktemp "$ROOT/.env.tmp.XXXXXX")"
+  chmod 600 "$LIVEKIT_ENV_TMP"
+  awk '
+    /^[[:space:]]*(export[[:space:]]+)?LIVACHAT__MEETING__LIVEKIT_(KEY|SECRET)[[:space:]]*=/ { next }
+    { sub(/\r$/, ""); print }
+  ' "$ROOT/.env" > "$LIVEKIT_ENV_TMP"
+  {
+    printf '# Meeting / LiveKit key pair (generated by livachat.sh install --livekit)\n'
+    printf 'LIVACHAT__MEETING__LIVEKIT_KEY=%s\n' "$LIVEKIT_KEY"
+    printf 'LIVACHAT__MEETING__LIVEKIT_SECRET=%s\n' "$LIVEKIT_SECRET"
+  } >> "$LIVEKIT_ENV_TMP"
+  mv "$LIVEKIT_ENV_TMP" "$ROOT/.env"
+  LIVEKIT_ENV_TMP=""
+
+  if [ -e "$LIVEKIT_CONFIG" ]; then
+    if [ "$env_created" -eq 1 ]; then
+      rm -f "$ROOT/.env"
+    else
+      cp "$backup" "$ROOT/.env"
+      chmod 600 "$ROOT/.env"
+    fi
+    die "$LIVEKIT_CONFIG appeared concurrently; aborting without overwriting it"
+  fi
+  if ! mv "$LIVEKIT_CONFIG_TMP" "$LIVEKIT_CONFIG"; then
+    if [ "$env_created" -eq 1 ]; then
+      rm -f "$ROOT/.env"
+    else
+      cp "$backup" "$ROOT/.env"
+      chmod 600 "$ROOT/.env"
+    fi
+    die "failed to install $LIVEKIT_CONFIG"
+  fi
+  LIVEKIT_CONFIG_TMP=""
+
+  info "LiveKit key pair generated: $LIVEKIT_CONFIG and $ROOT/.env"
+  if [ "$had_pair" -eq 1 ]; then
+    info "Previous .env key/secret replaced (backup: $backup)"
+  fi
+  info "LIVACHAT__MEETING__LIVEKIT_SERVER was not modified; edit .env and set it to the local wss:// URL."
+  umask "$old_umask"
+}
+
+livekit_dry_run() {
+  local ver="$1" first=1
+  livekit_validate_version "$ver"
+  if [ -n "${LIVEKIT_SERVER_BIN:-}" ]; then
+    LIVEKIT_OS="server-bin"
+  else
+    livekit_platform
+  fi
+  [ -f "$LIVEKIT_CONFIG" ] && first=0
+  info "Would install LiveKit $ver on $LIVEKIT_OS."
+  if [ -n "${LIVEKIT_SERVER_BIN:-}" ]; then
+    info "Would copy LIVEKIT_SERVER_BIN=$LIVEKIT_SERVER_BIN."
+  elif [ "$LIVEKIT_OS" = "linux" ]; then
+    info "Would download/verify the release tarball if needed."
+  else
+    info "Would use Homebrew if no local binary exists."
+  fi
+  if [ "$first" -eq 1 ]; then
+    info "First install: would generate a key pair, update .env key/secret, and create livekit.yaml."
+    if livekit_shell_var_set LIVACHAT__MEETING__LIVEKIT_KEY || livekit_shell_var_set LIVACHAT__MEETING__LIVEKIT_SECRET; then
+      info "Would abort: shell LIVEKIT_KEY/SECRET is set."
+    fi
+  else
+    info "Existing livekit.yaml: would not generate keys or modify .env/livekit.yaml."
+  fi
+  info "LIVACHAT__MEETING__LIVEKIT_SERVER would not be modified."
+}
+
+livekit_install() {
+  local ver="$1" actual
+  livekit_validate_version "$ver"
+  if [ -n "${LIVEKIT_SERVER_BIN:-}" ]; then
+    LIVEKIT_OS="server-bin"
+  else
+    livekit_platform
+  fi
+
+  if [ ! -f "$LIVEKIT_CONFIG" ]; then
+    if [ -L "$ROOT/.env" ]; then
+      die "$ROOT/.env is a symlink; resolve it manually before running install --livekit"
+    fi
+    if livekit_shell_var_set LIVACHAT__MEETING__LIVEKIT_KEY || livekit_shell_var_set LIVACHAT__MEETING__LIVEKIT_SECRET; then
+      die "shell has LIVACHAT__MEETING__LIVEKIT_KEY/SECRET set; unset before first install"
+    fi
+  fi
+
+  mkdir -p "$BIN_DIR"
+  chmod 755 "$BIN_DIR"
+  LIVEKIT_TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/livachat-livekit.XXXXXX")"
+  trap 'livekit_cleanup' EXIT
+  trap 'livekit_cleanup; exit 130' INT
+  trap 'livekit_cleanup; exit 143' TERM
+
+  if [ -n "${LIVEKIT_SERVER_BIN:-}" ]; then
+    livekit_install_server_bin "$ver"
+  elif [ "$LIVEKIT_OS" = "linux" ]; then
+    livekit_install_linux "$ver"
+  else
+    livekit_install_macos "$ver"
+  fi
+
+  actual="$(cat "$LIVEKIT_VERSION_FILE" 2>/dev/null || true)"
+  [ -n "$actual" ] || actual="$ver"
+
+  if [ -f "$LIVEKIT_CONFIG" ]; then
+    livekit_check_existing
+  else
+    livekit_ensure_sample "$actual"
+    livekit_ensure_license "$actual"
+    livekit_generate_keypair
+    livekit_first_install
+  fi
+
+  livekit_cleanup
+  trap - EXIT INT TERM
 }
 
 cmd_start() {
@@ -518,7 +1067,7 @@ cmd_status() {
 }
 
 case "${1:-}" in
-  install) "cmd_install" ;;
+  install) shift; cmd_install "$@" ;;
   start)   "cmd_start" ;;
   stop)    "cmd_stop" ;;
   status)  "cmd_status" ;;
