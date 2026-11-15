@@ -22,22 +22,22 @@ describe('formatMeetingError', () => {
     ).toBe(messages.meetingServiceUnavailable)
   })
 
-  it('formats opens_at/expires_at timestamps', () => {
+  it('omits opens_at/expires_at details from user-facing messages', () => {
     const started = formatMeetingError(
       new TokenEndpointError('meeting_not_started', 'x', 403, {
         opens_at_ms: Date.UTC(2030, 0, 1, 10, 0),
       }),
     )
-    expect(started).toContain(messages.meetingNotStarted)
-    expect(started).toContain('opens ')
+    expect(started).toBe(messages.meetingNotStarted)
+    expect(started).not.toContain('(')
 
     const expired = formatMeetingError(
       new TokenEndpointError('meeting_expired', 'x', 410, {
         expires_at_ms: Date.UTC(2030, 0, 1, 11, 0),
       }),
     )
-    expect(expired).toContain(messages.meetingExpired)
-    expect(expired).toContain('ended ')
+    expect(expired).toBe(messages.meetingExpired)
+    expect(expired).not.toContain('(')
   })
 
   it('falls back to the error message for unknown codes/non-API errors', () => {

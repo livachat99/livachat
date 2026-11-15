@@ -529,7 +529,7 @@ export function CameraSettings({
           ) : null}
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
-              className={`lk-button ${styles.backgroundOption}`}
+              className={`lk-button ${styles.backgroundOption} ${styles.thumbnailOption}`}
               type="button"
               aria-pressed={backgroundType === 'none'}
               onClick={() => selectBackground('none')}

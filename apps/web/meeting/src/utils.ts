@@ -18,31 +18,15 @@ export function errorMessage(error: unknown): string {
   return 'Unknown error'
 }
 
-function formatTime(value: unknown): string | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value))
-}
-
 export function formatMeetingError(error: unknown): string {
   if (!(error instanceof TokenEndpointError)) return errorMessage(error)
   switch (error.code) {
     case 'meeting_not_found':
       return messages.meetingNotFound
-    case 'meeting_not_started': {
-      const time = formatTime(error.details.opens_at_ms)
-      return time
-        ? `${messages.meetingNotStarted} (opens ${time})`
-        : messages.meetingNotStarted
-    }
-    case 'meeting_expired': {
-      const time = formatTime(error.details.expires_at_ms)
-      return time
-        ? `${messages.meetingExpired} (ended ${time})`
-        : messages.meetingExpired
-    }
+    case 'meeting_not_started':
+      return messages.meetingNotStarted
+    case 'meeting_expired':
+      return messages.meetingExpired
     case 'rate_limited':
       return messages.meetingRateLimited
     case 'meeting_disabled':

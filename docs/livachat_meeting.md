@@ -925,14 +925,14 @@ token = (
 | HTTP | code | 场景 | Web 文案（建议） |
 |---|---|---|---|
 | 400 | `bad_request` | JSON/字段/会议号格式非法 | 会议号或姓名格式不正确 |
-| 403 | `meeting_not_started` | 早于开始前 30 分钟 | 会议尚未开放，`<opens_at>` 后可入会 |
+| 403 | `meeting_not_started` | 早于开始前 30 分钟 | 会议尚未开放 |
 | 404 | `meeting_not_found` | 会议号不存在/已删除 | 会议不存在，请检查会议号 |
 | 410 | `meeting_expired` | 晚于结束后 4 小时 | 会议已结束 |
 | 429 | `rate_limited` | 每 IP 限流 | 尝试过于频繁，请稍后再试 |
 | 502 | `upstream_unavailable` | lvdata 不可达/异常 | 会议服务暂时不可用 |
 | 503 | `meeting_disabled` | 功能未启用/配置缺失 | 会议功能未启用 |
 
-没有 `meeting_cancelled`：硬删除后就是 `meeting_not_found`。`meeting_not_started`/`meeting_expired` 的 details 用 epoch ms；Web 用浏览器时区格式化。BFF 不猜测设备时区。
+没有 `meeting_cancelled`：硬删除后就是 `meeting_not_found`。`meeting_not_started`/`meeting_expired` 的 details 仍由 BFF 返回（epoch ms），供调试/兼容；当前 Web UI 只显示简短文案，不再展示 `opens_at_ms`/`expires_at_ms`（2026-11-15）。
 
 ### 6.6 公开端点的安全设计
 
@@ -1208,7 +1208,7 @@ export function isValidMeetingNumber(input: string): boolean {
 | code | 文案 |
 |---|---|
 | `meeting_not_found` | 会议不存在，请检查会议号 |
-| `meeting_not_started` | 会议尚未开放；用 `opens_at_ms` 格式化本地时间 |
+| `meeting_not_started` | 会议尚未开放；不展示 `opens_at_ms` |
 | `meeting_expired` | 会议已结束 |
 | `rate_limited` | 尝试过于频繁，请稍后重试 |
 | `meeting_disabled` | 会议功能未启用 |
@@ -1247,7 +1247,7 @@ server: {
 | 姓名存储 | 合法值读取；空/超长/控制字符/`localStorage` 异常 → 空；保存时 trim |
 | Home | 无随机生成按钮；空/非 8 位不能提交；server 模式输入 8 位后可提交；空输入无 placeholder |
 | 焦点 | 粗指针设备不 autofocus；桌面聚焦第一个空字段 |
-| UI | 错误码到文案映射；`opens_at_ms` 本地化 |
+| UI | 错误码到简短文案映射；不展示 `opens_at_ms`/`expires_at_ms` |
 | 构建 | `ALLOW_CLIENT_TOKEN` 防护仍生效；CSS target 不变 |
 
 ---
@@ -1506,7 +1506,7 @@ ai_text → App
 | 场景 | lvdata | BFF | Web 表现 |
 |---|---|---|---|
 | 会议不存在/已硬删除 | REST 404 | `meeting_not_found` 404 | “会议不存在” |
-| 早于开始-30m | REST 200 | `meeting_not_started` 403 | 显示开放时间 |
+| 早于开始-30m | REST 200 | `meeting_not_started` 403 | “会议尚未开放” |
 | 晚于结束+4h | REST 200 | `meeting_expired` 410 | “会议已结束” |
 | lvdata 不可达 | 连接失败 | `upstream_unavailable` 502 | “会议服务暂不可用” |
 | 会议功能关闭 | — | `meeting_disabled` 503 | “会议功能未启用” |

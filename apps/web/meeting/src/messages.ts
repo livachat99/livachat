@@ -12,7 +12,6 @@ export const messages = {
   joinMeeting: 'Join meeting',
   joining: 'Joining...',
   back: 'Back',
-  retry: 'Retry',
   leave: 'Leave',
   cancel: 'Cancel',
   leaveConfirmTitle: 'Leave the meeting?',
@@ -25,7 +24,7 @@ export const messages = {
   duplicateIdentity: 'You joined from another tab or device.',
   participantRemoved: 'You were removed from the meeting.',
   roomDeleted: 'The meeting has ended.',
-  connectionLost: 'Connection lost. Check your network and retry.',
+  connectionLost: 'Connection lost. Check your network and join again.',
   mediaDeviceError: 'Media device error',
   backgroundEffectError: 'Background effect failed',
   backgroundContextLost:

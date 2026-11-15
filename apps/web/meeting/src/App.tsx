@@ -25,7 +25,7 @@ type Stage =
   | { kind: 'home'; roomName?: string; participantName?: string }
   | { kind: 'prejoin'; roomName: string; participantName: string }
   | { kind: 'meeting'; details: ConnectionDetails; choices: LocalUserChoices }
-  | { kind: 'error'; message: string; retry: JoinParams }
+  | { kind: 'error'; message: string; join: JoinParams }
 
 const DEFAULT_CHOICES: LocalUserChoices = {
   username: '',
@@ -109,7 +109,7 @@ export default function App() {
       setStage({
         kind: 'error',
         message: formatMeetingError(error),
-        retry: params,
+        join: params,
       })
     }
   }
@@ -175,8 +175,8 @@ export default function App() {
               participantName: stage.details.participantName,
             })
           }}
-          onError={(message, retry) =>
-            setStage({ kind: 'error', message, retry })
+          onError={(message, join) =>
+            setStage({ kind: 'error', message, join })
           }
         />
       ) : null}
@@ -184,12 +184,11 @@ export default function App() {
       {stage.kind === 'error' ? (
         <ErrorView
           message={stage.message}
-          onRetry={() => void enterMeeting(stage.retry)}
           onBack={() =>
             setStage({
               kind: 'home',
-              roomName: stage.retry.roomName,
-              participantName: stage.retry.participantName,
+              roomName: stage.join.roomName,
+              participantName: stage.join.participantName,
             })
           }
         />

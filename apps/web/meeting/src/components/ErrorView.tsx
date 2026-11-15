@@ -1,10 +1,8 @@
-import * as React from 'react'
 import { messages } from '../messages'
 import styles from '../styles/home.module.css'
 
 export type ErrorViewProps = {
   message: string
-  onRetry: () => void | Promise<void>
   onBack: () => void
 }
 
@@ -22,43 +20,24 @@ function sanitizeMessage(message: string): string {
     : withoutSecret
 }
 
-export function ErrorView({ message, onRetry, onBack }: ErrorViewProps) {
-  const [retrying, setRetrying] = React.useState(false)
-
-  const handleRetry = async () => {
-    if (retrying) return
-    setRetrying(true)
-    try {
-      await onRetry()
-    } finally {
-      setRetrying(false)
-    }
-  }
-
+export function ErrorView({ message, onBack }: ErrorViewProps) {
   return (
     <main className={`${styles.page} ${styles.light}`}>
       <section className={styles.card} role="alert">
-        <h1 className={styles.title}>{messages.couldNotJoin}</h1>
-        <p className={styles.error}>{sanitizeMessage(message)}</p>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            type="button"
-            className="lk-button"
-            style={{ flex: 1 }}
-            onClick={() => void handleRetry()}
-            disabled={retrying}
-          >
-            {retrying ? messages.joining : messages.retry}
-          </button>
-          <button
-            type="button"
-            className="lk-button"
-            onClick={onBack}
-            disabled={retrying}
-          >
-            {messages.back}
-          </button>
-        </div>
+        <h1 className={styles.title} style={{ textAlign: 'center' }}>
+          {messages.couldNotJoin}
+        </h1>
+        <p className={styles.error} style={{ textAlign: 'center' }}>
+          {sanitizeMessage(message)}
+        </p>
+        <button
+          type="button"
+          className="lk-button"
+          style={{ width: '100%' }}
+          onClick={onBack}
+        >
+          {messages.back}
+        </button>
       </section>
     </main>
   )

@@ -799,7 +799,7 @@ export function makeIdentity(): string {
 ```
 
 - `identity` 只用于唯一性，**不携带显示名**；显示名只放 `name` claim，支持中文/emoji。这样 identity 进入服务端日志时不含 PII，也符合 §3.13.2 的生产目标。
-- 每次签发 token 生成新的 identity（页面内通常只签发一次；Retry 会生成新身份，旧连接已随组件卸载断开）；刷新/新 tab 都是新参与者，不会互相顶掉。
+- 每次签发 token 生成新的 identity（页面内通常只签发一次；返回 Home 后重新入会会生成新身份，旧连接已随组件卸载断开）；刷新/新 tab 都是新参与者，不会互相顶掉。
 - 不再使用 `sessionStorage`/cookie 保存后缀：省掉“复制标签页拿到相同后缀”“同名同 tab 刷新”这类边界，也不需要为 `Storage` 写测试。
 - `ClientTokenProvider` 在签发前对 `participantName` 做 `trim()`；空串回退 `Guest`；`name`、返回的 `participantName` 用同一个值，避免 PreJoin 编辑后出现前导/尾随空格或三处不一致。
 - 如果未来需要“同一用户多端合并/踢旧连接”，应由服务端下发稳定 user id，而不是用显示名推导 identity。
@@ -940,7 +940,7 @@ function randomRoomId(): string {
                  └──────┬───────────────┬───────┘
                         │ leave         │ error
                         ▼               ▼
-                      Home        Error screen -> Home/Retry
+                      Home        Error screen -> Home
 ```
 
 ```ts
@@ -955,12 +955,12 @@ type Stage =
   | { kind: 'home'; roomName?: string; participantName?: string }
   | { kind: 'prejoin'; roomName: string; participantName: string }
   | { kind: 'meeting'; details: ConnectionDetails; choices: LocalUserChoices }
-  | { kind: 'error'; message: string; retry: JoinParams }
+  | { kind: 'error'; message: string; join: JoinParams }
 ```
 
 - 默认 `showPreJoin=false` 时，Home 的 `onJoin` 直接调用 provider 生成 details，并把默认 choices 放进 meeting 阶段，跳过 PreJoin。
 - 离开/断线 -> `setStage({ kind: 'home' })`，并 toast「You left the meeting」。
-- 连接失败 -> `MeetingRoom` 调 `onError(message, retry)`，进入 `error` 阶段；ErrorView 的 Retry 用 `retry.roomName/participantName` **重新签发 token**，成功后带原 `retry.choices` 回到 meeting；Back 回 Home。这样 token 过期/server 临时不可达都能重试。
+- 连接失败 -> `MeetingRoom` 调 `onError(message, join)`，进入 `error` 阶段；ErrorView 只显示简短错误摘要和 Back，Back 用 `join.roomName/participantName` 回填 Home；用户可再次 Join（会重新签发 token）。
 - 不引入路由；刷新页面 = 离开会议，回到 Home（token 不持久化）。
 
 #### 3.8.2 `Room` options（默认 vp8 + simulcast）
@@ -1105,7 +1105,7 @@ function disconnectMessage(reason?: DisconnectReason): string {
     case DisconnectReason.ROOM_DELETED:
       return 'The meeting has ended.'
     default:
-      return 'Connection lost. Check your network and retry.'
+      return 'Connection lost. Check your network and join again.'
   }
 }
 ```
@@ -1121,9 +1121,9 @@ function disconnectMessage(reason?: DisconnectReason): string {
 - `onLeave` / `onError` 在父组件里应稳定（`useCallback`），或在本组件用 ref 持有；否则它们每次渲染都变，effect 依赖会让 Room 重连。本节骨架用 ref 演示。
 - effect 内维护 `let cancelled = false`；cleanup 置 true。`room.connect().then(...)` 里先检查 `cancelled`，避免组件卸载后仍去 `setCameraEnabled` / 调回调。
 - 用 `let hasConnected = false` + `RoomEvent.Connected` 区分「连接成功后离开」与「connect 失败时 LiveKit 也触发的 Disconnected」；后者交给 `onError`，避免错误页被 Home 覆盖。
-- `RoomEvent.Disconnected` 的 `DisconnectReason` 决定去向：`CLIENT_INITIATED` → Home（默认文案）；`DUPLICATE_IDENTITY` / `PARTICIPANT_REMOVED` / `ROOM_DELETED` → Home + 对应原因；其他（网络不可恢复等）→ Error + Retry。不要把所有情况都显示成 “You left the meeting”。
+- `RoomEvent.Disconnected` 的 `DisconnectReason` 决定去向：`CLIENT_INITIATED` → Home（默认文案）；`DUPLICATE_IDENTITY` / `PARTICIPANT_REMOVED` / `ROOM_DELETED` → Home + 对应原因；其他（网络不可恢复等）→ Error（仅 Back，无 Retry）。不要把所有情况都显示成 “You left the meeting”。
 - `onLeave(message?)` 由 App 统一 toast（`message ?? 'You left the meeting'`）；MeetingRoom 只负责传原因，避免双 toast。
-- 连接失败 -> `onError(message, { roomName, participantName, choices })` -> App 进入 `error` 阶段；Retry 重新签发 token，Back 回 Home。`ROOM_DELETED` 不走 Retry（重试会重新创建空房），直接回 Home。
+- 连接失败 -> `onError(message, { roomName, participantName, choices })` -> App 进入 `error` 阶段；ErrorView 只提供 Back 回 Home，用户可再次 Join。`ROOM_DELETED` 直接回 Home。
 - 会中组合里加 `<ConnectionStateToast />`（`components-react` 已导出），覆盖 `Reconnecting`/`Reconnected` 的可见反馈，不必自己写横幅。
 - App 渲染 `<MeetingRoom key={details.participantToken} ... />`，保证 token 变化时强制重建 Room。
 
@@ -1369,11 +1369,11 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 | 场景 | 行为 |
 |------|------|
 | 主动 Leave（控制栏） | 点击先弹确认对话框；`Cancel` / `Esc` / 点遮罩关闭且留在会议；确认后 `room.disconnect()` -> `Disconnected(CLIENT_INITIATED)` -> 回 Home，toast “You left the meeting” |
-| 网络断线 | `ConnectionStateToast` 显示 `Reconnecting`；恢复后显示 `Reconnected`；不可恢复时 `Disconnected` -> 错误页 + Retry |
+| 网络断线 | `ConnectionStateToast` 显示 `Reconnecting`；恢复后显示 `Reconnected`；不可恢复时 `Disconnected` -> 错误页（仅 Back） |
 | 重复 identity（同一 token 被重复使用） | `DUPLICATE_IDENTITY` -> 回 Home + “You joined from another tab or device.” |
 | 被主持人移除 | `PARTICIPANT_REMOVED` -> 回 Home + “You were removed from the meeting.” |
-| 房间被删除/结束 | `ROOM_DELETED` -> 回 Home + “The meeting has ended.”；**不要** Retry（重试会重新创建空房） |
-| token 过期/无效 | 连接失败 -> 错误页，提供 Retry（重新签发）与 Back |
+| 房间被删除/结束 | `ROOM_DELETED` -> 回 Home + “The meeting has ended.” |
+| token 过期/无效 | 连接失败 -> 错误页（仅 Back），回 Home 后可再次 Join 重新签发 |
 | 摄像头/麦克风失败 | toast；会议继续（可看/听）；`NotReadableError` 自动延迟重试一次；可在 SettingsMenu 重试 |
 | iOS/iPadOS 屏幕共享 | iOS/iPadOS **26 及以前** Safari 不支持 `getDisplayMedia`，应隐藏控制栏的共享按钮；**iOS/iPadOS 27+（Safari 27，2026-09-14 发布）已支持**。当前实现仍按 `is-ios` UA 隐藏，属于 P2 增强：移除 UA 判断、改为能力检测（LiveKit `supportsScreenSharing()` 已检查 `navigator.mediaDevices.getDisplayMedia`），并实机验证 |
 | 扬声器选择 | `setSinkId` 在 Safari/iOS 支持不全：`MediaDeviceMenu kind="audiooutput"` 可能无效，浏览器矩阵里标注 |
@@ -1384,7 +1384,7 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 | 房间为空/别人都走了 | LiveKit `empty_timeout` 后关房；最后一人离开后回 Home |
 
 - **ErrorView 脱敏**：只显示简短错误摘要（如 `Could not connect` + 状态码/原因），不要渲染完整 token/JWT、`apiSecret` 或带敏感查询参数的 URL；详细堆栈只进 console（内网测试）。
-- **ErrorView Retry**：Retry 期间 disable 按钮（loading），避免并发签发/连接；Back 直接回 Home。
+- **ErrorView**：只显示错误摘要和 Back；不提供 Retry，用户回 Home 后可再次 Join。
 - **toast 归属**：`Disconnected` 的原因文案由 App 的 `onLeave(message?)` 统一 toast；MeetingRoom 不重复 toast，避免双提示。
 
 > **iOS/iPadOS 27+ 网页屏幕共享（2026-11-11 调研，P2 增强项）**
@@ -1947,9 +1947,9 @@ Permissions-Policy: camera=(self), microphone=(self), display-capture=(self)
 - 拒绝摄像头权限 -> 仍可音频入会；拒绝麦克风 -> 仍可观看。
 - 刷新 -> 回 Home；不残留 token。
 - 错误 meeting number 字符 -> 表单错误；大小写归一化生效。
-- 错误 key/server -> 连接失败错误页 + Retry。
+- 错误 key/server -> 连接失败错误页（仅 Back）。
 - 同一 identity 被顶掉（两个 tab 使用同一 token 或手工造 token）-> 收到 “You joined from another tab or device.”，不是 “You left the meeting”。
-- 断网/恢复 -> 看到 `Reconnecting`/`Reconnected`；不可恢复时进错误页可 Retry。
+- 断网/恢复 -> 看到 `Reconnecting`/`Reconnected`；不可恢复时进错误页（仅 Back）。
 - 只有自己入会 30s -> 出现空房提示。
 - 手机 Safari/Chrome：布局、安全区、权限弹窗、音频播放；iOS 26 及以前不显示屏幕共享按钮；iOS 27+ 的共享能力属于 P2，启用后需单独验收。
 - 构建闸门：`public/config.json` 含 client secret 时 `npm run build` 失败，`npm run build:demo` 成功。
@@ -2200,7 +2200,7 @@ type Stage =
   | { kind: 'home'; roomName?: string; participantName?: string }
   | { kind: 'prejoin'; roomName: string; participantName: string }
   | { kind: 'meeting'; details: ConnectionDetails; choices: LocalUserChoices }
-  | { kind: 'error'; message: string; retry: JoinParams }
+  | { kind: 'error'; message: string; join: JoinParams }
 
 const DEFAULT_CHOICES: LocalUserChoices = {
   username: '',
@@ -2243,7 +2243,7 @@ export default function App() {
       setStage({
         kind: 'error',
         message: (err as Error).message,
-        retry: params,
+        join: params,
       })
     }
   }
@@ -2304,18 +2304,17 @@ export default function App() {
               participantName: stage.details.participantName,
             })
           }}
-          onError={(message, retry) => setStage({ kind: 'error', message, retry })}
+          onError={(message, join) => setStage({ kind: 'error', message, join })}
         />
       )}
       {stage.kind === 'error' && (
         <ErrorView
           message={stage.message}
-          onRetry={() => void enterMeeting(stage.retry)}
           onBack={() =>
             setStage({
               kind: 'home',
-              roomName: stage.retry.roomName,
-              participantName: stage.retry.participantName,
+              roomName: stage.join.roomName,
+              participantName: stage.join.participantName,
             })
           }
         />
@@ -2332,9 +2331,9 @@ export default function App() {
 要点回顾：
 
 - `room = useMemo(() => new Room(roomOptionsFrom(config.videoCodec, choices)), [])`；组件每次入会重新挂载。
-- `onLeave(message?)` / `onError(message, retry)` 用 ref 固定，避免 effect 重跑导致重连。
+- `onLeave(message?)` / `onError(message, join)` 用 ref 固定，避免 effect 重跑导致重连。
 - 会中组合 `<KeyboardShortcuts /> + <VideoConference ... /> + <DebugMode /> + <RecordingIndicator /> + <ConnectionStateToast />`；`SettingsComponent` 由 `config.enableSettingsMenu` 控制，`DebugMode` 由 `config.showDebugPanel` 控制。
-- 连接失败才进 `error` 阶段；单设备失败只 toast；`ROOM_DELETED`/`PARTICIPANT_REMOVED`/`DUPLICATE_IDENTITY` 回 Home，不 Retry。
+- 连接失败才进 `error` 阶段；单设备失败只 toast；ErrorView 仅 Back；`ROOM_DELETED`/`PARTICIPANT_REMOVED`/`DUPLICATE_IDENTITY` 回 Home。
 
 ### 4.3 版本来源
 

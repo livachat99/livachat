@@ -50,7 +50,7 @@
 - [x] `src/components/Home.tsx`：会议号 + 用户名、随机号、校验、IME、loading、默认值回填
 - [x] `src/components/PreJoinStage.tsx`：PreJoin（`persistUserChoices=false`）、Back、joining state、错误处理
 - [x] `src/components/ConfigError.tsx`、`Loading.tsx`
-- [x] `src/components/ErrorView.tsx`：Retry/Back、脱敏、loading
+- [x] `src/components/ErrorView.tsx`：Back、脱敏、简洁错误摘要
 - [x] `src/components/MeetingRoom.tsx`：
   - Room options（默认 vp8 + simulcast；vp9/av1 走 SVC）
   - `RoomEvent.Connected` / `Disconnected`(reason) / `MediaDevicesError`
@@ -77,7 +77,7 @@
   - PreJoin、Back 回填
   - 两个 browser context 通过 demo server 入同一房间，双方参与者 tile 可见
   - Leave -> Home + toast + 回填
-  - 错误 server -> ErrorView + Retry/Back
+  - 错误 server -> ErrorView + Back
   - Settings 打开/关闭，camera/mic/speaker/背景效果 UI 可见
   - DebugMode Shift+D 显示 room/permissions/identity
   - 空房 30s hint 显示
@@ -128,7 +128,7 @@
 - [ ] 拒绝摄像头 -> 仍可音频入会；拒绝麦克风 -> 仍可观看
 - [x] 刷新 -> 回 Home；`window.__lk_room` 清空、video 元素归零、媒体释放
 - [x] 非法会议号/用户名 -> 表单错误；大小写归一化
-- [x] 错误 key/server -> 错误页 + Retry/Back（用不可达 WSS 实测）
+- [x] 错误 key/server -> 错误页 + Back（用不可达 WSS 实测）
 - [x] 重连：`room.simulateScenario('signal-reconnect')` 与 `'full-reconnect'` 后 state 回到 connected，本地 camera/mic 与远端订阅保持
 - [x] 只有自己 30s -> 空房提示
 - [ ] 手机 Safari/Chrome：布局、安全区、权限、音频播放；iOS 26 及以前无屏幕共享按钮，iOS 27+ 的共享启用与实机验证见 §4.5

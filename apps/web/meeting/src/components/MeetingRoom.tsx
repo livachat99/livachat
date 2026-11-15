@@ -33,7 +33,7 @@ export type MeetingRoomProps = {
   details: ConnectionDetails
   choices: LocalUserChoices
   onLeave: (message?: string) => void
-  onError: (message: string, retry: JoinParams) => void
+  onError: (message: string, join: JoinParams) => void
 }
 
 function roomOptionsFrom(
