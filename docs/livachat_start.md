@@ -1,9 +1,12 @@
 # LivaChat 本地服务管理脚本（livachat.sh）— 分析与设计
 
-> 状态：设计定稿 v1.3（2026-10-14：运行地址显示改取本机 LAN IP（无则回退 127.0.0.1）——
-> 仅显示层，探测仍走 127.0.0.1；§3.5/§3.7）。v1.2（2026-10-12：决议已回填 §7；含同日 review
-> 修订、test 环境改造 §3.0、首次生成端口自动避让、start 预检细化（环境变量 + ffmpeg/libopus））。
-> 验证进度见 §5。
+> 状态：设计定稿 v1.6（2026-11-16：§3.5 显示地址跟随 `server.host`；§3.8 SSL-aware health URL
+> 与 start 环境变量存在性预检已实施，CLI 测试见 `tests/start/livachat_start_test.sh`；结果见 §5）。
+> v1.5（2026-11-16：§3.8 实施）。v1.4（2026-11-16：计划让 health/status URL 的 scheme 跟随
+> `server.ssl.enabled`）。v1.3（2026-10-14：运行地址显示改取本机 LAN IP（无则回退 127.0.0.1）——
+> 仅显示层，探测仍走 127.0.0.1；§3.5/§3.7）。v1.2
+> （2026-10-12：决议已回填 §7；含同日 review 修订、test 环境改造 §3.0、首次生成端口自动避让、
+> start 预检细化（环境变量 + ffmpeg/libopus））。验证进度见 §5。
 > **hermes 不安装、不配置**（用户明示）；本脚本不读写 `~/.hermes/` 任何内容。
 
 ## 1. 背景与目标
@@ -13,7 +16,7 @@
 
 | 服务 | 进程 | 端点 |
 |------|------|------|
-| livachat-server | `.venv/bin/livachat-server`（console script `app.main:main`） | https://localhost:8080 |
+| livachat-server | `.venv/bin/livachat-server`（console script `app.main:main`） | `https://localhost:8080`（scheme 跟随 `server.ssl.enabled`，见 §3.8） |
 | lvdata-mcp | `.venv/bin/lvdata-mcp serve` | http://127.0.0.1:8090 |
 
 4 个子命令：
@@ -125,6 +128,9 @@ livachat.sh status    # 进程 + /healthz 状态
 | 无参/`help` | usage | 0 |
 | 未知命令 | usage | 2 |
 
+> §3.8 已实施：`configs/test/server.yaml`/`.venv/bin/python` 不可读时，`status` 会在
+> `resolve_ports` 阶段直接 `die`（退出码 1），不再输出下面的三态结果。
+
 ### 3.2 install
 
 1. **uv**：`command -v uv` 命中即用；否则先把 `~/.local/bin` 加进 PATH（uv 官方安装位置），
@@ -159,15 +165,24 @@ livachat.sh status    # 进程 + /healthz 状态
   提示先停）。非 HTTP 服务的占位（探针失联）则由 uvicorn 自报
   "address already in use" 进日志，由就绪检测兜底。
 - 端口不硬编码：用 `.venv` 的 python 读 `configs/test/*.yaml` 的 `server.port`
-  （读不到再退回 REPO.md:64-66 记录的 8080/8090）。
+  （读不到时历史上退回 REPO.md:64-66 记录的 8080/8090；§3.8 已实施后，配置/venv 不可读会直接
+  `die`，不会再走到这个静默回退）。
 - 环境注入：两服务分别以 `LIVA_CHAT_CONFIG` / `LVDATA_MCP_CONFIG` 指向 `configs/test/`
   绝对路径启动（§3.0）。
-- 环境预检（`check_required_env`）：必需项 = `APP_AUTH_TOKEN` / `DASHSCOPE_API_KEY` /
-  `DASHSCOPE_API_HOST`（非空；依据 install_design.md §1.4、chat `validation.py:30-33`、
-  lvdata `validate_required`）；有效值解析与 loader 一致——shell 优先（含"已设置但为空"），
-  未设置时取仓库根 `.env`（同键后行覆盖、容忍 export 前缀与成对引号）。`.env` 不存在或
-  必需项为空 → `die` 并**逐项列出**缺失/为空的变量名与修复指引；`DASHSCOPE_WORKSPACE_ID`
-  为空仅 `warn`（§1.4 允许空串——不发 Workspace 头，TTS 可能 401/411）。
+- 环境预检（`check_required_env`）：
+  - **必须非空**：`APP_AUTH_TOKEN` / `DASHSCOPE_API_KEY` / `DASHSCOPE_API_HOST`（依据
+    install_design.md §1.4、chat `validation.py:30-33`、lvdata `validate_required`）。
+  - **必须存在但允许空串**：`DASHSCOPE_WORKSPACE_ID`、`HERMES_AUTH_TOKEN`、
+    `OPENCLAW_AUTH_TOKEN`。`configs/dev/server.yaml` 中对应 `${...}` 占位符在 loader
+    `_resolve_placeholders` 阶段要求变量**已定义**；值为空可以，变量完全未设置会让 server
+    在启动时抛 `ConfigError`。`configs/test/server.yaml` 继承同一组占位符。
+  - 有效值解析与 loader 一致——shell 优先（含"已设置但为空"），未设置时取仓库根 `.env`
+    （同键后行覆盖、容忍 export 前缀与成对引号）。`.env` 不存在或必需项为空 → `die` 并
+    **逐项列出**缺失/为空的变量名与修复指引。
+  - **存在性检查（2026-11-16 已实施）**：`check_required_env` 通过 `env_defined`
+    检查后三个变量是否已定义——shell 中 set-but-empty 也算，否则要求 `.env` 存在对应行；
+    完全未定义时逐项列出并 `die`。空值仍只对 `DASHSCOPE_WORKSPACE_ID` 发出 warning。
+    该检查只用于 start 前置提示，不参与 §3.8 的 scheme 解析。
 - 系统依赖预检（`check_system_deps`）：libopus 用**服务自身加载器**实测
   （`media.opus._load_opus()`——与 chat 语音编解码同一路径、候选路径权威，media/opus.py:16-36），
   失败即 `die`（`brew install opus` / `apt install libopus0`；每会话 opus 编解码必需、
@@ -210,19 +225,29 @@ livachat-server  未受本脚本管理，但 https://127.0.0.1:8080/healthz 有�
 livachat-server  未运行
 ```
 
-**显示地址取本机 LAN IP（2026-10-14 用户指示）**：`运行中（健康）`行与 start 的 `就绪:`
-行显示 `https://<local_ip>:<port>/healthz`（如 `<lan-host>`）——该行即健康端点（自签
-证书，需 `curl -k`）；手机端「服务」设置填 `<local_ip>:<port>`（App 输入框仅接受
-`ip:port` / `域名:port`，**不接受**含 scheme / 路径的完整 URL——`parseServerAddress`
-整串匹配，见 docs/setting_server_address.md）。取法：venv python UDP connect `192.0.2.1`
-（不发包，仅解析默认路由并取源地址）；取不到（离线 / 无默认路由 / 无 venv python）→
-回退 `127.0.0.1`。**仅显示层替换**：健康探测、冲突预检与 `未受本脚本管理` 行仍用
-`127.0.0.1`（保只绑回环实例的检出能力、不受网卡/防火墙波动影响；该行实例绑定未知，显示
-LAN IP 会误导）。lvdata-mcp 不适用（设计即绑 127.0.0.1——configs/dev/lvdata_mcp.yaml:6，
-手机不直连）。已知边界：显示的是默认路由网卡地址——VPN 抢占默认路由时显示 VPN IP（手机
-不可达）；多网卡并存（如有线优先于 Wi-Fi）时显示的未必是手机所在网段。显示前提：
-server 配置 `host: 0.0.0.0`（configs/dev/server.yaml:11，test 继承）——改绑回环则显示
-失真（脚本不感知）。
+**显示地址（2026-11-16：跟随 `server.host`）**：`运行中（健康）`行与 start 的 `就绪:`
+行显示 `http(s)://<display-host>:<port>/healthz`。`display-host` 规则：
+
+| `server.host` | 显示地址 |
+|---|---|
+| `0.0.0.0` / `::`（wildcard） | 本机 LAN IP（2026-10-14 行为）；取不到时回退 `127.0.0.1` |
+| `127.0.0.1` / `localhost` / `::1` | `127.0.0.1` |
+| 明确的 IP / 域名 | 原样显示（裸 IPv6 加方括号） |
+
+scheme 跟随 `server.ssl.enabled`（§3.8）。LAN IP 取法：venv python UDP connect `192.0.2.1`
+（不发包，仅解析默认路由并取源地址）；取不到（离线 / 无默认路由）→ 回退 `127.0.0.1`。
+`.venv/bin/python` 不可用会在 §3.8 解析阶段直接 `die`，不会走到显示回退；该回退只覆盖
+venv 可用但取不到 LAN IP 的情况。
+
+手机端「服务」设置填 `<display-host>:<port>`（App 输入框仅接受 `ip:port` / `域名:port`，
+**不接受**含 scheme / 路径的完整 URL——`parseServerAddress` 整串匹配，见
+docs/setting_server_address.md）。**仅显示层**：健康探测、冲突预检与 `未受本脚本管理`
+行仍用 `127.0.0.1`（保只绑回环实例的检出能力、不受网卡/防火墙波动影响）。
+
+lvdata-mcp 不适用（设计即绑 127.0.0.1——configs/dev/lvdata_mcp.yaml:6，手机不直连）。
+已知边界：wildcard 显示的是默认路由网卡地址——VPN 抢占默认路由时显示 VPN IP（手机不可达）；
+多网卡并存（如有线优先于 Wi-Fi）时显示的未必是手机所在网段。配置读取失败时 `status`
+按 §3.8 直接 `die`，不会进入上面的三态输出。
 
 ### 3.6 路径与状态文件
 
@@ -249,19 +274,117 @@ server 配置 `host: 0.0.0.0`（configs/dev/server.yaml:11，test 继承）—�
 - **热重载保持 main.py 默认（开）**：与用户现有工作方式一致；需要稳定单进程时透传
   `LIVACHAT_SERVER_RELOAD=0`。
 - **不做 `.env` 自动生成**：`install` 只提示 `cp .env.example .env`。
-- **运行地址显示取本机 LAN IP（2026-10-14 用户指示）**：status 健康行 / start 就绪行的
-  server 地址显示 LAN IP（无则 `127.0.0.1` 回退；取法与边界见 §3.5）——**仅显示层**，
-  探测/预检仍 `127.0.0.1`（保只绑回环实例的检出能力）；lvdata-mcp 不适用（设计绑 127.0.0.1）。
+- **运行地址显示跟随 `server.host`（2026-11-16 修订）**：status 健康行 / start 就绪行按
+  wildcard→LAN IP、loopback→`127.0.0.1`、明确 host→原样的规则显示（取法与边界见 §3.5）——
+  **仅显示层**，探测/预检仍 `127.0.0.1`（保只绑回环实例的检出能力）；lvdata-mcp 不适用
+  （设计绑 127.0.0.1）。2026-10-14 的 LAN IP 显示行为保留为 wildcard 分支。
+
+### 3.8 SSL/server.host-aware health URL（已实施，2026-11-16）
+
+**目标**：`start` 的就绪等待、冲突预检、`status` 探测和地址显示，按 LivaChat server 实际配置选择 `http` 或 `https`；显示 host 跟随 `server.host`（规则见 §3.5）；不再硬编码 `https` 或 LAN IP。
+
+**配置来源与优先级**
+
+脚本实际启动 server 时固定使用：
+
+```bash
+LIVA_CHAT_CONFIG="$TEST_CFG/server.yaml"
+```
+
+因此以 `configs/test/server.yaml` 为唯一配置源，**不增加用户可配置的 `LIVA_CHAT_CONFIG` 自定义路径支持**（按 2026-11-16 决策）。脚本内部子进程只把这个固定路径设置为 `LIVA_CHAT_CONFIG`，供 `load_config()` 定位。
+
+读取方案：**不要自行重新实现 YAML + env override + Pydantic 的布尔规则**。在 `.venv` 中调用 server 自己的配置加载器，保证与实际启动完全一致：
+
+```bash
+LIVA_CHAT_CONFIG="$TEST_CFG/server.yaml" "$VENV/bin/python" - <<'PY'
+from shared.config.loader import load_config
+
+cfg = load_config()
+print("ssl=" + ("true" if cfg.server.ssl.enabled else "false"))
+print("host=" + cfg.server.host)
+PY
+```
+
+`load_config()` 会依次完成：
+
+1. 加载仓库根 `.env`（`setdefault`，shell 已设置的值优先）
+2. 解析 YAML 中的 `${ENV_VAR}` 占位符
+3. 应用 `LIVACHAT__` 环境变量覆盖，包括 `LIVACHAT__SERVER__SSL__ENABLED`
+4. 用 server 的 `ServerSslConfig`/Pydantic 解析，并执行完整配置校验
+
+因此不需要在 shell 里重复实现 `true/1/yes` 等布尔规则；`on`、空串、缺失字段等边界都以 server 实际行为为准。
+
+- `server.ssl` 或 `server.ssl.enabled` 缺省 → loader/Pydantic 默认 `false`。
+- **配置读取/校验失败直接 `die`，不静默回退**（按 2026-11-16 决策）：
+  - `configs/test/server.yaml` 不存在；
+  - `.venv/bin/python` 不可执行；
+  - YAML 解析失败 / 顶层结构异常；
+  - `load_config()` 因占位符缺失或其他配置校验失败；
+  - `server.ssl.enabled` 无法被 server 的模型解析。
+  - 错误信息需包含配置文件路径和修复提示（`./livachat.sh install` 或修复 YAML/.env）。
+
+**实现要点**
+
+- 新增全局 `SRV_SCHEME`（由解析结果设置为 `http` / `https`）和 `SRV_HOST`（`server.host`）。
+- 新增 `read_server_runtime`：在 `.venv` 中设置 `LIVA_CHAT_CONFIG` 为同一份
+  `configs/test/server.yaml`，调用 `load_config()` 并输出 `ssl=...` / `host=...` 两行。
+  读取/校验失败时由 `resolve_ports` 调用 `die`。
+- scheme/host 解析不使用 shell 的 `env_defined`/独立 env override 实现；`env_defined` 只用于
+  §3.3 的变量存在性预检，避免与 loader 的占位符、`.env`、shell 优先级和 Pydantic 规则产生分歧。
+- 在 `resolve_ports` 末尾调用 `read_server_runtime` 解析 scheme 和 host；端口读取行为保持不变
+  （`LIVACHAT__SERVER__PORT` 的 env override 不在本次范围）。
+- `srv_health_url` 使用 `$SRV_SCHEME` 且仍探测 `127.0.0.1`；`srv_display_url` 通过
+  `srv_display_host` 按 §3.5 的 host 规则生成显示地址。
+- `probe` 保持 `curl -ksf`：`-k` 对 http 无副作用，https 仍支持自签证书。
+- `cmd_start` / `cmd_status` 的调用点无需改动，自动继承新 scheme/display host。
+
+**行为矩阵**
+
+| 配置 / 环境 | scheme |
+|---|---|
+| YAML `ssl.enabled=true` | https |
+| YAML `ssl.enabled=false` | http |
+| `.env` 覆盖为 false，YAML true | http |
+| shell 覆盖为 true，`.env`/YAML false | https |
+| YAML 缺 `server.ssl` 或 `enabled` | http |
+| YAML/venv 无法读取 | `die`，不在 http/https 之间猜测 |
+
+显示 host 另按 §3.5：wildcard→LAN IP，loopback→`127.0.0.1`，明确 host→原样。探测地址仍为
+`127.0.0.1`，只替换 scheme（HTTP 探测可直接访问，HTTPS 自签证书由 `curl -k` 兼容）。
+
+**验证计划**
+
+- `bash -n livachat.sh`；有 shellcheck 时执行。
+- 自动化 CLI 测试：`./tests/start/livachat_start_test.sh`（沙箱化 fake console scripts/curl，
+  使用真实 `load_config()` 的副本，覆盖 YAML / `.env` / shell 覆盖、配置损坏、venv 缺失、
+  变量存在性检查，以及 `server.host` 的 wildcard/loopback/localhost/明确 IP/IPv6 显示；见 §5）。
+- 不增加 source guard（按 2026-11-16 决策），另外以实际 `start` / `status` 手工矩阵验证：
+  - YAML true → 就绪行/status 显示 https，`curl -k` 成功；
+  - YAML false → 显示 http，`curl` 成功；
+  - shell / `.env` 覆盖 true/false；
+  - 配置不可读 → 明确 `die`；
+  - lvdata-mcp 仍固定 http；
+  - 端口解析与原有 start/stop/status 行为不回归。
+- 修改 SSL/host 配置后必须重启 server；脚本只读取当前配置，无法感知运行中进程的旧
+  scheme/host。
+
+**状态**：已实施并回填 §5；`livachat.sh` 的 `resolve_ports`、`srv_health_url`、
+`srv_display_host` / `srv_display_url` 已改为使用 `SRV_SCHEME` / `SRV_HOST`。
+
+---
 
 ## 4. 错误处理矩阵
 
 | 情形 | 行为 |
 |------|------|
 | `.venv`/console script 缺失 | start 报「先 ./livachat.sh install」 |
+| `configs/test/server.yaml` 不存在 | start 由前置检查报 install；status 由 `resolve_ports` 直接 `die`（§3.8） |
+| `configs/test/server.yaml` 存在但无法解析/SSL 布尔无效；或 `.venv/bin/python` 不可用（§3.8） | `resolve_ports` 直接 `die`，输出配置路径与修复提示；`status` 不再进入三态 |
 | `configs/test` 缺失/不完整（本地生成、gitignore） | start 报错并指向 install（逐项补齐生成） |
 | `<repo>/data` 缺失 | start 自动创建（无需手工前置） |
 | `.env` 不存在或必需项为空（APP_AUTH_TOKEN / DASHSCOPE_API_KEY / DASHSCOPE_API_HOST） | start `die`：逐项列出缺失/为空的变量名 + `cp .env.example .env` 指引 |
 | `DASHSCOPE_WORKSPACE_ID` 为空 | start `warn` 后继续（不发 Workspace 头，TTS 可能 401/411） |
+| `DASHSCOPE_WORKSPACE_ID` / `HERMES_AUTH_TOKEN` / `OPENCLAW_AUTH_TOKEN` 完全未设置 | start `die`：逐项列出未定义的变量名；空值允许（§3.3） |
 | libopus 加载失败（chat 语音编解码必需） | start `die`：`brew install opus` / `apt install libopus0` 指引 |
 | 缺 ffmpeg | start `warn` 后继续（lvdata 音频分析降级；查询平面不受影响） |
 | 端口被其它实例占用且健康端点有响应 | start 拒绝并提示先停 |
@@ -291,6 +414,7 @@ server 配置 `host: 0.0.0.0`（configs/dev/server.yaml:11，test 继承）—�
 | review 修订 2 轮（2026-10-12）：reload 子进程哨兵 + stop orphan 清理 | 一轮 `pgrep -P` 版**真实机制下失效**——实测复现（uvicorn --reload 故障 app）：崩溃后父进程子进程 = [resource_tracker 存活 + 服务器子进程僵尸]，"是否有子进程"恒真。改为 `has_server_child`（ps 过滤两类）+ 壁钟 5s 宽限。验证：控制组（健康 reload app）rc 0 / 1s 不误报；实验组（故障 app）rc 2 / **8s** 提前判失败（原 23s 迭代计法 → 壁钟修正）；单元（普通子进程 true / resource_tracker 名 false / 僵尸 false）。另实测发现 `kill -9` reloader 后 server child 孤儿化继续监听端口 → stop 增加 SIGKILL 兜底后的残留子进程补杀（TERM 免疫假父实测：父死+子清，rc 0）；真机 start/stop 回归通过（stop 正常路径 2.1s 无额外开销） |
 | 系统依赖预检复验（2026-10-12） | ✅ 三场景：本机真实态（ffmpeg 在、libopus 可加载）静默通过；PATH 无 ffmpeg → 仅警告放行（rc 0）；libopus 加载失败 → `die` + 安装指引（rc 1）。真实 start/status/stop 回归通过 |
 | 运行地址显示取 LAN IP 实测（2026-10-14，含复核轮补测） | ✅ `bash -n` 通过。函数级（source 后直调，含 resolve_ports）：正常态 `local_ip`=`<lan-host>` → `srv_display_url`=`https://<lan-host>:8180/healthz`；回退实测两类：venv python 不存在（`VENV=/nonexistent`）与存在但失败（假 python exit 1）均 → 空 → 显示回退 `https://127.0.0.1:8180/healthz`（离线/无默认路由走同一"取不到 → 空"异常路径，未构造实测）。真机 stop→start→status 全循环 rc 0：start 就绪行与 status 健康行均显示 LAN IP；lvdata-mcp 两处均保持 127.0.0.1；"未受本脚本管理"分支实测（临时移走 pid 文件、测后恢复）仍显示探测地址 `127.0.0.1`。展示地址实证：`curl -k https://<lan-host>:8180/healthz` → 200、监听 socket 为 wildcard `*:8180`（§3.5"显示前提 host: 0.0.0.0"）；url/display 变量使用点全量 grep 对位（探测恒 `srv_url`、展示恒 `srv_disp`/第 5 参，无串用） |
+| SSL/host-aware health URL + start 环境存在性预检（2026-11-16） | ✅ `bash -n livachat.sh` 通过；`tests/start/livachat_start_test.sh` 全部通过：YAML true→https、false→http、`.env` false 覆盖 YAML true→http、shell true 覆盖→https；`server.host` 127.0.0.1/localhost→显示 127.0.0.1、明确 IP→原样、裸 IPv6→方括号，wildcard 保留 LAN IP 分支；start/status 探测与显示均跟随 scheme，lvdata 固定 http；配置损坏 / `.venv/bin/python` 缺失 → `status` rc 1 且输出路径+修复提示；三个变量行完全缺失 → start 逐项报错，shell 空值 → 允许并仅 warning。 |
 
 ## 6. 验收步骤（2026-10-12 已实测通过，结果见 §5）
 
@@ -325,6 +449,10 @@ server 配置 `host: 0.0.0.0`（configs/dev/server.yaml:11，test 继承）—�
 - [x] 运行地址显示取本机 LAN IP（2026-10-14 用户指示；§3.5/§3.7）：`local_ip()`（UDP connect
       取默认路由源地址，空则回退）+ 显示替换（start 就绪行 / status 健康行）；探测保持 127.0.0.1
       ——实测见 §5（2026-10-14 行）
+- [x] SSL-aware health/status URL（§3.8；2026-11-16 实施；`tests/start/livachat_start_test.sh`）
+- [x] 显示地址跟随 `server.host`（§3.5；2026-11-16 修订；wildcard/loopback/明确 host）
+- [x] start 前置补齐 `DASHSCOPE_WORKSPACE_ID` / `HERMES_AUTH_TOKEN` / `OPENCLAW_AUTH_TOKEN` 的存在性检查（空值允许；§3.3）
+- [x] CLI 回归测试 `tests/start/livachat_start_test.sh`（scheme 矩阵 + 配置/venv/变量失败路径）
 - [ ] 提交（等拍板）
 
 review 决议（2026-10-12，已回填 §3）：

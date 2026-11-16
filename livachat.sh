@@ -30,9 +30,13 @@ LIVEKIT_TMP_DIR=""
 LIVEKIT_ENV_TMP=""
 LIVEKIT_CONFIG_TMP=""
 
-# Ports come from configs/test (resolve_ports); fall back to the defaults recorded in REPO.md if unreadable
+# Ports come from configs/test (resolve_ports); fall back to the defaults recorded in REPO.md if unreadable.
+# SRV_SCHEME/SRV_HOST follow server.ssl.enabled/server.host via the service's own load_config()
+# (docs/livachat_start.md §3.5/§3.8).
 SRV_PORT=8080
 MCP_PORT=8090
+SRV_SCHEME=https
+SRV_HOST=0.0.0.0
 
 info() { printf '%s\n' "$*"; }
 warn() { printf 'Warning: %s\n' "$*" >&2; }
@@ -60,15 +64,53 @@ EOF
 
 # ---------------------------------------------------------------- utilities
 
+# Read server.ssl.enabled and server.host through the service's own loader so .env,
+# ${ENV_VAR} placeholders, LIVACHAT__ overrides and Pydantic parsing all match the real server.
+read_server_runtime() {
+  (
+    cd "$ROOT"
+    LIVA_CHAT_CONFIG="$TEST_CFG/server.yaml" "$VENV/bin/python" - <<'PY'
+from shared.config.loader import load_config
+
+cfg = load_config()
+print("ssl=" + ("true" if cfg.server.ssl.enabled else "false"))
+print("host=" + cfg.server.host)
+PY
+  )
+}
+
 # Read ports from the actual config (guarantees consistency with configs/test rather than guessing)
+# and resolve the health/display URL scheme and display host. Port reading is unchanged: a missing
+# port key falls back to the defaults above. An unreadable venv/config or a load/validation failure
+# is fatal: guessing http/https or the bind host would make status/start show the wrong endpoint
+# (docs/livachat_start.md §3.5/§3.8).
 resolve_ports() {
-  local p
-  if [ -x "$VENV/bin/python" ]; then
-    p="$(cd "$ROOT" && "$VENV/bin/python" -c 'import yaml;print(yaml.safe_load(open("configs/test/server.yaml"))["server"]["port"])' 2>/dev/null || true)"
-    if [ -n "$p" ]; then SRV_PORT="$p"; fi
-    p="$(cd "$ROOT" && "$VENV/bin/python" -c 'import yaml;print(yaml.safe_load(open("configs/test/lvdata_mcp.yaml"))["server"]["port"])' 2>/dev/null || true)"
-    if [ -n "$p" ]; then MCP_PORT="$p"; fi
+  local p runtime ssl host
+  [ -x "$VENV/bin/python" ] \
+    || die ".venv/bin/python not found; cannot resolve ports or server runtime—run ./livachat.sh install first"
+  [ -f "$TEST_CFG/server.yaml" ] \
+    || die "configs/test/server.yaml not found; cannot resolve server runtime—run ./livachat.sh install first"
+
+  p="$(cd "$ROOT" && "$VENV/bin/python" -c 'import yaml;print(yaml.safe_load(open("configs/test/server.yaml"))["server"]["port"])' 2>/dev/null || true)"
+  if [ -n "$p" ]; then SRV_PORT="$p"; fi
+  p="$(cd "$ROOT" && "$VENV/bin/python" -c 'import yaml;print(yaml.safe_load(open("configs/test/lvdata_mcp.yaml"))["server"]["port"])' 2>/dev/null || true)"
+  if [ -n "$p" ]; then MCP_PORT="$p"; fi
+
+  if ! runtime="$(read_server_runtime 2>&1)"; then
+    printf '%s\n' "$runtime" >&2
+    die "failed to load $TEST_CFG/server.yaml; cannot determine server.ssl.enabled/server.host (run ./livachat.sh install or fix the config/.env)"
   fi
+  ssl="$(printf '%s\n' "$runtime" | sed -n 's/^ssl=//p' | tail -n 1 | tr -d '[:space:]')"
+  host="$(printf '%s\n' "$runtime" | sed -n 's/^host=//p' | tail -n 1 | tr -d '\r')"
+  case "$ssl" in
+    true)  SRV_SCHEME=https ;;
+    false) SRV_SCHEME=http ;;
+    *)
+      die "cannot determine server.ssl.enabled from $TEST_CFG/server.yaml (got '$ssl'); run ./livachat.sh install or fix the config/.env"
+      ;;
+  esac
+  [ -n "$host" ] || host=0.0.0.0
+  SRV_HOST="$host"
 }
 
 # Port bind test (tries 0.0.0.0 and 127.0.0.1 separately with SO_REUSEADDR, matching actual
@@ -134,21 +176,40 @@ env_effective() {
   printf '%s' "$line"
 }
 
+# Whether a variable is defined at all (shell—even set-but-empty—or a line in repo-root .env).
+# Only the start preflight uses this; scheme resolution must go through load_config() instead
+# (docs/livachat_start.md §3.8).
+env_defined() {
+  local name="$1" seen
+  eval "seen=\${$name+set}"
+  [ -n "$seen" ] && return 0
+  [ -f "$ROOT/.env" ] || return 1
+  grep -Eq "^[[:space:]]*(export[[:space:]]+)?$name=" "$ROOT/.env" 2>/dev/null
+}
+
 # start preflight: check required items one by one (.env absent or required item empty → list and die)
 # Basis: install_design.md §1.4; chat validation.py:30-33 (dev_token non-empty),
 # lvdata validate_required (api_key non-empty). WORKSPACE_ID empty string allowed per §1.4 → warning only.
+# WORKSPACE_ID / HERMES_AUTH_TOKEN / OPENCLAW_AUTH_TOKEN must still be **defined** because the
+# loader resolves every ${...} placeholder and fails when the variable is entirely unset.
 # APP_AUTH_TOKEN charset gate [A-Za-z0-9._-]: **kept strict** (docs/server_auth.md §5 decision).
 # The old "also doubles as the client query token (URL-safe)" rationale is obsolete—the client only
 # sends a sha1 digest, the plaintext secret never enters the URL; the gate is now just a loose
 # constraint beyond non-emptiness, with no protocol dependency.
 check_required_env() {
-  local name missing="" v
+  local name missing="" absent="" v
   for name in APP_AUTH_TOKEN DASHSCOPE_API_KEY DASHSCOPE_API_HOST; do
     v="$(env_effective "$name")"
     [ -n "$v" ] || missing="${missing}${name} "
   done
   if [ -n "$missing" ]; then
     die "required environment variables missing or empty: ${missing} (cp .env.example .env and fill in)"
+  fi
+  for name in DASHSCOPE_WORKSPACE_ID HERMES_AUTH_TOKEN OPENCLAW_AUTH_TOKEN; do
+    env_defined "$name" || absent="${absent}${name} "
+  done
+  if [ -n "$absent" ]; then
+    die "required environment variables not defined: ${absent}(empty values are allowed, but the lines must exist in the shell or .env; see .env.example)"
   fi
   case "$(env_effective APP_AUTH_TOKEN)" in
     *[!A-Za-z0-9._-]*)
@@ -215,8 +276,9 @@ ensure_test_config() {
   done
 }
 
+# -k is harmless for http and still allows the dev self-signed cert for https
 probe() { curl -ksf --max-time 3 -o /dev/null "$1" >/dev/null 2>&1; }
-srv_health_url() { printf 'https://127.0.0.1:%s/healthz' "$SRV_PORT"; }
+srv_health_url() { printf '%s://127.0.0.1:%s/healthz' "$SRV_SCHEME" "$SRV_PORT"; }
 mcp_health_url() { printf 'http://127.0.0.1:%s/healthz' "$MCP_PORT"; }
 
 # Non-loopback local IPv4: UDP connect to 192.0.2.1 (TEST-NET-1, sends no packets) to resolve the
@@ -237,13 +299,35 @@ finally:
 ' 2>/dev/null || true
 }
 
-# server display address (status health line / start ready line; 127.0.0.1 if no LAN IP, so phones
-# can use host:port). Display layer only—health probes/conflict prechecks still use srv_health_url
-# (127.0.0.1)—docs/livachat_start.md §3.5
+# Host shown in the status health line / start ready line. Follow server.host: wildcard binds
+# (0.0.0.0/::) show the LAN IP so phones can connect; loopback binds show 127.0.0.1; an explicit
+# host is shown as configured. Display layer only—health probes/conflict prechecks still use
+# srv_health_url (127.0.0.1)—docs/livachat_start.md §3.5
+srv_display_host() {
+  local h="${SRV_HOST:-0.0.0.0}" l ip
+  l="$(printf '%s' "$h" | tr '[:upper:]' '[:lower:]')"
+  case "$l" in
+    ""|0.0.0.0|::|"[::]")
+      ip="$(local_ip)"
+      printf '%s' "${ip:-127.0.0.1}"
+      ;;
+    localhost|127.0.0.1|::1|"[::1]")
+      printf '127.0.0.1'
+      ;;
+    \[*\])
+      printf '%s' "$h"
+      ;;
+    *:*)
+      printf '[%s]' "$h"   # bare IPv6 literal needs brackets in a URL
+      ;;
+    *)
+      printf '%s' "$h"
+      ;;
+  esac
+}
+
 srv_display_url() {
-  local ip
-  ip="$(local_ip)"
-  printf 'https://%s:%s/healthz' "${ip:-127.0.0.1}" "$SRV_PORT"
+  printf '%s://%s:%s/healthz' "$SRV_SCHEME" "$(srv_display_host)" "$SRV_PORT"
 }
 
 # Print the pid of a live process; pid file missing / process gone → exit 1
