@@ -25,3 +25,7 @@ apps/web/meeting/public/config.json
 /bin/
 /.env.tmp.*
 /.env.bak.*
+
+# Docker nginx local secrets/logs (never commit)
+/infra/nginx/certs/
+/infra/nginx/logs/
