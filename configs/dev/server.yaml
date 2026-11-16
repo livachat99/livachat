@@ -306,7 +306,7 @@ meeting:
   token_ttl_s: 600
   join_early_s: 1800
   expire_after_end_s: 14400
-  join_rate_limit_per_min: 10
+  join_rate_limit_per_min: 100
 
 # Agent Relay — external agent integration
 agent_relay:

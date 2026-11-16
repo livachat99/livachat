@@ -314,7 +314,7 @@ class MeetingConfig(BaseModel):
     token_ttl_s: int = Field(default=600, ge=60, le=3600)
     join_early_s: int = Field(default=1800, ge=0)
     expire_after_end_s: int = Field(default=14400, ge=0)
-    join_rate_limit_per_min: int = Field(default=10, gt=0)
+    join_rate_limit_per_min: int = Field(default=100, gt=0)
 
 
 # ---------------------------------------------------------------------------

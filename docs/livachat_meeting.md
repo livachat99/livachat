@@ -715,7 +715,7 @@ class MeetingConfig(BaseModel):
     token_ttl_s: int = 600               # LiveKit JWT TTL
     join_early_s: int = 1800             # 提前 30 分钟可入会
     expire_after_end_s: int = 14400      # 结束后 4 小时过期
-    join_rate_limit_per_min: int = 10    # 每 IP 每分钟 join 尝试上限
+    join_rate_limit_per_min: int = 100    # 每 IP 每分钟 join 尝试上限
 ```
 
 `AppConfig` 增加：
@@ -749,7 +749,7 @@ meeting:
   token_ttl_s: 600
   join_early_s: 1800
   expire_after_end_s: 14400
-  join_rate_limit_per_min: 10
+  join_rate_limit_per_min: 100
 ```
 
 本地 dev/test 在 gitignored 仓库根 `.env` 中启用（先构建 `dist`）：
@@ -949,7 +949,7 @@ token = (
 - 收敛措施：
   1. 8 位随机会议号（约 26.4 bit）；
   2. 仅在 `[start-30m, end+4h]` 窗口内可换 token；
-  3. 每 IP 每分钟 `join_rate_limit_per_min`（默认 10）；
+  3. 每 IP 每分钟 `join_rate_limit_per_min`（默认 100）；
   4. token TTL 600s，且被窗口末尾截断；
   5. token 只允许 `room=会议号`，不能进其他房间；
   6. 成功响应不返回主题/时间；错误响应只在必要时应返回 `opens_at_ms`/`expires_at_ms`；
@@ -1670,7 +1670,7 @@ ai_text → App
 | 1 | 8 位会议号显示 | 连续 8 位数字 `12345678`；不分组/不加连字符；输入可容忍空格/连字符并归一化 |
 | 2 | 默认结束时间/最大时长 | +60min / 24h |
 | 3 | `get_meetings` 默认范围 | `end_at_ms >= now`；`include_past=true` 看历史/刚结束 |
-| 4 | 限流 | 每 IP 每分钟 10 次（可配） |
+| 4 | 限流 | 每 IP 每分钟 100 次（可配） |
 | 5 | token TTL | 600s；窗口末尾截断，最小 60s 余量（边界签发的 token 可能晚于窗口最多 60s 首次连接；如需严格，把窗口上界提前 60s） |
 | 6 | `remove_meeting` 重复删除 | 第二次 `not_found`；Agent 解释为“不存在或已删除” |
 | 7 | `external_server_addr` 格式 | scheme+host+port，无 path/尾斜杠；生产 `https://` |
