@@ -13,7 +13,8 @@ import type {
   ConnectionDetails,
   CredentialProvider,
 } from './credentials/types'
-import { messages } from './messages'
+import { useMessages } from './i18n'
+import { messages as legacyMessages } from './messages'
 import { meetingNumberFromUrl } from './meetingUrl'
 import { saveParticipantName } from './storage'
 import type { JoinParams } from './types'
@@ -44,6 +45,7 @@ function initialStage(): Stage {
 }
 
 export default function App() {
+  const messages = useMessages()
   const [config, setConfig] = React.useState<MeetingConfig | null>(null)
   const [configError, setConfigError] = React.useState<string | null>(null)
   const [provider, setProvider] = React.useState<CredentialProvider | null>(
@@ -82,16 +84,16 @@ export default function App() {
   if (!secureContext) {
     return (
       <FatalError
-        title={messages.secureContextTitle}
-        message={messages.secureContextHint}
+        title={legacyMessages.secureContextTitle}
+        message={legacyMessages.secureContextHint}
       />
     )
   }
   if (!hasMediaDevices) {
     return (
       <FatalError
-        title={messages.unsupportedBrowserTitle}
-        message={messages.unsupportedBrowserHint}
+        title={legacyMessages.unsupportedBrowserTitle}
+        message={legacyMessages.unsupportedBrowserHint}
       />
     )
   }
@@ -108,7 +110,7 @@ export default function App() {
     } catch (error) {
       setStage({
         kind: 'error',
-        message: formatMeetingError(error),
+        message: formatMeetingError(error, messages),
         join: params,
       })
     }

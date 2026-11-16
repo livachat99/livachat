@@ -29,6 +29,8 @@ describe('validateConfig', () => {
 
     expect(config).toMatchObject({
       appTitle: 'LivaChat Meeting',
+      homepageSlogan: {},
+      homepageLink: '',
       tokenMode: 'client',
       tokenTtlSeconds: 600,
       videoCodec: 'vp8',
@@ -40,6 +42,70 @@ describe('validateConfig', () => {
       mediapipeAssetBase: '',
       showDebugPanel: false,
     })
+  })
+
+  it('reads the optional homepage footer and validates its link', () => {
+    const base = {
+      livekitUrl: clientConfig.livekitUrl,
+      apiKey: 'key',
+      apiSecret: 'secret',
+    }
+    const config = validateConfig(
+      {
+        ...base,
+        homepageSlogan: {
+          en: ' Opensource BYOA solution ',
+          'zh-Hans': ' 开源BYOA解决方案 ',
+          'zh-Hant': '   ',
+        },
+        homepageLink: ' https://livachat99.github.io/ ',
+      },
+      { isHttps: false },
+    )
+    expect(config.homepageSlogan).toEqual({
+      en: 'Opensource BYOA solution',
+      'zh-Hans': '开源BYOA解决方案',
+    })
+    expect(config.homepageLink).toBe('https://livachat99.github.io/')
+
+    const legacy = validateConfig(
+      {
+        ...base,
+        homepageSlogan: ' Opensource BYOA solution ',
+      },
+      { isHttps: false },
+    )
+    expect(legacy.homepageSlogan).toEqual({
+      en: 'Opensource BYOA solution',
+    })
+
+    expect(() =>
+      validateConfig({ ...base, homepageSlogan: 1 }, { isHttps: false }),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        { ...base, homepageSlogan: { 'zh-CN': '不支持的 locale' } },
+        { isHttps: false },
+      ),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        { ...base, homepageSlogan: { en: 1 } },
+        { isHttps: false },
+      ),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        { ...base, homepageLink: 'javascript:alert(1)' },
+        { isHttps: false },
+      ),
+    ).toThrow()
+    expect(() =>
+      validateConfig(
+        { ...base, homepageLink: '/relative-link' },
+        { isHttps: false },
+      ),
+    ).toThrow()
   })
 
   it('accepts an explicit showPreJoin override and rejects non-booleans', () => {

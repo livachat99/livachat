@@ -65,6 +65,7 @@ import dev.livachat.app.ui.components.isHttpUrl
 import dev.livachat.app.ui.navigation.LocalAllowSelfSigned
 import dev.livachat.app.ui.navigation.LocalServerBaseUrl
 import dev.livachat.app.ui.navigation.isSameOrigin
+import dev.livachat.app.ui.util.appLanguageCode
 import dev.livachat.app.ui.theme.Spacing
 
 private const val WEBVIEW_TAG = "LivaChatWebView"
@@ -143,9 +144,22 @@ fun WebViewScreen(
     val serverBaseUrl = LocalServerBaseUrl.current
     // 入参校验：非 http/https 直接错误占位
     val safeUrl = remember(url) { if (url.isHttpUrl()) url else null }
+    // 某些厂商 WebView 的 navigator.language 与系统/App 语言不一致（实测 Huawei
+    // WebView 返回英文）。把 App 资源语言显式传给会议页，避免 WebView 回落英文。
+    val appLanguage = remember(context) {
+        val locales = context.resources.configuration.locales
+        if (locales.isEmpty()) "en" else appLanguageCode(locales[0])
+    }
+    val localizedUrl = remember(safeUrl, appLanguage, serverBaseUrl) {
+        safeUrl?.let {
+            localizedWebUrl(it, appLanguage, serverBaseUrl, BuildConfig.DEBUG)
+        }
+    }
     // 中文等非 ASCII 路径必须转成 %XX 形式，WebView 直接 loadUrl 会导航失败且无回调
-    val asciiUrl = remember(safeUrl) {
-        safeUrl?.let { runCatching { java.net.URI(it).toASCIIString() }.getOrNull() ?: it }
+    val asciiUrl = remember(localizedUrl) {
+        localizedUrl?.let {
+            runCatching { java.net.URI(it).toASCIIString() }.getOrNull() ?: it
+        }
     }
 
     var webView by remember { mutableStateOf<WebView?>(null) }
@@ -196,7 +210,7 @@ fun WebViewScreen(
         return
     }
 
-    val initialUrl: String = asciiUrl ?: safeUrl
+    val initialUrl: String = asciiUrl ?: localizedUrl ?: safeUrl
     val initialLoader = remember(initialUrl) { InitialUrlLoader(initialUrl) }
     val currentCoordinator by rememberUpdatedState(mediaPermissionCoordinator)
     val currentInitialLoader by rememberUpdatedState(initialLoader)

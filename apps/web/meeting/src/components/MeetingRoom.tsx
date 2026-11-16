@@ -1,7 +1,5 @@
 import {
-  ConnectionStateToast,
   RoomContext,
-  VideoConference,
   formatChatMessageLinks,
   type LocalUserChoices,
 } from '@livekit/components-react'
@@ -21,12 +19,14 @@ import type { ConnectionDetails } from '../credentials/types'
 import { useLowCPUOptimizer } from '../hooks/useLowCPUOptimizer'
 import { messages } from '../messages'
 import type { JoinParams } from '../types'
+import { useMessages } from '../i18n'
 import { errorMessage, isIOSLike } from '../utils'
 import { DebugMode } from './DebugMode'
 import { KeyboardShortcuts } from './KeyboardShortcuts'
 import { LeaveConfirmDialog } from './LeaveConfirmDialog'
 import { RecordingIndicator } from './RecordingIndicator'
 import { SettingsMenu } from './SettingsMenu'
+import { LocalizedVideoConference } from './livekit/LocalizedVideoConference'
 
 export type MeetingRoomProps = {
   config: MeetingConfig
@@ -84,6 +84,7 @@ export function MeetingRoom({
   onLeave,
   onError,
 }: MeetingRoomProps) {
+  const localizedMessages = useMessages()
   const room = React.useMemo(
     () => new Room(roomOptionsFrom(config.videoCodec, choices)),
     // The component is remounted per meeting (App uses a token key).
@@ -290,7 +291,7 @@ export function MeetingRoom({
     >
       <RoomContext.Provider value={room}>
         <KeyboardShortcuts />
-        <VideoConference
+        <LocalizedVideoConference
           chatMessageFormatter={formatChatMessageLinks}
           SettingsComponent={
             config.enableSettingsMenu ? Settings : undefined
@@ -298,7 +299,6 @@ export function MeetingRoom({
         />
         {config.showDebugPanel ? <DebugMode /> : null}
         <RecordingIndicator />
-        <ConnectionStateToast />
       </RoomContext.Provider>
       <LeaveConfirmDialog
         open={leaveConfirmOpen}
@@ -306,7 +306,7 @@ export function MeetingRoom({
         onConfirm={confirmLeave}
       />
       {showEmptyHint && participantCount <= 1 ? (
-        <div className="empty-room-hint">{messages.noOneElse}</div>
+        <div className="empty-room-hint">{localizedMessages.noOneElse}</div>
       ) : null}
     </div>
   )

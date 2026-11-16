@@ -538,6 +538,8 @@ export type BackgroundImageConfig = {
 
 export type MeetingConfigCommon = {
   appTitle: string               // UI 标题 / document.title，默认 "LivaChat Meeting"
+  homepageSlogan: Partial<Record<Locale, string>> // 可选；按 canonical locale 配置首页底部 slogan；缺失回落 en
+  homepageLink: string           // 可选；http(s) 链接；slogan 或 link 为空/缺省不显示 footer
   livekitUrl: string             // wss://<livekit-host>:<port>（最终 URL，不再做 region 解析）
   tokenTtlSeconds: number        // 默认 600；范围 120..3600
   videoCodec: MeetingVideoCodec  // 默认 'vp8'；vp9/av1 走 SVC，vp8/h264 走 simulcast
@@ -575,6 +577,11 @@ export type MeetingConfig = ClientTokenConfig | ServerTokenConfig
 ```json
 {
   "appTitle": "LivaChat Meeting",
+  "homepageSlogan": {
+    "en": "Opensource BYOA solution",
+    "zh-Hans": "开源BYOA解决方案"
+  },
+  "homepageLink": "https://livachat99.github.io/",
   "livekitUrl": "wss://<livekit-host>:<port>",
   "tokenMode": "client",
   "apiKey": "<LIVEKIT_API_KEY>",
@@ -594,6 +601,8 @@ export type MeetingConfig = ClientTokenConfig | ServerTokenConfig
 > 上面是 `tokenMode=client` 示例。未来 `tokenMode=server` 时：删除 `apiKey` / `apiSecret`，改为提供 `tokenEndpoint`（见 §3.4.2 的 union 类型）。
 >
 > `showDebugPanel` 在示例里是 `false`：调试面板默认只在 `import.meta.env.DEV` 打开，生产/内网部署不应因为复制示例而开启。
+>
+> `homepageSlogan` / `homepageLink` 是首页底部运营文案与链接。`homepageSlogan` 按当前 canonical locale 取值，当前 locale 缺失时回落 `en`；当前 locale 与 `en` 都为空，或 `homepageLink` 为空时，整个 footer 不显示。也兼容单字符串写法，等价于只配置 `en`。链接只接受 http(s) URL。
 >
 > **demo 环境（已确认）**：`livekitUrl` 为 `wss://<livekit-host>:<port>`（实际值只写本地 `public/config.json`），livekit-server `v1.13.11`；`apiKey` / `apiSecret` 用 `meet.git/.env.local` 里的**专用 demo key**。真实 secret 只写本地 `public/config.json`，不写入本文、不提交仓库。
 
@@ -818,7 +827,7 @@ export function makeIdentity(): string {
 ```
 ┌──────────────────────────────────────────────┐
 │                LivaChat Meeting              │
-│            Join a meeting by number          │
+│               Your own meeting               │
 │                                              │
 │  Meeting number                              │
 │  ┌──────────────────────────────┐  ┌──────┐  │
@@ -838,6 +847,8 @@ export function makeIdentity(): string {
 │    embedded in this client. Do not deploy    │
 │    publicly.                                 │
 └──────────────────────────────────────────────┘
+
+              Opensource BYOA solution
 ```
 
 #### 3.6.2 字段与校验

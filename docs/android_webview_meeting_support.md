@@ -1,6 +1,6 @@
 # Android 应用内 WebView 会议页支持：问题分析与修复设计
 
-> 状态：已实施（2026-11-15，采用推荐方案 A/A/A）。Android WebView 布局/视口/媒体权限代码已落地；WebView 单元测试与 Huawei 真机仪器测试通过，实际会议首页已在应用内 WebView 验证铺满。尚未提交 commit。
+> 状态：已实施（2026-11-15，采用推荐方案 A/A/A）。Android WebView 布局/视口/媒体权限代码已落地；WebView 单元测试与 Huawei 真机仪器测试通过，实际会议首页已在应用内 WebView 验证铺满。**2026-11-16 增加 WebView 语言桥（§13）和设备 label fallback（§14）**。尚未提交 commit。
 >
 > 范围：Android App 内通过 Markdown 链接打开的 `/meeting/` 页面。
 > iOS、Web 会议应用本身、LiveKit 服务端不在本次改动范围内。
@@ -731,3 +731,98 @@ Huawei 真机额外探针（临时测试，验证后已删除，不进入提交�
 - 真机手工：首次系统权限对话框、拒绝摄像头/麦克风、真实 LiveKit 入会与 A/V。
 - 合入后同步 §5.5 列出的旧文档限制。
 - 提交 commit（本次未提交）。
+
+
+## 13. WebView 语言 locale 修复（2026-11-16）
+
+### 13.1 现象与证据
+
+- 设备：Huawei 设备，Android 12；系统/App 语言为 `zh-Hans-CN`。
+- WebView provider：`com.huawei.webview 14.0.2.319`（Chromium 99）。
+- 同一会议 URL：系统浏览器显示中文；应用内 WebView 显示英文。
+- 结论：该 WebView 提供给 `navigator.language` / `navigator.languages` 的 locale 不能可靠代表系统/App 语言，Web 端不能只依赖浏览器语言探测。
+
+### 13.2 修复方案
+
+1. Android 侧用 `appLanguageCode(context.resources.configuration.locales[0])` 取得 canonical app locale。
+2. `WebViewLocale.localizedWebUrl(url, language, serverBaseUrl, allowDebugLoopback)` 仅对**受信任会议页**（`isTrustedMeetingPage`）追加 `?lang=<canonical>`；外部页面不改，避免破坏第三方/签名 URL。具体编码由 `withLanguageQuery` 完成：
+   - 已有 `lang` 会被替换；
+   - 保留其他 query 参数和 fragment；
+   - 仅修改用于 WebView 加载的 URL；“在浏览器中打开”仍使用原始 URL。
+3. Web 端 `localeFromQuery(window.location.search)` 优先读取 `lang`，存在时用 `resolveLocale([value])`；否则使用 `navigator.languages`。
+4. `lang` 只影响 UI 文案，不改变会议号、鉴权、媒体权限或 WebView 信任边界；不支持的语言（如 Web 不支持的 `ar`）按 Web 规则回落 `en`。
+
+### 13.3 改动文件
+
+- 新增 `apps/android/LivaChatApp/src/main/kotlin/dev/livachat/app/ui/screens/webview/WebViewLocale.kt`
+- 修改 `apps/android/LivaChatApp/src/main/kotlin/dev/livachat/app/ui/screens/webview/WebViewScreen.kt`
+  - 计算 app locale 并传入 `localizedWebUrl`（仅受信任会议页）；`asciiUrl`/`InitialUrlLoader` 使用带 `lang` 的 URL。
+- 修改 `apps/web/meeting/src/i18n/resolveLocale.ts`
+  - 新增 `localeFromQuery(search)`。
+- 修改 `apps/web/meeting/src/main.tsx`
+  - `?lang=` 优先于 `navigator.languages`。
+- 扩展 `apps/web/meeting/src/i18n/resolveLocale.test.ts`
+  - 覆盖 `?lang=zh-CN`、`?foo=1&lang=ja-JP`、空值。
+- 扩展 `apps/android/LivaChatApp/src/test/kotlin/dev/livachat/app/ui/screens/webview/WebViewUrlPolicyTest.kt`
+  - 覆盖新增、替换旧 `lang`、保留 query/fragment，以及只对受信任会议页追加 `lang`。
+
+> 本文 §5.4 的“Web 会议应用代码和 CSS 不改动”是 2026-11-15 当轮的记录；2026-11-16 的语言桥新增了上述 Web 改动。
+
+### 13.4 验证
+
+```bash
+# Android WebView locale policy tests
+ANDROID_HOME="$HOME/Library/Android/sdk" ./gradlew -p apps/android \
+  :LivaChatApp:testDebugUnitTest \
+  --tests 'dev.livachat.app.ui.screens.webview.WebViewUrlPolicyTest'
+# BUILD SUCCESSFUL
+
+# Web
+cd apps/web/meeting
+npm run check
+npm test
+npm run build
+# 14 files / 77 tests passed; build successful
+```
+
+- 安装带语言桥的 release APK 后，系统/App 为中文时，应用内 WebView 的会议首页显示中文。
+- 系统浏览器仍按自身语言显示中文；外部浏览器 URL 不追加 `lang`。
+
+### 13.5 未做
+
+- iOS `WKWebView` 尚未加同类语言桥；本次只处理 Android WebView。
+- 未把语言写入 LiveKit token、BFF join 请求或会议记录。
+
+
+## 14. WebView 设备 label 为空（2026-11-16）
+
+### 14.1 现象与证据
+
+- 应用内会议页可正常使用摄像头（本地预览有画面），但点击摄像头下拉箭头时菜单只有空白/蓝色条，看起来“设备为空”。
+- 系统浏览器打开同一会议 URL 时设备名称正常。
+- 设备为 Huawei WebView 14.0.2.319（Chromium 99）。该 WebView 的 `navigator.mediaDevices.enumerateDevices()` 返回设备项，但 `label` 为空；LiveKit `MediaDeviceMenu` 直接渲染 label，因此出现空白项。
+- 这不是设备权限失败：`getUserMedia()` 已成功，摄像头画面正常。
+
+### 14.2 修复
+
+- 新增 `apps/web/meeting/src/deviceLabels.ts`：
+  - `addDeviceLabelFallbacks(devices, messages, grantedKinds?)` 对空 label 按 kind 生成稳定的本地化名称；
+  - `videoinput` → `settingsCamera`，`audioinput` → `settingsMicrophone`，`audiooutput` → `settingsSpeaker`，后接序号；
+  - 非空 label 原样保留；未知 kind 或未授权 kind 保持原样；
+  - `installDeviceLabelFallback()` 在 React/LiveKit 挂载前包装 `navigator.mediaDevices.enumerateDevices()` 和 `getUserMedia()`；只有对应 kind 的 `getUserMedia` 成功后，才替换该 kind 的空 label。
+  - 只改变 label，不改变 deviceId/groupId/kind。
+- **权限探测兼容性**：Chrome/WebView 在权限授予前返回空 label 且 deviceId 为空；LiveKit `DeviceManager.getDevices()` 依赖空 label 判断是否调用 `getUserMedia`。如果直接替换全部空 label，会跳过这次权限探测并显示不可用的占位设备。因此 fallback 按 kind 延迟到 `getUserMedia` 成功后启用。
+- 新增 `settingsSpeaker` 到 15 个 locale 目录（第一阶段目录从 30 增至 31 key）。
+- 仅影响空 label 环境；系统浏览器返回真实 label 时不改变设备信息。
+
+### 14.3 验证
+
+- Web 单测：`deviceLabels.test.ts` 覆盖空 label、已有 label、中文 fallback、未授权 kind 保持原样，以及权限前/后的 `installDeviceLabelFallback` 行为；`npm test` 为 **14 个文件 / 77 个测试通过**。
+- Android 真机：重新打开会议页后，摄像头下拉显示「摄像头 1..6」；选择摄像头 1 可恢复画面，选择其他条目可切换（部分虚拟/不可用设备可能显示黑屏，取决于 WebView 枚举结果）。
+- 系统浏览器设备名称仍由浏览器提供，不受该 fallback 影响。
+
+### 14.4 限制
+
+- WebView 不提供真实 label，无法恢复厂商/系统设备名称；fallback 只能保证菜单不空白。
+- 若 WebView 返回空数组（而不是空 label），fallback 无法生成设备条目；当前设备返回的是空 label。该情况可通过原生设备枚举另行处理，暂未实施。
+- fallback 依赖对应 kind 的 `getUserMedia` 成功；权限前或权限被拒绝时保持原生空 label，避免显示不可用的占位设备。

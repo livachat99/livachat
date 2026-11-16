@@ -1,4 +1,8 @@
 import { messages } from './messages'
+import { SUPPORTED_LOCALES } from './i18n/types'
+import type { Locale } from './i18n/types'
+
+export type HomepageSlogan = Partial<Record<Locale, string>>
 
 export type MeetingVideoCodec = 'vp8' | 'h264' | 'vp9' | 'av1'
 export type BackgroundEffectsPreload = 'auto' | 'off'
@@ -11,6 +15,8 @@ export type BackgroundImageConfig = {
 
 export type MeetingConfigCommon = {
   appTitle: string
+  homepageSlogan: HomepageSlogan
+  homepageLink: string
   tokenTtlSeconds: number
   videoCodec: MeetingVideoCodec
   showPreJoin: boolean
@@ -92,6 +98,56 @@ function readOptionalNonEmptyString(
     throw new Error(`config.json: "${key}" must be a string.`)
   }
   return value.trim()
+}
+
+function readHomepageSlogan(
+  raw: Record<string, unknown>,
+): HomepageSlogan {
+  const value = raw.homepageSlogan
+  if (value === undefined || value === null) return {}
+  if (typeof value === 'string') {
+    const slogan = value.trim()
+    return slogan ? { en: slogan } : {}
+  }
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(
+      'config.json: "homepageSlogan" must be a string or a locale-to-string object.',
+    )
+  }
+  const result: HomepageSlogan = {}
+  for (const [key, entry] of Object.entries(value)) {
+    if (!SUPPORTED_LOCALES.includes(key as Locale)) {
+      throw new Error(
+        `config.json: "homepageSlogan" has unsupported locale "${key}".`,
+      )
+    }
+    if (typeof entry !== 'string') {
+      throw new Error(
+        `config.json: "homepageSlogan.${key}" must be a string.`,
+      )
+    }
+    const slogan = entry.trim()
+    if (slogan) result[key as Locale] = slogan
+  }
+  return result
+}
+
+function readOptionalHttpUrl(
+  raw: Record<string, unknown>,
+  key: string,
+): string {
+  const value = readOptionalString(raw, key)
+  if (!value) return ''
+  let url: URL
+  try {
+    url = new URL(value)
+  } catch {
+    throw new Error(`config.json: "${key}" must be an http(s) URL.`)
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error(`config.json: "${key}" must be an http(s) URL.`)
+  }
+  return value
 }
 
 function readBoolean(
@@ -253,6 +309,8 @@ export function validateConfig(
   const record = asRecord(raw)
   const common: MeetingConfigCommon = {
     appTitle: readOptionalString(record, 'appTitle') || DEFAULT_TITLE,
+    homepageSlogan: readHomepageSlogan(record),
+    homepageLink: readOptionalHttpUrl(record, 'homepageLink'),
     tokenTtlSeconds: readInteger(
       record,
       'tokenTtlSeconds',

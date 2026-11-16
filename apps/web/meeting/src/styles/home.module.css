@@ -12,9 +12,13 @@
   overflow-y: auto;
 }
 
-/* Lift the join card slightly above the optical center (grid centering
-   distributes the extra bottom padding as an upward shift). */
+/* Keep the join card and footer together, slightly above the optical center. */
 .home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
   padding-bottom: calc(12vh + 1.5rem + env(safe-area-inset-bottom));
 }
 
@@ -160,4 +164,27 @@
   color: #ffb08c;
   font-size: 0.78rem;
   line-height: 1.4;
+}
+
+.footer {
+  width: 100%;
+  color: #667085;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.footer a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.footer a:hover {
+  color: #2563eb;
+}
+
+.footer a:focus-visible {
+  border-radius: 0.2rem;
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }

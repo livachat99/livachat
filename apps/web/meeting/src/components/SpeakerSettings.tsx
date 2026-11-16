@@ -2,10 +2,11 @@ import {
   MediaDeviceMenu,
   useMediaDeviceSelect,
 } from '@livekit/components-react'
-import { messages } from '../messages'
+import { useMessages } from '../i18n'
 import { cleanDeviceLabel } from '../utils'
 
 export function SpeakerSettings() {
+  const messages = useMessages()
   const { devices, activeDeviceId } = useMediaDeviceSelect({
     kind: 'audiooutput',
   })

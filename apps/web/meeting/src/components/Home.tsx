@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { MeetingConfig } from '../config'
-import { messages } from '../messages'
+import { useI18n } from '../i18n'
 import {
   isValidMeetingNumber,
   isValidParticipantName,
@@ -24,6 +24,9 @@ export function Home({
   defaultParticipantName,
   onJoin,
 }: HomeProps) {
+  const { locale, messages } = useI18n()
+  const footerSlogan =
+    config.homepageSlogan[locale] ?? config.homepageSlogan.en ?? ''
   const [roomName, setRoomName] = React.useState(
     defaultRoomName ?? '',
   )
@@ -180,6 +183,17 @@ export function Home({
           <p className={styles.devWarning}>⚠ {messages.devWarning}</p>
         ) : null}
       </form>
+      {footerSlogan && config.homepageLink ? (
+        <footer className={styles.footer}>
+          <a
+            href={config.homepageLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {footerSlogan}
+          </a>
+        </footer>
+      ) : null}
     </main>
   )
 }

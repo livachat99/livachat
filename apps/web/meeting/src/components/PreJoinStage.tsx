@@ -9,7 +9,8 @@ import type {
   ConnectionDetails,
   CredentialProvider,
 } from '../credentials/types'
-import { messages } from '../messages'
+import { useMessages } from '../i18n'
+import { formatMessage } from '../i18n/format'
 import { saveParticipantName } from '../storage'
 import { formatMeetingError } from '../utils'
 import styles from '../styles/home.module.css'
@@ -31,6 +32,7 @@ export function PreJoinStage({
   onBack,
   onJoined,
 }: PreJoinStageProps) {
+  const messages = useMessages()
   const [joining, setJoining] = React.useState(false)
 
   const handlePreJoinSubmit = async (values: LocalUserChoices) => {
@@ -45,14 +47,18 @@ export function PreJoinStage({
       onJoined(details, values)
     } catch (error) {
       console.error(error)
-      toast.error(formatMeetingError(error))
+      toast.error(formatMeetingError(error, messages))
       setJoining(false)
     }
   }
 
   const handlePreJoinError = (error: Error) => {
     console.error(error)
-    toast.error(`${messages.mediaDeviceError}: ${error.message}`)
+    toast.error(
+      formatMessage(messages.mediaDeviceErrorWithDetail, {
+        detail: error.message,
+      }),
+    )
   }
 
   return (

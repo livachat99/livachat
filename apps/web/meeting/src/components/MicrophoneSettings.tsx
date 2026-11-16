@@ -4,10 +4,11 @@ import {
   useMediaDeviceSelect,
 } from '@livekit/components-react'
 import { Track } from 'livekit-client'
-import { messages } from '../messages'
+import { useMessages } from '../i18n'
 import { cleanDeviceLabel } from '../utils'
 
 export function MicrophoneSettings() {
+  const messages = useMessages()
   const { devices, activeDeviceId } = useMediaDeviceSelect({
     kind: 'audioinput',
   })

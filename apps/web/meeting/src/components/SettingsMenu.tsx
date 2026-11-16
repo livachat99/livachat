@@ -1,7 +1,7 @@
 import { useMaybeLayoutContext } from '@livekit/components-react'
 import * as React from 'react'
 import type { MeetingConfig } from '../config'
-import { messages } from '../messages'
+import { useMessages } from '../i18n'
 import { CameraSettings } from './CameraSettings'
 import { MicrophoneSettings } from './MicrophoneSettings'
 import { SpeakerSettings } from './SpeakerSettings'
@@ -12,6 +12,7 @@ export type SettingsMenuProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 export function SettingsMenu({ config, ...props }: SettingsMenuProps) {
+  const messages = useMessages()
   const layoutContext = useMaybeLayoutContext()
   const tabs = ['media'] as const
   const [activeTab, setActiveTab] = React.useState<(typeof tabs)[number]>(

@@ -1,4 +1,4 @@
-import { messages } from '../messages'
+import { useMessages } from '../i18n'
 import styles from '../styles/home.module.css'
 
 export type ErrorViewProps = {
@@ -21,6 +21,7 @@ function sanitizeMessage(message: string): string {
 }
 
 export function ErrorView({ message, onBack }: ErrorViewProps) {
+  const messages = useMessages()
   return (
     <main className={`${styles.page} ${styles.light}`}>
       <section className={styles.card} role="alert">

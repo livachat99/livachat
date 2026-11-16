@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
-import { messages } from '../messages'
+import { useMessages } from '../i18n'
 import styles from './LeaveConfirmDialog.module.css'
 
 export type LeaveConfirmDialogProps = {
@@ -17,6 +17,7 @@ export function LeaveConfirmDialog({
   onCancel,
   onConfirm,
 }: LeaveConfirmDialogProps) {
+  const messages = useMessages()
   const dialogRef = React.useRef<HTMLDivElement>(null)
   const cancelRef = React.useRef<HTMLButtonElement>(null)
   const previousFocusRef = React.useRef<HTMLElement | null>(null)

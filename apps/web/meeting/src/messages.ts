@@ -1,6 +1,6 @@
 export const messages = {
   appTitle: 'LivaChat Meeting',
-  homeSubtitle: 'Join a meeting by number',
+  homeSubtitle: 'Your own meeting',
   meetingNumberLabel: 'Meeting number',
   meetingNumberRequired: 'Enter a meeting number.',
   meetingNumberInvalid:
@@ -18,8 +18,7 @@ export const messages = {
   leaveConfirmMessage: 'Leave the meeting and return to the home screen.',
   devWarning:
     'Demo mode: LiveKit credentials are embedded in this client. Do not deploy publicly.',
-  noOneElse:
-    'No one else has joined yet - check the meeting number.',
+  noOneElse: 'No one else has joined yet.',
   youLeft: 'You left the meeting.',
   duplicateIdentity: 'You joined from another tab or device.',
   participantRemoved: 'You were removed from the meeting.',

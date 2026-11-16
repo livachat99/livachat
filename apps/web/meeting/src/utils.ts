@@ -1,5 +1,6 @@
 import { TokenEndpointError } from './credentials/httpTokenProvider'
-import { messages } from './messages'
+import type { Messages } from './i18n'
+import { messages as enMessages } from './i18n/locales/en'
 
 export function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false
@@ -12,14 +13,17 @@ export function isEditableTarget(target: EventTarget | null): boolean {
   )
 }
 
-export function errorMessage(error: unknown): string {
+export function errorMessage(error: unknown, fallback = 'Unknown error'): string {
   if (error instanceof Error) return error.message
   if (typeof error === 'string') return error
-  return 'Unknown error'
+  return fallback
 }
 
-export function formatMeetingError(error: unknown): string {
-  if (!(error instanceof TokenEndpointError)) return errorMessage(error)
+export function formatMeetingError(
+  error: unknown,
+  messages: Messages = enMessages,
+): string {
+  if (!(error instanceof TokenEndpointError)) return messages.joinFailed
   switch (error.code) {
     case 'meeting_not_found':
       return messages.meetingNotFound
@@ -34,7 +38,7 @@ export function formatMeetingError(error: unknown): string {
     case 'upstream_unavailable':
       return messages.meetingServiceUnavailable
     default:
-      return error.message || messages.meetingServiceUnavailable
+      return messages.tokenFailed
   }
 }
 

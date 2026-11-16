@@ -41,7 +41,8 @@ import type {
   BackgroundImageConfig,
 } from '../config'
 import { useBackgroundPreload } from '../hooks/useBackgroundPreload'
-import { messages } from '../messages'
+import { useMessages, type Messages } from '../i18n'
+import { formatMessage } from '../i18n/format'
 import { errorMessage } from '../utils'
 import styles from './CameraSettings.module.css'
 
@@ -112,28 +113,32 @@ function canUseBackgroundEffects(): boolean {
   return backgroundEffectsSupported
 }
 
-const BACKGROUND_IMAGES: BackgroundImageOption[] = [
-  {
-    name: messages.backgroundDesk,
-    path: DeskBackground,
-    thumbnail: DeskThumbnail,
-  },
-  {
-    name: messages.backgroundNature,
-    path: NatureBackground,
-    thumbnail: NatureThumbnail,
-  },
-  {
-    name: messages.backgroundLake,
-    path: LakeBackground,
-    thumbnail: LakeThumbnail,
-  },
-  {
-    name: messages.backgroundFlower,
-    path: FlowerBackground,
-    thumbnail: FlowerThumbnail,
-  },
-]
+function builtInBackgroundImages(
+  messages: Messages,
+): BackgroundImageOption[] {
+  return [
+    {
+      name: messages.backgroundDesk,
+      path: DeskBackground,
+      thumbnail: DeskThumbnail,
+    },
+    {
+      name: messages.backgroundNature,
+      path: NatureBackground,
+      thumbnail: NatureThumbnail,
+    },
+    {
+      name: messages.backgroundLake,
+      path: LakeBackground,
+      thumbnail: LakeThumbnail,
+    },
+    {
+      name: messages.backgroundFlower,
+      path: FlowerBackground,
+      thumbnail: FlowerThumbnail,
+    },
+  ]
+}
 
 function thumbnailStyle(url: string): React.CSSProperties {
   return { backgroundImage: `url(${JSON.stringify(url)})` }
@@ -152,6 +157,7 @@ export function CameraSettings({
   backgroundImages,
   mediapipeAssetBase,
 }: CameraSettingsProps) {
+  const messages = useMessages()
   const { cameraTrack, localParticipant, isCameraEnabled } =
     useLocalParticipant()
   const connectionState = useConnectionState()
@@ -185,14 +191,14 @@ export function CameraSettings({
         ? 'http://localhost'
         : window.location.origin
     return [
-      ...BACKGROUND_IMAGES,
+      ...builtInBackgroundImages(messages),
       ...toBackgroundImageOptions(
         backgroundImages,
         import.meta.env.BASE_URL,
         origin,
       ),
     ]
-  }, [backgroundImages])
+  }, [backgroundImages, messages])
 
   // A full reconnect or a camera republish replaces the local track and
   // destroys its processor. Bump the revision so the attach effect runs again.
@@ -275,7 +281,7 @@ export function CameraSettings({
       setImagePath(null)
       void stopProcessorAndRestore()
     },
-    [stopProcessorAndRestore],
+    [messages, stopProcessorAndRestore],
   )
 
   React.useEffect(() => {
@@ -297,14 +303,16 @@ export function CameraSettings({
   const onProcessorError = React.useCallback((error: unknown) => {
     console.error(error)
     toast.error(
-      `${messages.backgroundEffectError}: ${errorMessage(error)}`,
+      formatMessage(messages.backgroundEffectErrorWithDetail, {
+        detail: errorMessage(error),
+      }),
     )
     setLoading(false)
     setProcessorReady(false)
     firstFrameRef.current = false
     setBackgroundType('none')
     setImagePath(null)
-  }, [])
+  }, [messages.backgroundEffectErrorWithDetail])
 
   const handleFrameProcessed = React.useCallback(() => {
     attachContextLossListener(processorRef.current)
@@ -478,7 +486,9 @@ export function CameraSettings({
       ) : null}
 
       <section className="lk-button-group">
-        <TrackToggle source={Track.Source.Camera}>Camera</TrackToggle>
+        <TrackToggle source={Track.Source.Camera}>
+          {messages.settingsCamera}
+        </TrackToggle>
         <div className="lk-button-group-menu">
           <MediaDeviceMenu kind="videoinput" />
         </div>
@@ -486,7 +496,9 @@ export function CameraSettings({
 
       {enableBackgroundEffects ? (
         <div style={{ marginTop: '10px' }}>
-          <div style={{ marginBottom: '8px' }}>Background effects</div>
+          <div style={{ marginBottom: '8px' }}>
+            {messages.backgroundEffects}
+          </div>
           {unsupportedNotice ? (
             <p
               role="alert"
