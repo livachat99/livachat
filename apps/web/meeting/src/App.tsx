@@ -28,6 +28,21 @@ type Stage =
   | { kind: 'meeting'; details: ConnectionDetails; choices: LocalUserChoices }
   | { kind: 'error'; message: string; join: JoinParams }
 
+// Every stage must declare its document surface. Keying the record by the
+// Stage union makes adding a new stage a compile error instead of silently
+// painting the light background behind a dark screen.
+const STAGE_SURFACE: Record<Stage['kind'], 'light' | 'dark'> = {
+  home: 'light',
+  prejoin: 'dark',
+  meeting: 'dark',
+  error: 'light',
+}
+
+const THEME_COLOR = {
+  light: '#f4f6fb',
+  dark: '#111111',
+} as const
+
 const DEFAULT_CHOICES: LocalUserChoices = {
   username: '',
   videoEnabled: true,
@@ -73,6 +88,20 @@ export default function App() {
   React.useEffect(() => {
     if (config) document.title = config.appTitle
   }, [config])
+
+  // Light join/error stages and dark meeting/PreJoin stages must paint with
+  // matching document backgrounds; a mismatch is visible as a full-page
+  // flash on Safari/Firefox. useLayoutEffect keeps the switch pre-paint.
+  React.useLayoutEffect(() => {
+    const surface = STAGE_SURFACE[stage.kind]
+    const root = document.documentElement
+    if (root.dataset.stage !== surface) root.dataset.stage = surface
+    const meta = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    )
+    const color = THEME_COLOR[surface]
+    if (meta && meta.content !== color) meta.setAttribute('content', color)
+  }, [stage.kind])
 
   const secureContext =
     typeof window === 'undefined' ? true : window.isSecureContext

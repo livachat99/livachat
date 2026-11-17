@@ -24,7 +24,7 @@
 
 /* Join/entry page is light; the in-meeting room keeps the dark LiveKit theme. */
 .light {
-  background: #f4f6fb;
+  background: var(--liva-home-bg);
   color: #101828;
   color-scheme: light;
 }

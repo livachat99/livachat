@@ -1,10 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-stage="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#111111" />
-    <meta name="description" content="LivaChat Meeting - join by meeting number" />
+    <!-- First-paint hint only: the document starts light; runtime stages are
+         switched by App via html[data-stage]. -->
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f4f6fb" />
+    <!-- Paint the join page background before the CSS bundle and React app
+         load. Without this first-paint color, Safari/Firefox flash white and
+         then the dark document background before settling on the light home
+         screen. --liva-home-bg is the first-paint source of truth for the
+         light surface; globals.css and home.module.css reference it.
+         globals.css keeps the same value as a fallback if this block is
+         ever blocked or stripped. -->
+    <style>
+      :root {
+        --liva-home-bg: #f4f6fb;
+      }
+      html,
+      body {
+        background-color: var(--liva-home-bg);
+        color-scheme: light;
+      }
+    </style>
+    <meta name="description" content="LivaChat Meeting" />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>LivaChat Meeting</title>

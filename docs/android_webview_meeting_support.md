@@ -23,7 +23,7 @@ Agent 在回复中用 Markdown 给出会议链接。用户点击后：
 
 - Android App 进入内置 WebView 页面（`Routes.webview(url)`）。
 - 外部浏览器（Chrome / 系统浏览器）打开同一链接，页面显示和入会都正常。
-- 内置 WebView 中页面没有正常铺满：顶部原生 AppBar 正常，下面只有很窄的一条浅色区域（会议首页卡片顶部），其余区域是页面 `body` 的深色背景。
+- 内置 WebView 中页面没有正常铺满：顶部原生 AppBar 正常，下面只有很窄的一条浅色区域（会议首页卡片顶部），其余区域是页面 `body` 的深色背景（该现象记录于 2026-11-15；2026-11-17 起首屏 body 默认改为浅色，见 §2.1 注）。
 
 ### 1.1 现场证据
 
@@ -62,7 +62,7 @@ MarkdownContent（链接点击）
   - `.page { height: 100vh; height: 100dvh; ... overflow-y: auto; }`
 - `apps/web/meeting/src/styles/globals.css`
   - `html, body, #root { height: 100%; margin: 0; }`
-  - `body { overflow: hidden; background: #111; }`
+  - 首屏（Home/Loading/Error）默认 `background: var(--liva-home-bg)`（`#f4f6fb`）；PreJoin/会中通过 `html[data-stage='dark']` 切回 `#111`（2026-11-17 起）。
 - `apps/web/meeting/index.html`
   - 已有 `viewport` meta：`width=device-width, initial-scale=1.0, viewport-fit=cover`。
 - `apps/android/LivaChatApp/src/main/AndroidManifest.xml`
@@ -95,6 +95,8 @@ Huawei WebView 14 / Chromium 99 在首次加载时如果宿主 View 尚未完成
 - `html/body/#root` 的 `height: 100%` 也无法改变已经建立的视口高度；
 - `.page` 因此塌缩成一条窄带；
 - `body` 的深色 `#111` 背景露出来，形成“上面一条浅色、下面全黑”的现象。
+
+> 2026-11-17 注：首屏 `body` 默认背景已改为 `#f4f6fb`，只有 PreJoin/会中才通过 `html[data-stage='dark']` 使用 `#111`。因此 WebView 回归检查不能再以“下方全黑”为唯一判据；应检查 `.page` 是否铺满、其下方是否露出浅色（首屏）或深色（会中）底色。
 
 这与 Huawei 官方文档中描述的 Compose/WebView 加载时序问题一致：
 <https://developer.huawei.com/consumer/cn/blog/topic/03225130377356153>

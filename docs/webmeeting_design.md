@@ -345,7 +345,7 @@ GET /api/connection-details?roomName=..&participantName=..
 **事实**：
 
 - `app/layout.tsx` 导入顺序：`styles/globals.css` → `@livekit/components-styles` → `@livekit/components-styles/prefabs`；`<body data-lk-theme="default">`；`<Toaster />`。
-- `globals.css`：`color-scheme: dark`、`background-color: #111`、`html/body` 100% 高、`body` flex column、`overflow: hidden`；footer 深色。
+- `globals.css`：默认 `color-scheme: light`、`background-color: var(--liva-home-bg)`（`#f4f6fb`，首页/加载/错误页），`html[data-stage='dark']` 时切回 `#111`（PreJoin/会中）；`html/body/#root` 100% 高、`body` `overflow: hidden`；footer 深色。
 - `Home.module.css`：居中 main、max-width 500px、tab 选择器、卡片式 tabContent（1px 半透明边框 + 0.5rem 圆角）。
 - `SettingsMenu.module.css` / `Debug.module.css`：设置 tab 下划线、调试浮层。
 - 没有 Tailwind；组件样式以 LiveKit CSS 变量 + CSS Modules 为主。
@@ -1417,7 +1417,7 @@ meet 实际代码用 `Ctrl/Cmd+A` / `Ctrl/Cmd+V`，会劫持聊天输入框的�
 
 ### 3.9 UI/UX、响应式与可访问性
 
-- 全站暗色：`html { color-scheme: dark; background: #111; }`；`<body data-lk-theme="default">`。
+- 首屏浅色：`html { color-scheme: light; background: var(--liva-home-bg); }`（`#f4f6fb`），与首页/加载/错误页一致；`<body data-lk-theme="default">` 的暗色变量继续供 LiveKit 组件使用。进入 PreJoin/会中时 App 用 `useLayoutEffect` 给 `<html>` 加 `data-stage="dark"`，把 `html/body` 切回 `#111` 与 `color-scheme: dark`；返回首页/错误页再切回 light。这样首屏不会先画暗色再变浅（Safari/Firefox 会表现为整页闪屏）。
 - 首页卡片参照 meet 的 `Home.module.css`：居中、max-width ~440px、半透明 1px 边框、0.5rem 圆角、`lk-button` 风格按钮。
 - 会中直接用 LiveKit `VideoConference` 的布局；不自造顶栏，保持与 meet 一致。
 - 移动端：
@@ -1610,12 +1610,23 @@ export default defineConfig({
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="en" data-stage="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#111111" />
-    <meta name="description" content="LivaChat Meeting - join by meeting number" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f4f6fb" />
+    <style>
+      :root {
+        --liva-home-bg: #f4f6fb;
+      }
+      html,
+      body {
+        background-color: var(--liva-home-bg);
+        color-scheme: light;
+      }
+    </style>
+    <meta name="description" content="LivaChat Meeting" />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>LivaChat Meeting</title>
@@ -1628,6 +1639,8 @@ export default defineConfig({
 ```
 
 - `href="/favicon.svg"` 不要写成 `/meeting/favicon.svg`：Vite build 会给 public 资源自动加 `base` 前缀；写死 base 会在部署前缀变化或根路径部署时 404。
+- `index.html` 内联首屏背景与 `color-scheme`：CSS bundle 是 render-blocking，JS 还要解析执行；若等外部 CSS 才设置背景，Safari/Firefox 会先画默认白底，再画 `globals.css` 的暗色，最后由 React 首页改成浅色，形成白→黑→浅的闪屏。首屏颜色以 `index.html` 内联 `--liva-home-bg` 为准，`globals.css` 保留同值 fallback（防止内联样式被 CSP/构建剥离时浅色表面变透明），`home.module.css` 引用该变量；App 的 `theme-color` 使用同一颜色值（`THEME_COLOR`）。
+- `theme-color` 首屏用浅色 `#f4f6fb`；进入 PreJoin/会中时 App 会同步改成 `#111111`，返回首页再改回浅色。
 - `<title>` 是首屏兜底；App 加载 config 后执行 `document.title = config.appTitle`，这样 `appTitle` 才真正生效。
 - `index.html` 不放 `showDebugPanel` 之类的运行期开关，统一走 `config.json`。
 
@@ -1650,8 +1663,10 @@ createRoot(document.getElementById('root')!).render(<App />)
 
 ```css
 html {
-  color-scheme: dark;
-  background-color: #111;
+  /* fallback；内联首屏样式存在时由 :root 的值覆盖 */
+  --liva-home-bg: #f4f6fb;
+  color-scheme: light;
+  background-color: var(--liva-home-bg);
 }
 
 html,
@@ -1663,6 +1678,19 @@ body,
 
 body {
   overflow: hidden;
+  background: var(--liva-home-bg);
+}
+
+/* LiveKit 的 [data-lk-theme=default] 会给 body 设 color-scheme: dark；
+   浅色舞台要覆盖回来，深色舞台再切回暗色。 */
+html[data-stage='light'] body[data-lk-theme] {
+  color-scheme: light;
+}
+
+html[data-stage='dark'],
+html[data-stage='dark'] body {
+  background-color: #111;
+  color-scheme: dark;
 }
 ```
 
@@ -2391,3 +2419,4 @@ export default function App() {
 - 2026-11-14：明确 `@livekit/track-processors@0.8.1` 的 disabled 行为：`switchTo({ mode: 'disabled' })` 不会停止分割/模糊处理；None 改为 `stopProcessor()` 销毁并恢复原始 track；新增 WebGL context loss 兜底（停止处理、回 None、提示），避免持续黑帧。
 - 2026-11-14：修复 Huawei Browser 竖屏 Settings 未全宽：生产构建设置 `build.cssTarget` 包含 `chrome99`，防止 Lightning CSS 输出 `(width<=640px)` range 语法（Chromium 99 解析为 `not all` 并丢弃竖屏全宽规则）；实测 Huawei Browser 14 竖屏 Settings 已覆盖全屏。
 - 2026-11-14：修复 Safari（Mac/iPad/iPhone）Blur→None 后本地预览黑屏：`stopProcessor()` 在同一 MediaStream 内换回原始 track，Safari 不重绘；停止后重置命中原始 track 的 `<video>` 的 `srcObject` 并重新 `play()`。Chrome/Firefox 不受影响。
+- 2026-11-17：修复首次打开 `/meeting/` 的整页闪屏（Safari/Firefox 明显）：原先 `index.html` 无首屏底色，`globals.css` 把 `html/body` 设为 `#111`，React 挂载后首页才变 `#f4f6fb`，形成白→暗→浅的连续闪色。现在 `index.html` 内联首屏浅色与 `color-scheme: light`，`globals.css` 默认浅色，App 用 `useLayoutEffect` 在进入 PreJoin/会中时给 `<html>` 切 `data-stage="dark"` 并把 `theme-color` 改为 `#111111`，返回首页再切回浅色。Playwright WebKit/Firefox 慢加载时间线验证暗色中间帧消失。

@@ -1,6 +1,14 @@
+/* The first screen is the light join page. The dark meeting/PreJoin stages
+   switch the document background via data-stage (set in App). Keeping the
+   initial value light avoids a full-page dark flash while CSS and React load;
+   body[data-lk-theme] would otherwise also make the UA color scheme dark. */
 html {
-  color-scheme: dark;
-  background-color: #111;
+  /* Fallback for the inline first-paint declaration in index.html. The
+     inline value still wins when present; this keeps the light surfaces
+     defined if that block is ever blocked or stripped. */
+  --liva-home-bg: #f4f6fb;
+  color-scheme: light;
+  background-color: var(--liva-home-bg);
 }
 
 html,
@@ -12,12 +20,25 @@ body,
 
 body {
   overflow: hidden;
-  background: #111;
+  background: var(--liva-home-bg);
   color: var(--lk-fg, #e8ecff);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* LiveKit's [data-lk-theme=default] sets color-scheme: dark on <body>. Keep
+   the light stages fully light (scrollbars, form controls) and restore the
+   dark scheme only for the meeting/PreJoin stages. */
+html[data-stage='light'] body[data-lk-theme] {
+  color-scheme: light;
+}
+
+html[data-stage='dark'],
+html[data-stage='dark'] body {
+  background-color: #111;
+  color-scheme: dark;
 }
 
 button,
