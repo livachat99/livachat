@@ -85,7 +85,7 @@ cp .env.example .env
 
 | Store | Link | QR code |
 | --- | --- | --- |
-| Android | [Download APK (v1.0.1)](https://github.com/livachat99/livachat/releases/download/v1.0.1/LivaChat-1.0.1.apk) | <img src="images/qr-download-apk.png" width="120" alt="QR code to download the Android APK" /> |
+| Android | [Download APK (v1.0.2)](https://github.com/livachat99/livachat/releases/download/v1.0.2/LivaChat-1.0.2.apk) | <img src="images/qr-download-apk.png" width="120" alt="QR code to download the Android APK" /> |
 | App Store | _link pending_ | _QR code pending_ |
 
 <!-- TODO: add the App Store link and QR code when the listing is live. -->
